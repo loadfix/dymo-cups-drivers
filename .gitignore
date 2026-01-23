@@ -36,6 +36,7 @@ mkinstalldirs
 depcomp
 compile
 test-driver
+install-sh
 COPYING
 INSTALL
 NEWS
