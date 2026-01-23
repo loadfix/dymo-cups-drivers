@@ -5,26 +5,26 @@ namespace DymoPrinterDriver
 {
 
 
-ErrorDiffusionHalftoning::ErrorDiffusionHalftoning(image_t InputImageType, image_t OutputImageType, bool UsePrinterColorSpace):
-  HalftoneFilter(InputImageType, OutputImageType), ImageWidth_(0), Errors_(), GrayLine_(), UsePrinterColorSpace_(UsePrinterColorSpace)
+ErrorDiffusionHalftoning::ErrorDiffusionHalftoning(image_t input_image_type, image_t output_image_type, bool use_printer_color_space):
+  HalftoneFilter(input_image_type, output_image_type), ImageWidth_(0), Errors_(), GrayLine_(), UsePrinterColorSpace_(use_printer_color_space)
 {
-  if (GetOutputImageType() != itBW)
+  if (getOutputImageType() != itBW)
     throw EHalftoneError(EHalftoneError::heUnsupportedImageType);
 }
 
-ErrorDiffusionHalftoning::~CErrorDiffusionHalftoning()
+ErrorDiffusionHalftoning::~ErrorDiffusionHalftoning()
 {
 }
 
 
 bool
-ErrorDiffusionHalftoning::IsProcessLineSupported()
+ErrorDiffusionHalftoning::isProcessLineSupported()
 {
   return true;
 }
 
 void
-ErrorDiffusionHalftoning::ProcessLine(
+ErrorDiffusionHalftoning::processLine(
   const buffer_t& InputLine, buffer_t& OutputLine)
 {
   int       pixelValue  = 0;
@@ -33,10 +33,10 @@ ErrorDiffusionHalftoning::ProcessLine(
 
   // set image  width
   if (!ImageWidth_)
-    ImageWidth_ = CalcImageWidth(InputLine);
+    ImageWidth_ = calcImageWidth(InputLine);
 
   // check buffer size
-  OutputLine.resize(CalcOutputBufferSize(ImageWidth_));
+  OutputLine.resize(calcOutputBufferSize(ImageWidth_));
   std::fill(OutputLine.begin(), OutputLine.end(), byte(0));
 
   // initialize halftone errors array and line buffer
@@ -50,8 +50,8 @@ ErrorDiffusionHalftoning::ProcessLine(
   for (i = 0; i < ImageWidth_; ++i)
   {
     byte R, G, B;
-    ExtractRGB(InputLine, i, R, G, B);
-    GrayLine_[i] = RGBToGrayScale(R, G, B);
+    extractRGB(InputLine, i, R, G, B);
+    GrayLine_[i] = convertRGBToGrayScale(R, G, B);
   }
 
   // apply errors from prev line
@@ -81,9 +81,9 @@ ErrorDiffusionHalftoning::ProcessLine(
     error = GrayLine_[i] - pixelValue * 255;
 
     if (UsePrinterColorSpace_)
-      SetPixelBW(OutputLine, i, !pixelValue);
+      setPixelBW(OutputLine, i, !pixelValue);
     else
-      SetPixelBW(OutputLine, i, pixelValue);
+      setPixelBW(OutputLine, i, pixelValue);
 
 
     // disribute error
@@ -114,13 +114,13 @@ ErrorDiffusionHalftoning::ProcessLine(
 }
 
 void
-ErrorDiffusionHalftoning::ProcessImage(
+ErrorDiffusionHalftoning::processImage(
   const void* ImageData, size_t ImageWidth, size_t ImageHeight, size_t LineDelta, std::vector<buffer_t>& OutputImage)
 {
   OutputImage.clear();
 
   buffer_t InputLine;
-  size_t   BufferSize = CalcBufferSize(ImageWidth);
+  size_t   BufferSize = calcBufferSize(ImageWidth);
   InputLine.resize(BufferSize, 0);
 
   for (size_t i = 0; i < ImageHeight; ++i)
@@ -130,12 +130,12 @@ ErrorDiffusionHalftoning::ProcessImage(
       (byte*)ImageData + LineDelta*i + BufferSize);
 
     OutputImage.push_back(buffer_t());
-    ProcessLine(InputLine, OutputImage[OutputImage.size() - 1]);
+    processLine(InputLine, OutputImage[OutputImage.size() - 1]);
   }
 }
 
 void
-ErrorDiffusionHalftoning::ProcessImage(const std::vector<buffer_t>& InputImage, std::vector<buffer_t>& OutputImage)
+ErrorDiffusionHalftoning::processImage(const std::vector<buffer_t>& InputImage, std::vector<buffer_t>& OutputImage)
 {
   OutputImage.clear();
 
@@ -143,7 +143,7 @@ ErrorDiffusionHalftoning::ProcessImage(const std::vector<buffer_t>& InputImage, 
 
   for (std::vector<buffer_t>::const_iterator i = InputImage.begin(); i < InputImage.end(); ++i)
   {
-    ProcessLine(*i, OutputLine);
+    processLine(*i, OutputLine);
     OutputImage.push_back(OutputLine);
   }
 }

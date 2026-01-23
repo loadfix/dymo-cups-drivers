@@ -26,47 +26,47 @@ public:
   LabelWriterLanguageMonitor(IPrintEnvironment& environment, bool use_sleep = true, size_t read_status_timeout = 10);
   virtual ~LabelWriterLanguageMonitor();
 
-  virtual void StartDoc();
-  virtual void EndDoc();
+  virtual void startDoc();
+  virtual void endDoc();
 
-  virtual void StartPage();
-  virtual void EndPage();
+  virtual void startPage();
+  virtual void endPage();
 
-  virtual void ProcessData(const buffer_t& data);
+  virtual void processData(const buffer_t& data);
 
   // some values used by driver is also interesting for the language monitor
-  void SetPaperType(LabelWriterDriver::paper_type_t  value);
-  void SetRoll(LabelWriterDriverTwinTurbo::roll_t    value);
+  void setPaperType(LabelWriterDriver::paper_type_t  value);
+  void setRoll(LabelWriterDriverTwinTurbo::roll_t    value);
 
 
 protected:
 private:
   // check if printer is locally connected, i.e. to usb port
-  bool IsLocal();
+  bool isLocal();
 
   // send reset command to reset from probably nonproper finished previous job
-  void ResetPrinter();
+  void resetPrinter();
 
   // send ESC q as first command to synchronize roll used by drivers and the device
   // it is needed to properly read status byte from the active roll
-  void SynchronizeRoll();
+  void synchronizeRoll();
 
   // checks status and reprint label if needed
-  void CheckStatusAndReprint();
+  void checkStatusAndReprint();
 
   // Read status byte from the printer
   // return true if status has been read, false otherwise
-  bool ReadStatus(byte& status);
+  bool readStatus(byte& status);
 
   // request status while the status become OK
   // return true on success, false - otherwise
-  bool PollUntilPaperIn();
+  bool pollUntilPaperIn();
 
   // update job status based on status read from the printer
-  void SetJobStatus(byte status);
+  void setJobStatus(byte status);
 
   // reprint cached label
-  void ReprintLabel();
+  void reprintLabel();
 
   IPrintEnvironment&                      Environment_;
 

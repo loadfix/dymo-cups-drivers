@@ -14,76 +14,76 @@ public:
     LabelWriterDriver(IPrintEnvironment& environment);
     virtual ~LabelWriterDriver() {}
 
-    virtual void StartDoc();
-    virtual void EndDoc();
+    virtual void startDoc();
+    virtual void endDoc();
 
-    virtual void StartPage();
-    virtual void EndPage();
+    virtual void startPage();
+    virtual void endPage();
 
-    virtual void ProcessRasterLine(const buffer_t& line_buffer);
+    virtual void processRasterLine(const buffer_t& line_buffer);
 
     // Device Name
-    void SetDeviceName(const std::string& value) { _deviceName = value; }
-    const std::string& GetDeviceName() const { return _deviceName; }
+    void setDeviceName(const std::string& value) { _deviceName = value; }
+    const std::string& getDeviceName() const { return _deviceName; }
 
     // Label height
-    virtual void SetVerticalResolution(const dword value) { _dwVerticalResolution = value; }
-    virtual dword GetVerticalResolution() const { return _dwVerticalResolution; }
+    virtual void setVerticalResolution(const dword value) { _dwVerticalResolution = value; }
+    virtual dword getVerticalResolution() const { return _dwVerticalResolution; }
 
     // Label width
-    virtual void SetHorizontalResolution(const dword value) { _dwHorizontalResolution = value; }
-    virtual dword GetHorizontalResolution() const { return _dwHorizontalResolution; }
+    virtual void setHorizontalResolution(const dword value) { _dwHorizontalResolution = value; }
+    virtual dword getHorizontalResolution() const { return _dwHorizontalResolution; }
 
     // Max printable width
-    void SetMaxPrintableWidth(const dword value) { _dwMaxPrintableWidth = value; }
-    dword GetMaxPrintableWidth() const { return _dwMaxPrintableWidth; }
+    void setMaxPrintableWidth(const dword value) { _dwMaxPrintableWidth = value; }
+    dword getMaxPrintableWidth() const { return _dwMaxPrintableWidth; }
 
     // Print density
-    void SetDensity (const density_t value) { _density = value; }
-    density_t GetDensity() const { return _density; }
+    void setDensity (const density_t value) { _density = value; }
+    density_t getDensity() const { return _density; }
 
     // Print quality
-    void SetQuality (const quality_t value) { _quality = value; }
-    quality_t GetQuality() const { return _quality; }
+    void setQuality (const quality_t value) { _quality = value; }
+    quality_t getQuality() const { return _quality; }
 
     // Print speed
-    void SetSpeed (const speed_t value) { _speed = value; }
-    speed_t GetSpeed() const { return _speed; }
+    void setSpeed (const speed_t value) { _speed = value; }
+    speed_t getSpeed() const { return _speed; }
 
     // Support high speed printing
-    void SetSupportHighSpeed (bool value) { _support_high_speed = value; }
-    bool GetSupportHighSpeed() { return _support_high_speed; }
+    void setSupportHighSpeed (bool value) { _support_high_speed = value; }
+    bool getSupportHighSpeed() { return _support_high_speed; }
 
     // Paper type
-    void SetPaperType (const paper_type_t value) { _paperType = value; }
-    paper_type_t GetPaperType() const { return _paperType; }
+    void setPaperType (const paper_type_t value) { _paperType = value; }
+    paper_type_t getPaperType() const { return _paperType; }
 
     // Media type
-    void SetMediaType (const media_type_t value) { _mediaType = value; }
-    media_type_t GetMediaType() const { return _mediaType; }
+    void setMediaType (const media_type_t value) { _mediaType = value; }
+    media_type_t getMediaType() const { return _mediaType; }
 
-    static bool IsBlank(const buffer_t& buf);
-    static buffer_t GetResetCommand();
-    static buffer_t GetRequestStatusCommand();
+    static bool isBlank(const buffer_t& buf);
+    static buffer_t getResetCommand();
+    static buffer_t getRequestStatusCommand();
 
 protected:
     // helper function
-    virtual void SetStartPrintJob(const dword dw_job_id);
-    virtual void SetEndPrintJob();
-    virtual void SetLabelIndex(const dword dw_page_number);
-    virtual void SetPrintDataHeader(const dword dw_vertical_resolution, const dword dw_horizontal_resolution);
-    virtual void SetFormFeed();
-    virtual void SetShortFormFeed();
+    virtual void setStartPrintJob(const dword dw_job_id);
+    virtual void setEndPrintJob();
+    virtual void setLabelIndex(const dword dw_page_number);
+    virtual void setPrintDataHeader(const dword dw_vertical_resolution, const dword dw_horizontal_resolution);
+    virtual void setFormFeed();
+    virtual void setShortFormFeed();
 
-    virtual void SetPrintDensity();
-    virtual void SetPrintQuality();
-    virtual void SetPrintSpeed();
-    virtual void SetPrintMedia();
-    virtual void SetLabelLength(const dword dw_length);
+    virtual void setPrintDensity();
+    virtual void setPrintQuality();
+    virtual void setPrintSpeed();
+    virtual void setPrintMedia();
+    virtual void setLabelLength(const dword dw_length);
 
-    virtual void ProcessRasterLineInternal(const buffer_t& line_buffer);
+    virtual void processRasterLineInternal(const buffer_t& line_buffer);
 
-    virtual void SendCommand(const buffer_t& cmd_buffer);
+    virtual void sendCommand(const buffer_t& cmd_buffer);
 
 private:
     IPrintEnvironment& _printEnvironment;

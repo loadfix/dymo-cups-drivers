@@ -4,32 +4,32 @@
 namespace DymoPrinterDriver
 {
 
-LabelWriterDriverTwinTurbo::LabelWriterDriverTwinTurbo(IPrintEnvironment& Environment) :
-   LabelWriterDriver400(Environment), _roll(rtAuto)
+LabelWriterDriverTwinTurbo::LabelWriterDriverTwinTurbo(IPrintEnvironment& environment) :
+   LabelWriterDriver400(environment), _roll(rtAuto)
 {
 }
 
-void LabelWriterDriverTwinTurbo::StartDoc()
+void LabelWriterDriverTwinTurbo::startDoc()
 {
-   LabelWriterDriver400::StartDoc();
-   SendRollSelect(_roll);
+   LabelWriterDriver400::startDoc();
+   sendRollSelect(_roll);
 }
 
-LabelWriterDriverTwinTurbo::roll_t LabelWriterDriverTwinTurbo::GetRoll()
+LabelWriterDriverTwinTurbo::roll_t LabelWriterDriverTwinTurbo::getRoll()
 {
    return _roll;
 }
 
-void LabelWriterDriverTwinTurbo::SetRoll(LabelWriterDriverTwinTurbo::roll_t Value)
+void LabelWriterDriverTwinTurbo::setRoll(LabelWriterDriverTwinTurbo::roll_t value)
 {
-   _roll = Value;
+   _roll = value;
 }
 
-buffer_t LabelWriterDriverTwinTurbo::GetRollSelectCommand(roll_t Value)
+buffer_t LabelWriterDriverTwinTurbo::getRollSelectCommand(roll_t value)
 {
    byte buf[] = {ESC, 'q', '0'};
 
-   switch (Value)
+   switch (value)
    {
       case rtLeft:    buf[2] = '1'; break;
       case rtRight:   buf[2] = '2'; break;
@@ -39,10 +39,10 @@ buffer_t LabelWriterDriverTwinTurbo::GetRollSelectCommand(roll_t Value)
    return buffer_t(buf, buf + sizeof(buf));
 }
 
-void LabelWriterDriverTwinTurbo::SendRollSelect(LabelWriterDriverTwinTurbo::roll_t Value)
+void LabelWriterDriverTwinTurbo::sendRollSelect(LabelWriterDriverTwinTurbo::roll_t value)
 {
-   buffer_t buf = GetRollSelectCommand(Value);
-   SendCommand(buf);
+   buffer_t buf = getRollSelectCommand(value);
+   sendCommand(buf);
 }
 
 };

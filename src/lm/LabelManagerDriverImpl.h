@@ -14,94 +14,94 @@ public:
    LabelManagerDriver(IPrintEnvironment& environment);
    virtual ~LabelManagerDriver() {}
 
-   virtual void StartDoc();
-   virtual void EndDoc();
+   virtual void startDoc();
+   virtual void endDoc();
 
-   virtual void StartPage();
-   virtual void EndPage();
+   virtual void startPage();
+   virtual void endPage();
 
-   virtual void ProcessRasterLine(const buffer_t& line_buffer);
+   virtual void processRasterLine(const buffer_t& line_buffer);
 
    // Device Name
-   void SetDeviceName(const std::string& value) { _deviceName = value; }
-   const std::string& GetDeviceName() const { return _deviceName; }
+   void setDeviceName(const std::string& value) { _deviceName = value; }
+   const std::string& getDeviceName() const { return _deviceName; }
 
    // Auto Cut Support
-   virtual void SetSupportAutoCut(const bool value) { _supportAutoCut = value; }
-   virtual bool GetSupportAutoCut() const { return _supportAutoCut; }
+   virtual void setSupportAutoCut(const bool value) { _supportAutoCut = value; }
+   virtual bool getSupportAutoCut() const { return _supportAutoCut; }
 
    // Cut, cutter marks or nothing
-   virtual void SetCutOption(const ILabelManagerDriver::cut_t value) { _cutOptions = value; fprintf(stderr, "TEST: SetCutOption = %d\n", value); }
-   virtual ILabelManagerDriver::cut_t GetCutOption() const { return _cutOptions; }
+   virtual void setCutOption(const ILabelManagerDriver::cut_t value) { _cutOptions = value; fprintf(stderr, "TEST: setCutOption = %d\n", value); }
+   virtual ILabelManagerDriver::cut_t getCutOption() const { return _cutOptions; }
 
    // Label alignment on the tape
-   virtual void SetAlignment(const ILabelManagerDriver::alignment_t value) { _alignment = value; fprintf(stderr, "TEST: SetAlignment = %d\n", value); }
-   virtual ILabelManagerDriver::alignment_t GetAlignment() const { return _alignment; }
+   virtual void setAlignment(const ILabelManagerDriver::alignment_t value) { _alignment = value; fprintf(stderr, "TEST: setAlignment = %d\n", value); }
+   virtual ILabelManagerDriver::alignment_t getAlignment() const { return _alignment; }
 
    // Label height
-   virtual void SetVerticalResolution(const dword value) { _dwVerticalResolution = value; }
-   virtual dword GetVerticalResolution() const { return _dwVerticalResolution; }
+   virtual void setVerticalResolution(const dword value) { _dwVerticalResolution = value; }
+   virtual dword getVerticalResolution() const { return _dwVerticalResolution; }
 
    // Label width
-   virtual void SetHorizontalResolution(const dword value) { _dwHorizontalResolution = value; }
-   virtual dword GetHorizontalResolution() const { return _dwHorizontalResolution; }
+   virtual void setHorizontalResolution(const dword value) { _dwHorizontalResolution = value; }
+   virtual dword getHorizontalResolution() const { return _dwHorizontalResolution; }
 
-   void SetPrintChainMarksAtDocEnd(const bool value) { _printChainMarksAtDocEnd = value; fprintf(stderr, "TEST: SetPrintChainMarksAtDocEnd = %d\n", value); }
-   bool GetPrintChainMarksAtDocEnd() const { return _printChainMarksAtDocEnd; }
+   void setPrintChainMarksAtDocEnd(const bool value) { _printChainMarksAtDocEnd = value; fprintf(stderr, "TEST: setPrintChainMarksAtDocEnd = %d\n", value); }
+   bool getPrintChainMarksAtDocEnd() const { return _printChainMarksAtDocEnd; }
 
    // Min label length in dots at printer DPI (300dpi -> 300 dots for 1 inch)
-   void SetMinLabelLength(const dword value) { _dwMinPageLine = value; }
-   dword GetMinLabelLength() const { return _dwMinPageLine; }
+   void setMinLabelLength(const dword value) { _dwMinPageLine = value; }
+   dword getMinLabelLength() const { return _dwMinPageLine; }
 
    // Tape alignment offset
-   void SetTapeAlignmentOffset(const dword value) { _dwTapeAlignmentOffset = value; fprintf(stderr, "INFORMATION - Setting shift value: %d\n", _dwTapeAlignmentOffset); }
-   dword GetTapeAlignmentOffset() const { return _dwTapeAlignmentOffset; }
+   void setTapeAlignmentOffset(const dword value) { _dwTapeAlignmentOffset = value; fprintf(stderr, "INFORMATION - Setting shift value: %d\n", _dwTapeAlignmentOffset); }
+   dword getTapeAlignmentOffset() const { return _dwTapeAlignmentOffset; }
 
    // Normal leader - no padding required since FW prints center aligned
-   void SetNormalLeader(const dword value) { _dwNormalLeader = value; }
-   dword GetNormalLeader() const { return _dwNormalLeader; }
+   void setNormalLeader(const dword value) { _dwNormalLeader = value; }
+   dword getNormalLeader() const { return _dwNormalLeader; }
 
    // Min leader - no padding required since FW prints center aligned
-   void SetMinLeader(const dword value) { _dwMinLeader = value; }
-   dword GetMinLeader() const { return _dwMinLeader; }
+   void setMinLeader(const dword value) { _dwMinLeader = value; }
+   dword getMinLeader() const { return _dwMinLeader; }
 
    // Aligned leader - no padding required since FW prints center aligned
-   void SetAlignedLeader(const dword value) { _dwAlignedLeader = value; }
-   dword GetAlignedLeader() const { return _dwAlignedLeader; }
+   void setAlignedLeader(const dword value) { _dwAlignedLeader = value; }
+   dword getAlignedLeader() const { return _dwAlignedLeader; }
 
    // Max printable width
-   void SetMaxPrintableWidth(const dword value) { _dwMaxPrintableWidth = value; }
-   dword GetMaxPrintableWidth() const { return _dwMaxPrintableWidth; }
+   void setMaxPrintableWidth(const dword value) { _dwMaxPrintableWidth = value; }
+   dword getMaxPrintableWidth() const { return _dwMaxPrintableWidth; }
 
    // Paper type
-   void SetPaperType (const paper_type_t value) { _paperType = value; }
-   paper_type_t GetPaperType() const { return _paperType; }
+   void setPaperType (const paper_type_t value) { _paperType = value; }
+   paper_type_t getPaperType() const { return _paperType; }
 
-   static bool IsBlank(const buffer_t& buf) { return false; }
-   static buffer_t GetRequestStatusCommand();
+   static bool isBlank(const buffer_t& buf) { return false; }
+   static buffer_t getRequestStatusCommand();
 
 protected:
    // helper function
-   virtual void SetStartPrintJob(const dword dw_job_id);
-   virtual void SetEndPrintJob();
-   virtual void SetLabelIndex(const dword dw_page_number);
-   virtual void SetLabelLeader(const dword dw_length);
-   virtual void SetLabelTrailer(const dword dw_length);
-   virtual void SetPrintDataHeader(const dword dw_vertical_resolution, const dword dw_horizontal_resolution);
-   virtual void SetFormFeed();
-   virtual void SetShortFormFeed();
+   virtual void setStartPrintJob(const dword dw_job_id);
+   virtual void setEndPrintJob();
+   virtual void setLabelIndex(const dword dw_page_number);
+   virtual void setLabelLeader(const dword dw_length);
+   virtual void setLabelTrailer(const dword dw_length);
+   virtual void setPrintDataHeader(const dword dw_vertical_resolution, const dword dw_horizontal_resolution);
+   virtual void setFormFeed();
+   virtual void setShortFormFeed();
 
-   virtual void SetCutCommand();
-   virtual void SetCutterMark();
+   virtual void setCutCommand();
+   virtual void setCutterMark();
 
-   virtual void ProcessRasterLineInternal(const buffer_t& line_buffer);
+   virtual void processRasterLineInternal(const buffer_t& line_buffer);
 
-   virtual void ShiftData(const buffer_t& buf, buffer_t& shifted_buf, int shift_value);
-   virtual void ShiftDataLeft(const buffer_t& buf, buffer_t& shifted_buf, size_t shift_value);
-   virtual void ShiftDataRight(const buffer_t& buf, buffer_t& shifted_buf, size_t shift_value);
-   virtual int GetShiftValue(size_t raster_line_size);
+   virtual void shiftData(const buffer_t& buf, buffer_t& shifted_buf, int shift_value);
+   virtual void shiftDataLeft(const buffer_t& buf, buffer_t& shifted_buf, size_t shift_value);
+   virtual void shiftDataRight(const buffer_t& buf, buffer_t& shifted_buf, size_t shift_value);
+   virtual int getShiftValue(size_t raster_line_size);
 
-   virtual void SendCommand(const buffer_t& cmd_buffer);
+   virtual void sendCommand(const buffer_t& cmd_buffer);
 
 private:
    IPrintEnvironment& _printEnvironment;

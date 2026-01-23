@@ -12,40 +12,40 @@ public:
   NLLBlock(NLLHalftoning& Parent, const HalftoneFilter::image_buffer_t& Image, int x1, int y1, HalftoneFilter::image_buffer_t& OutputImage);
 
   // return true if at least on pixels of the block is insize the image
-  bool IsInImage();
+  bool isInImage();
 
   // fill block information
-  void FillBlock();
-  void OutputBlock();
+  void fillBlock();
+  void outputBlock();
 
 private:
   // return intense value of the block - original number of pixels to draw in 'black'
-  size_t GetBlockIntenseValue();
+  size_t getBlockIntenseValue();
 
   // fill info for one of 18 pixels
   // PixelNo - ordinal number of the pixel in the block
   // (x, y)  - coords of the pixel in original image
-  void FillPixel(size_t PixelNo, int x, int y);
+  void fillPixel(size_t PixelNo, int x, int y);
 
   // Split class 1 pixels to class 2 and class 5 to class 4
-  void ReduceClasses();
-  void ReduceClasses(size_t ClassFrom, size_t ClassTo);
+  void reduceClasses();
+  void reduceClasses(size_t ClassFrom, size_t ClassTo);
 
   // return Laplacian value for pixel with coords (x, y)
-  int GetNLL(int x, int y);
+  int calculateNll(int x, int y);
 
   // return grayscale value [0, 255] of pixel with coords (x, y)
-  int GetPixelGray(int x, int y);
+  int getPixelGray(int x, int y);
 
   // output Pixels of specific class
   // return number of pixels drawn
-  size_t  OutputClass(size_t ClassNo, size_t MaxPixelsToOutput);
+  size_t  outputClass(size_t ClassNo, size_t MaxPixelsToOutput);
 
-  void OutputPixel(size_t PixelNo);
-  void OutputPixel(int x, int y);
+  void outputPixel(size_t PixelNo);
+  void outputPixel(int x, int y);
 
   // return true if pixel (x, y) is inside image
-  bool IsInImage(int x, int y);
+  bool isInImage(int x, int y);
 
   NLLHalftoning&                         Parent_;
   const HalftoneFilter::image_buffer_t&  Image_;
@@ -118,7 +118,7 @@ const NLLBlock::square_block_t NLLBlock::Squares_[8] =
 NLLHalftoning::NLLHalftoning(int Threshold, image_t InputImageType, image_t OutputImageType):
   HalftoneFilter(InputImageType, OutputImageType), Threshold_(Threshold)
 {
-  if (GetOutputImageType() != itBW)
+  if (getOutputImageType() != itBW)
     throw EHalftoneError(EHalftoneError::heUnsupportedImageType);
 }
 
@@ -127,19 +127,19 @@ NLLHalftoning::~NLLHalftoning()
 }
 
 bool
-NLLHalftoning::IsProcessLineSupported()
+NLLHalftoning::isProcessLineSupported()
 {
   return false;
 }
 
 void
-NLLHalftoning::ProcessLine(
+NLLHalftoning::processLine(
   const buffer_t& InputLine, buffer_t& OutputLine)
 {
 }
 
 void
-NLLHalftoning::ProcessImage(
+NLLHalftoning::processImage(
   const void* ImageData, size_t ImageWidth, size_t ImageHeight, size_t LineDelta, std::vector<buffer_t>& OutputImage)
 {
   // TODO: non-implemented yet
@@ -148,12 +148,12 @@ NLLHalftoning::ProcessImage(
 
 
 void
-NLLHalftoning::ProcessImage(const std::vector<buffer_t>& InputImage, std::vector<buffer_t>& OutputImage)
+NLLHalftoning::processImage(const std::vector<buffer_t>& InputImage, std::vector<buffer_t>& OutputImage)
 {
   OutputImage.clear();
   if (InputImage.size() == 0) return;
 
-  ImageWidth_   = CalcImageWidth(InputImage[0]);
+  ImageWidth_   = calcImageWidth(InputImage[0]);
   ImageHeight_  = InputImage.size();
 
   // create an empty output image
@@ -175,8 +175,8 @@ NLLHalftoning::ProcessImage(const std::vector<buffer_t>& InputImage, std::vector
     {
       NLLBlock Block(*this, InputImage, x1, y1, OutputImage);
 
-      Block.FillBlock();
-      Block.OutputBlock();
+      Block.fillBlock();
+      Block.outputBlock();
 
 
       // advance to next block
@@ -187,10 +187,10 @@ NLLHalftoning::ProcessImage(const std::vector<buffer_t>& InputImage, std::vector
 
 
 bool
-NLLHalftoning::ProcessDiagonal(
+NLLHalftoning::processDiagonal(
   const std::vector<buffer_t>& InputImage, std::vector<buffer_t>& OutputImage, size_t& x1, size_t& y1)
 {
-  //fprintf(stderr, "ProcessDiagonal(%i, %i)\n", x1, y1);
+  //fprintf(stderr, "processDiagonal(%i, %i)\n", x1, y1);
 
   bool   Result           = false;
   bool   HasDownBlocks    = false;
@@ -205,11 +205,11 @@ NLLHalftoning::ProcessDiagonal(
   {
     NLLBlock Block(*this, InputImage, x, y, OutputImage);
 
-    if (Block.IsInImage())
+    if (Block.isInImage())
     {
       //fprintf(stderr, "down Block (%i, %i)\n", x, y);
-      Block.FillBlock();
-      Block.OutputBlock();
+      Block.fillBlock();
+      Block.outputBlock();
       Result = true;
 
       if (!HasDownBlocks)
@@ -233,12 +233,12 @@ NLLHalftoning::ProcessDiagonal(
   {
     NLLBlock Block(*this, InputImage, x, y, OutputImage);
 
-    if (Block.IsInImage())
+    if (Block.isInImage())
     {
       //fprintf(stderr, "up Block (%i, %i)\n", x, y);
 
-      Block.FillBlock();
-      Block.OutputBlock();
+      Block.fillBlock();
+      Block.outputBlock();
       Result = true;
       HasUpBlocks = true;
 
@@ -262,7 +262,7 @@ NLLHalftoning::ProcessDiagonal(
 }
 
 int
-NLLHalftoning::GetThreshold()
+NLLHalftoning::getThreshold()
 {
   return Threshold_;
 }
@@ -272,103 +272,103 @@ NLLHalftoning::GetThreshold()
 ////////////////////////////////////////////////////////////////////////
 
 NLLBlock::NLLBlock(
-  NLLHalftoning& Parent, const HalftoneFilter::image_buffer_t& Image, int x1, int y1, HalftoneFilter::image_buffer_t& OutputImage):
-  Parent_(Parent), Image_(Image), OutputImage_(OutputImage), x1_(x1), y1_(y1), Pixels_(18, 0), Classes_(18, 0)
+  NLLHalftoning& parent, const HalftoneFilter::image_buffer_t& image, int x1, int y1, HalftoneFilter::image_buffer_t& output_image):
+  Parent_(parent), Image_(image), OutputImage_(output_image), x1_(x1), y1_(y1), Pixels_(18, 0), Classes_(18, 0)
 {
-  ImageWidth_   = Parent_.CalcImageWidth(Image_[0]);
+  ImageWidth_   = Parent_.calcImageWidth(Image_[0]);
   ImageHeight_  = Image_.size();
 }
 
 void
-NLLBlock::FillBlock()
+NLLBlock::fillBlock()
 {
   for (size_t i = 0; i < Pixels_.size(); ++i)
-    FillPixel(i + 1, x1_ + PixelOffsets_[i].x, y1_ + PixelOffsets_[i].y);
+    fillPixel(i + 1, x1_ + PixelOffsets_[i].x, y1_ + PixelOffsets_[i].y);
 
-  ReduceClasses();
+  reduceClasses();
 
 }
 
 void
-NLLBlock::ReduceClasses()
+NLLBlock::reduceClasses()
 {
-  //ReduceClasses(1, 2);
-  //ReduceClasses(5, 4);
+  //reduceClasses(1, 2);
+  //reduceClasses(5, 4);
 }
 
 void
-NLLBlock::ReduceClasses(size_t ClassFrom, size_t ClassTo)
+NLLBlock::reduceClasses(size_t class_from, size_t class_to)
 {
   for (size_t i = 0; i < 8; ++i)
   {
-    if ((Classes_[Squares_[i].p1 - 1] == ClassFrom)
-    && (Classes_[Squares_[i].p2 - 1] == ClassFrom)
-    && (Classes_[Squares_[i].p3 - 1] == ClassFrom)
-    && (Classes_[Squares_[i].p4 - 1] == ClassFrom))
+    if ((Classes_[Squares_[i].p1 - 1] == class_from)
+    && (Classes_[Squares_[i].p2 - 1] == class_from)
+    && (Classes_[Squares_[i].p3 - 1] == class_from)
+    && (Classes_[Squares_[i].p4 - 1] == class_from))
     {
-      Classes_[Squares_[i].p1 - 1] = ClassTo;
-      Classes_[Squares_[i].p3 - 1] = ClassTo;
+      Classes_[Squares_[i].p1 - 1] = class_to;
+      Classes_[Squares_[i].p3 - 1] = class_to;
     }
   }
 }
 
 void
-NLLBlock::FillPixel(size_t PixelNo, int x, int y)
+NLLBlock::fillPixel(size_t pixel_no, int x, int y)
 {
   // fill pixels
-  Pixels_[PixelNo - 1] = GetPixelGray(x, y);
+  Pixels_[pixel_no - 1] = getPixelGray(x, y);
 
   // fill classes
-  int NLL = GetNLL(x, y);
-  int Threshold = Parent_.GetThreshold();
+  int nll = calculateNll(x, y);
+  int threshold = Parent_.getThreshold();
 
   // we added to new classes to those described in the papers
   // 0 - (same as 1) - it is set for black pixels, those should remeined black
   // 6 - (same as 5) - it is set for white pixels, those should remeined white
 
-  if (Pixels_[PixelNo - 1] == 0)
-    Classes_[PixelNo - 1] = 0;
-  else if (Pixels_[PixelNo - 1] == 255)
-    Classes_[PixelNo - 1] = 6;
+  if (Pixels_[pixel_no - 1] == 0)
+    Classes_[pixel_no - 1] = 0;
+  else if (Pixels_[pixel_no - 1] == 255)
+    Classes_[pixel_no - 1] = 6;
   else // as in papers
-    if (NLL < -Threshold)
-      Classes_[PixelNo - 1] = 1;
-    else if (NLL > Threshold)
-      Classes_[PixelNo - 1] = 5;
+    if (nll < -threshold)
+      Classes_[pixel_no - 1] = 1;
+    else if (nll > threshold)
+      Classes_[pixel_no - 1] = 5;
     else
-      Classes_[PixelNo - 1] = 3;
+      Classes_[pixel_no - 1] = 3;
 
 }
 
 int
-NLLBlock::GetPixelGray(int x, int y)
+NLLBlock::getPixelGray(int x, int y)
 {
-  if (IsInImage(x, y))
+  if (isInImage(x, y))
   {
     byte R, G, B;
-    Parent_.ExtractRGB(Image_[y], x, R, G, B);
-    return Parent_.RGBToGrayScale(R, G, B);
+    Parent_.extractRGB(Image_[y], x, R, G, B);
+    return Parent_.convertRGBToGrayScale(R, G, B);
   }
   else
     return 255; // white
 }
 
 int
-NLLBlock::GetNLL(int x, int y)
+NLLBlock::calculateNll(int x, int y)
 {
   int A =
-    GetPixelGray(x, y)
-    - (  GetPixelGray(x - 1, y - 1)
-    + GetPixelGray(x + 1, y - 1)
-    + GetPixelGray(x - 1, y + 1)
-    + GetPixelGray(x + 1, y + 1)) / 4;
+    getPixelGray(x, y)
+    - (  getPixelGray(x - 1, y - 1)
+    + getPixelGray(x + 1, y - 1)
+    + getPixelGray(x - 1, y + 1)
+    + getPixelGray(x + 1, y + 1)) / 4;
 
   int B =
-    GetPixelGray(x, y)
-    - (  GetPixelGray(x - 0, y - 1)
-    + GetPixelGray(x + 0, y + 1)
-    + GetPixelGray(x - 1, y + 0)
-    + GetPixelGray(x + 1, y + 0)) / 4;
+    getPixelGray(x, y)
+    - (  getPixelGray(x - 0, y - 1)
+    + getPixelGray(x + 0, y + 1)
+    + getPixelGray(x - 1, y + 0)
+    + getPixelGray(x + 1, y + 0)) / 4;
 
   if ((A > 0) && (B > 0))
     return std::min(A, B);
@@ -381,49 +381,49 @@ NLLBlock::GetNLL(int x, int y)
 
 
 size_t
-NLLBlock::GetBlockIntenseValue()
+NLLBlock::getBlockIntenseValue()
 {
   size_t Intense = 128;
   for (size_t i = 0; i < Pixels_.size(); ++i)
     Intense += Pixels_[i];
 
   size_t result =  18 - std::min(Intense / 255, size_t(18));
-  //fprintf(stderr, "GetBlockIntenseValue() = %d\n", result);
+  //fprintf(stderr, "getBlockIntenseValue() = %d\n", result);
   return result;
 }
 
 void
-NLLBlock::OutputBlock()
+NLLBlock::outputBlock()
 {
-  size_t RemainedPixels = GetBlockIntenseValue();
+  size_t RemainedPixels = getBlockIntenseValue();
   size_t PixelCount       = 0;
 
   // output all pixels for class 0
-  PixelCount = OutputClass(0, 18);
+  PixelCount = outputClass(0, 18);
 
   if (PixelCount < RemainedPixels)
   {
     RemainedPixels -= PixelCount;
-    RemainedPixels -= OutputClass(1, RemainedPixels);
-    RemainedPixels -= OutputClass(2, RemainedPixels);
-    RemainedPixels -= OutputClass(3, RemainedPixels);
-    RemainedPixels -= OutputClass(4, RemainedPixels);
+    RemainedPixels -= outputClass(1, RemainedPixels);
+    RemainedPixels -= outputClass(2, RemainedPixels);
+    RemainedPixels -= outputClass(3, RemainedPixels);
+    RemainedPixels -= outputClass(4, RemainedPixels);
   }
 }
 
 size_t
-NLLBlock::OutputClass(size_t ClassNo, size_t MaxPixelsToOutput)
+NLLBlock::outputClass(size_t class_no, size_t max_pixels_to_output)
 {
-  //fprintf(stderr, "OutputClass(%i, %i)\n", ClassNo, MaxPixelsToOutput);
+  //fprintf(stderr, "outputClass(%i, %i)\n", class_no, max_pixels_to_output);
 
-  if (MaxPixelsToOutput == 0)
+  if (max_pixels_to_output == 0)
     return 0;
 
   std::vector<size_t> Pixels;
 
   // collect all pixels of a class
   for (size_t i = 0; i < Classes_.size(); ++i)
-    if (Classes_[i] == ClassNo)
+    if (Classes_[i] == class_no)
       Pixels.push_back(i + 1);
 
   // sort pixels, so output it in order
@@ -433,9 +433,9 @@ NLLBlock::OutputClass(size_t ClassNo, size_t MaxPixelsToOutput)
   // output pixels
   size_t Result = 0;
   for (size_t i = 0; i < Pixels.size(); ++i)
-    if (Result < MaxPixelsToOutput)
+    if (Result < max_pixels_to_output)
     {
-      OutputPixel(Pixels[i]);
+      outputPixel(Pixels[i]);
       ++Result;
     }
     else
@@ -445,30 +445,30 @@ NLLBlock::OutputClass(size_t ClassNo, size_t MaxPixelsToOutput)
 }
 
 void
-NLLBlock::OutputPixel(size_t PixelNo)
+NLLBlock::outputPixel(size_t pixel_no)
 {
-  OutputPixel(x1_ + PixelOffsets_[PixelNo - 1].x, y1_ + PixelOffsets_[PixelNo - 1].y);
+  outputPixel(x1_ + PixelOffsets_[pixel_no - 1].x, y1_ + PixelOffsets_[pixel_no - 1].y);
 }
 
 void
-NLLBlock::OutputPixel(int x, int y)
+NLLBlock::outputPixel(int x, int y)
 {
-  if (IsInImage(x, y))
-    Parent_.SetPixelBW(OutputImage_[y], x, 1);
+  if (isInImage(x, y))
+    Parent_.setPixelBW(OutputImage_[y], x, 1);
 }
 
 bool
-NLLBlock::IsInImage()
+NLLBlock::isInImage()
 {
   for (size_t i = 0; i < Pixels_.size(); ++i)
-    if (IsInImage(x1_ + PixelOffsets_[i].x, y1_ + PixelOffsets_[i].y))
+    if (isInImage(x1_ + PixelOffsets_[i].x, y1_ + PixelOffsets_[i].y))
       return true;
 
   return false;
 }
 
 bool
-NLLBlock::IsInImage(int x, int y)
+NLLBlock::isInImage(int x, int y)
 {
   return (x >= 0) && (size_t(x) < ImageWidth_) && (y >= 0) && (size_t(y) < ImageHeight_);
 }

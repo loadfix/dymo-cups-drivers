@@ -10,8 +10,8 @@ namespace DymoPrinterDriver
 {
 
 //const byte ESC = 0x1B;
-LabelWriterLanguageMonitor::LabelWriterLanguageMonitor(IPrintEnvironment& Environment, bool UseSleep, size_t ReadStatusTimeout):
-  Environment_(Environment), PaperType_(LabelWriterDriver::ptRegular), Roll_(LabelWriterDriverTwinTurbo::rtAuto), RollUsed_(false), IsFirstPage_(true), PageData_(), UseSleep_(UseSleep), LastStatus_(0), LastReadStatusResult_(true), ReadStatusTimeout_(ReadStatusTimeout)
+LabelWriterLanguageMonitor::LabelWriterLanguageMonitor(IPrintEnvironment& environment, bool use_sleep, size_t read_status_timeout):
+  Environment_(environment), PaperType_(LabelWriterDriver::ptRegular), Roll_(LabelWriterDriverTwinTurbo::rtAuto), RollUsed_(false), IsFirstPage_(true), PageData_(), UseSleep_(use_sleep), LastStatus_(0), LastReadStatusResult_(true), ReadStatusTimeout_(read_status_timeout)
 {
 }
 
@@ -20,43 +20,43 @@ LabelWriterLanguageMonitor::~LabelWriterLanguageMonitor()
 }
 
 void
-LabelWriterLanguageMonitor::StartDoc()
+LabelWriterLanguageMonitor::startDoc()
 {
   IsFirstPage_ = true;
-  ResetPrinter();
+  resetPrinter();
 
   if (RollUsed_)
-    SynchronizeRoll();
+    synchronizeRoll();
 }
 
 void
-LabelWriterLanguageMonitor::EndDoc()
+LabelWriterLanguageMonitor::endDoc()
 {
-  fprintf(stderr, "DEBUG: LabelWriterLanguageMonitor::EndDoc()\n");
-  //CheckStatusAndReprint();
+  fprintf(stderr, "DEBUG: LabelWriterLanguageMonitor::endDoc()\n");
+  //checkStatusAndReprint();
 }
 
 void
-LabelWriterLanguageMonitor::StartPage()
+LabelWriterLanguageMonitor::startPage()
 {
-  fprintf(stderr, "DEBUG: LabelWriterLanguageMonitor::StartPage()\n");
+  fprintf(stderr, "DEBUG: LabelWriterLanguageMonitor::startPage()\n");
   if (IsFirstPage_)
   {
-    CheckStatusAndReprint();
+    checkStatusAndReprint();
   }
 
   IsFirstPage_ = false;
 }
 
 void
-LabelWriterLanguageMonitor::EndPage()
+LabelWriterLanguageMonitor::endPage()
 {
-  fprintf(stderr, "DEBUG: LabelWriterLanguageMonitor::EndPage()\n");
-  CheckStatusAndReprint();
+  fprintf(stderr, "DEBUG: LabelWriterLanguageMonitor::endPage()\n");
+  checkStatusAndReprint();
 }
 
 bool
-LabelWriterLanguageMonitor::IsLocal()
+LabelWriterLanguageMonitor::isLocal()
 {
   bool bIsLocal = true;
 
@@ -69,29 +69,29 @@ LabelWriterLanguageMonitor::IsLocal()
 }
 
 void
-LabelWriterLanguageMonitor::SynchronizeRoll()
+LabelWriterLanguageMonitor::synchronizeRoll()
 {
-  buffer_t buf = LabelWriterDriverTwinTurbo::GetRollSelectCommand(Roll_);
-  Environment_.WriteData(buf);
+  buffer_t buf = LabelWriterDriverTwinTurbo::getRollSelectCommand(Roll_);
+  Environment_.writeData(buf);
 }
 
 void
-LabelWriterLanguageMonitor::ResetPrinter()
+LabelWriterLanguageMonitor::resetPrinter()
 {
-  buffer_t buf = LabelWriterDriver::GetResetCommand();
-  Environment_.WriteData(buf);
+  buffer_t buf = LabelWriterDriver::getResetCommand();
+  Environment_.writeData(buf);
 }
 
 
 void
-LabelWriterLanguageMonitor::CheckStatusAndReprint()
+LabelWriterLanguageMonitor::checkStatusAndReprint()
 {
   fprintf(stderr, "DEBUG: LabelWriterLanguageMonitor::CheckStatusAndReprint()\n");
 
   // restore good status of the job
-  SetJobStatus(TOF_BIT);
+  setJobStatus(TOF_BIT);
 
-  if(!IsLocal())
+    if(!isLocal())
       return;
 
   while (true) // reprint also can fail, so don't forget to recheck status after reprint
@@ -111,7 +111,7 @@ LabelWriterLanguageMonitor::CheckStatusAndReprint()
     {
       fprintf(stderr, "DEBUG: LabelWriterLanguageMonitor::CheckStatusAndReprint() 2 %i\n", i);
 //      StatusOK =
-      ReadStatus(Status);
+      readStatus(Status);
       //usleep(100000);
       i++;
     }
@@ -135,13 +135,13 @@ LabelWriterLanguageMonitor::CheckStatusAndReprint()
       if (!(Status & TOF_BIT) && !(Status & ROLL_CHANGED_BIT))
         Status |= ERROR_BIT;
 
-      SetJobStatus(Status);
-      if (PollUntilPaperIn())
+      setJobStatus(Status);
+      if (pollUntilPaperIn())
       {
         // restore good status of the job
-        SetJobStatus(TOF_BIT);
+        setJobStatus(TOF_BIT);
 
-        ReprintLabel();
+        reprintLabel();
       }
     }
     else
@@ -155,39 +155,39 @@ LabelWriterLanguageMonitor::CheckStatusAndReprint()
 }
 
 bool
-LabelWriterLanguageMonitor::ReadStatus(byte& Status)
+LabelWriterLanguageMonitor::readStatus(byte& status)
 {
   time_t t = time(NULL);
   fprintf(stderr, "DEBUG: LabelWriterLanguageMonitor::ReadStatus() %s\n", ctime(&t));
 
   bool Result = false;
-  Status = 0; // default
+  status = 0; // default
   LastStatus_ = 0;
 
   //if (LastReadStatusResult_)
   {
-    buffer_t RequestStatusCommand = LabelWriterDriver::GetRequestStatusCommand();
-    Environment_.WriteData(RequestStatusCommand);
+    buffer_t RequestStatusCommand = LabelWriterDriver::getRequestStatusCommand();
+    Environment_.writeData(RequestStatusCommand);
   }
-  //Environment_.WriteData(buffer_t(128, 0));
-  //Environment_.WriteData(RequestStatusCommand);
+  //Environment_.writeData(buffer_t(128, 0));
+  //Environment_.writeData(RequestStatusCommand);
 
   //byte b[] = {
   //    0x1b, 'A', 0x1b, 'A', 0x1b, 'A', 0x1b, 'A', 0x1b, 'A', 0x1b, 'A', 0x1b, 'A', 0x1b, 'A',
   //    0x1b, 'A', 0x1b, 'A', 0x1b, 'A', 0x1b, 'A', 0x1b, 'A', 0x1b, 'A', 0x1b, 'A', 0x1b, 'A'};
   //byte b[] = { 0x1b, 'A', 0x1b, 'A'};
-  //Environment_.WriteData(buffer_t(b, b + sizeof(b)));
+  //Environment_.writeData(buffer_t(b, b + sizeof(b)));
 
   buffer_t buf;
-  Environment_.ReadData(buf);
+  Environment_.readData(buf);
 
   if (buf.size() > 0)
   {
 
-    Status = buf[0];
+    status = buf[0];
 
     if (PaperType_ == LabelWriterDriver::ptContinuous)
-      Status |= TOF_BIT;
+      status |= TOF_BIT;
 
     Result = true;
   }
@@ -200,16 +200,16 @@ LabelWriterLanguageMonitor::ReadStatus(byte& Status)
   //else
   //  LastReadStatusResult_ = Result;
 
-  LastStatus_ = Status;
+  LastStatus_ = status;
 
-  fprintf(stderr, "DEBUG: ReadStatus() returned %x %i\n", Status, (int)Result);
+  fprintf(stderr, "DEBUG: readStatus() returned %x %i\n", status, (int)Result);
   return Result;
 }
 
 bool
-LabelWriterLanguageMonitor::PollUntilPaperIn()
+LabelWriterLanguageMonitor::pollUntilPaperIn()
 {
-  fprintf(stderr, "DEBUG: LabelWriterLanguageMonitor::PollUntilPaperIn()\n");
+  fprintf(stderr, "DEBUG: LabelWriterLanguageMonitor::pollUntilPaperIn()\n");
 
   byte Status = 0;
   for(;;)
@@ -224,13 +224,13 @@ LabelWriterLanguageMonitor::PollUntilPaperIn()
       nanosleep(&interval, NULL);
     }
 
-    if (Environment_.GetJobStatus() == IPrintEnvironment::jsDeleted)
+    if (Environment_.getJobStatus() == IPrintEnvironment::jsDeleted)
       return false;
 
-    if (!ReadStatus(Status))
+    if (!readStatus(Status))
       return false;
 
-    SetJobStatus(Status); // update status
+    setJobStatus(Status); // update status
 
     if ((Status & TOF_BIT) && !(Status & ERROR_BIT))
       return true;
@@ -238,7 +238,7 @@ LabelWriterLanguageMonitor::PollUntilPaperIn()
 }
 
 void
-LabelWriterLanguageMonitor::SetJobStatus(byte Status)
+LabelWriterLanguageMonitor::setJobStatus(byte Status)
 {
   IPrintEnvironment::job_status_t JobStatus = IPrintEnvironment::jsOK;
 
@@ -247,40 +247,40 @@ LabelWriterLanguageMonitor::SetJobStatus(byte Status)
   else if (Status & ERROR_BIT)
     JobStatus = IPrintEnvironment::jsError;
 
-  Environment_.SetJobStatus(JobStatus);
+  Environment_.setJobStatus(JobStatus);
 }
 
 void
-LabelWriterLanguageMonitor::ReprintLabel()
+LabelWriterLanguageMonitor::reprintLabel()
 {
-  fprintf(stderr, "DEBUG: LabelWriterLanguageMonitor::ReprintLabel()\n");
+  fprintf(stderr, "DEBUG: LabelWriterLanguageMonitor::reprintLabel()\n");
 
   // send form feed first
   if (!(LastStatus_ & ROLL_CHANGED_BIT))
   {
-    buffer_t ShortFormFeedCommand = LabelWriterDriver400::GetShortFormFeedCommand();
-    Environment_.WriteData(ShortFormFeedCommand);
+    buffer_t ShortFormFeedCommand = LabelWriterDriver400::getShortFormFeedCommand();
+    Environment_.writeData(ShortFormFeedCommand);
   }
 
-  Environment_.WriteData(PageData_);
+  Environment_.writeData(PageData_);
 }
 
 void
-LabelWriterLanguageMonitor::ProcessData(const buffer_t& Data)
+LabelWriterLanguageMonitor::processData(const buffer_t& data)
 {
-  PageData_.insert(PageData_.end(), Data.begin(), Data.end());
+  PageData_.insert(PageData_.end(), data.begin(), data.end());
 }
 
 void
-LabelWriterLanguageMonitor::SetPaperType(LabelWriterDriver::paper_type_t Value)
+LabelWriterLanguageMonitor::setPaperType(LabelWriterDriver::paper_type_t value)
 {
-  PaperType_ = Value;
+  PaperType_ = value;
 }
 
 void
-LabelWriterLanguageMonitor::SetRoll(LabelWriterDriverTwinTurbo::roll_t Value)
+LabelWriterLanguageMonitor::setRoll(LabelWriterDriverTwinTurbo::roll_t value)
 {
-  Roll_       = Value;
+  Roll_       = value;
   RollUsed_   = true;
 }
 

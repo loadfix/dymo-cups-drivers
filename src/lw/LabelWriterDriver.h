@@ -38,20 +38,20 @@ public:
 
     virtual ~ILabelWriterDriver() {}
 
-    virtual void StartDoc() = 0;
-    virtual void EndDoc() = 0;
+    virtual void startDoc() = 0;
+    virtual void endDoc() = 0;
 
-    virtual void StartPage() = 0;
-    virtual void EndPage() = 0;
+    virtual void startPage() = 0;
+    virtual void endPage() = 0;
 
-    virtual void ProcessRasterLine(const buffer_t& LineBuffer) = 0;
+    virtual void processRasterLine(const buffer_t& line_buffer) = 0;
 
 protected:
     // helper function
-    virtual void SetStartPrintJob(const dword dwJobID) = 0;
-    virtual void SetEndPrintJob() = 0;
-    virtual void SetFormFeed() = 0;
-    virtual void SetShortFormFeed() = 0;
+    virtual void setStartPrintJob(const dword dw_job_id) = 0;
+    virtual void setEndPrintJob() = 0;
+    virtual void setFormFeed() = 0;
+    virtual void setShortFormFeed() = 0;
 };
 
 }

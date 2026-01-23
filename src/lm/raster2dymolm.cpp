@@ -21,13 +21,13 @@ using namespace DymoPrinterDriver;
 template<class Driver, class DriverInitializer, class LanguageMonitor>
 CupsFilter<Driver, DriverInitializer, LanguageMonitor>* gFilterPtr = nullptr;
 
-static bool IsBackchannelSupported()
+static bool isBackchannelSupported()
 {
     return true;
 }
 
 template<class Driver, class DriverInitializer, class LanguageMonitor>
-int RunFilter(int argc, char* argv[])
+int runFilter(int argc, char* argv[])
 {
     CupsFilter<Driver, DriverInitializer, LanguageMonitor> filter;
     gFilterPtr<Driver, DriverInitializer, LanguageMonitor> = &filter;
@@ -65,7 +65,7 @@ int RunFilter(int argc, char* argv[])
     sigaction(SIGTERM, &sa, NULL);
     sigaction(SIGTSTP, &sa, NULL);
 
-    int result = filter.Run(argc, argv);
+    int result = filter.run(argc, argv);
     gFilterPtr<Driver, DriverInitializer, LanguageMonitor> = nullptr;
     return result;
 }
@@ -74,14 +74,14 @@ int main(int argc, char* argv[])
 {
     fputs("DEBUG: starting (raster2dymolm)\n", stderr);
 
-    if (IsBackchannelSupported())
+    if (isBackchannelSupported())
     {
         // Note: LanguageMonitor support to be added later
         // For now using DummyLanguageMonitor until LabelManagerLanguageMonitor is copied
-        return RunFilter<LabelManagerDriver, LabelManagerDriverInitializerWithLM, DummyLanguageMonitor>(argc, argv);
+        return runFilter<LabelManagerDriver, LabelManagerDriverInitializerWithLM, DummyLanguageMonitor>(argc, argv);
     }
     else
     {
-        return RunFilter<LabelManagerDriver, LabelManagerDriverInitializer, DummyLanguageMonitor>(argc, argv);
+        return runFilter<LabelManagerDriver, LabelManagerDriverInitializer, DummyLanguageMonitor>(argc, argv);
     }
 }

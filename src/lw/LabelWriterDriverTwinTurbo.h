@@ -19,15 +19,15 @@ public:
     LabelWriterDriverTwinTurbo(IPrintEnvironment& environment);
     virtual ~LabelWriterDriverTwinTurbo() {}
 
-    virtual void StartDoc();
+    virtual void startDoc();
 
-    roll_t GetRoll();
-    void   SetRoll(roll_t value);
+    roll_t getRoll();
+    void   setRoll(roll_t value);
 
-    static buffer_t GetRollSelectCommand(roll_t value);
+    static buffer_t getRollSelectCommand(roll_t value);
 
 protected:
-    void SendRollSelect(roll_t value);
+    void sendRollSelect(roll_t value);
 
 private:
     roll_t _roll;

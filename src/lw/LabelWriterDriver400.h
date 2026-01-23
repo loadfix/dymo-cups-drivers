@@ -12,14 +12,14 @@ public:
     LabelWriterDriver400(IPrintEnvironment& environment);
     virtual ~LabelWriterDriver400() {}
 
-    virtual void StartDoc();
-    virtual void EndDoc();
-    virtual void EndPage();
+    virtual void startDoc();
+    virtual void endDoc();
+    virtual void endPage();
 
-    static buffer_t GetShortFormFeedCommand();
+    static buffer_t getShortFormFeedCommand();
 
 protected:
-    void SendShortFormFeed();
+    void sendShortFormFeed();
 };
 
 }

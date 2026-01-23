@@ -12,13 +12,13 @@
 namespace DymoPrinterDriver
 {
 
-bool IsLW5xxPrinter(std::string deviceName)
+bool isLW5xxPrinter(std::string deviceName)
 {
 
     return deviceName.rfind("DYMO LabelWriter 550", 0) == 0 || deviceName.rfind("DYMO LabelWriter 5XL", 0) == 0;
 }
 
-bool IsTwinTurboPrinter(const char* modelName)
+bool isTwinTurboPrinter(const char* modelName)
 {
     if (!modelName)
         return false;
@@ -27,7 +27,7 @@ bool IsTwinTurboPrinter(const char* modelName)
         || !strcasecmp(modelName, "DYMO LabelWriter 450 Twin Turbo");
 }
 
-bool Is400SeriesPrinter(const char* modelName)
+bool is400SeriesPrinter(const char* modelName)
 {
     if (!modelName)
         return false;
@@ -41,44 +41,44 @@ bool Is400SeriesPrinter(const char* modelName)
         || !strcasecmp(modelName, "DYMO LabelWriter 450 DUO Label");
 }
 
-void LabelWriterDriverInitializer::ProcessCupsOptions(LabelWriterDriver& Driver, int num_options, cups_option_t* options)
+void LabelWriterDriverInitializer::processCupsOptions(LabelWriterDriver& Driver, int num_options, cups_option_t* options)
 {
-    const char* option = CupsUtils::GetCupsOption("DymoPrintQuality", num_options, options, "Text");
+    const char* option = CupsUtils::getCupsOption("DymoPrintQuality", num_options, options, "Text");
 
-    Driver.SetDeviceName(CupsUtils::GetCupsOption("printer-make-and-model", num_options, options));
+    Driver.setDeviceName(CupsUtils::getCupsOption("printer-make-and-model", num_options, options));
 
     if(strcasecmp(option, "Text") == 0)
-        Driver.SetQuality(ILabelWriterDriver::pqText);
+        Driver.setQuality(ILabelWriterDriver::pqText);
     else if(strcasecmp(option, "Graphics") == 0)
-        Driver.SetQuality(ILabelWriterDriver::pqBarcodeAndGraphics);
+        Driver.setQuality(ILabelWriterDriver::pqBarcodeAndGraphics);
     else
         fprintf(stderr, "WARNING: Unknown DymoPrintQuality option value = %s\n", option);
 
-    option = CupsUtils::GetCupsOption("DymoPrintDensity", num_options, options, "Normal");
+    option = CupsUtils::getCupsOption("DymoPrintDensity", num_options, options, "Normal");
 
     if(strcasecmp(option, "Light") == 0)
-        Driver.SetDensity(ILabelWriterDriver::pdLow);
+        Driver.setDensity(ILabelWriterDriver::pdLow);
     else if(strcasecmp(option, "Medium") == 0)
-        Driver.SetDensity(ILabelWriterDriver::pdMedium);
+        Driver.setDensity(ILabelWriterDriver::pdMedium);
     else if(strcasecmp(option, "Normal") == 0)
-        Driver.SetDensity(ILabelWriterDriver::pdNormal);
+        Driver.setDensity(ILabelWriterDriver::pdNormal);
     else if(strcasecmp(option, "Dark") == 0)
-        Driver.SetDensity(ILabelWriterDriver::pdHigh);
+        Driver.setDensity(ILabelWriterDriver::pdHigh);
     else
         fprintf(stderr, "WARNING: Unknown DymoPrintDensity option value = %s\n", option);
 
-    if(IsLW5xxPrinter(Driver.GetDeviceName()))
+    if(isLW5xxPrinter(Driver.getDeviceName()))
     {
-        option = CupsUtils::GetCupsOption("DymoPrintSpeed", num_options, options, "Normal");
+        option = CupsUtils::getCupsOption("DymoPrintSpeed", num_options, options, "Normal");
 
         if(strcasecmp(option, "Normal") == 0)
-            Driver.SetSpeed(ILabelWriterDriver::psNormal);
+            Driver.setSpeed(ILabelWriterDriver::psNormal);
         else if(strcasecmp(option, "High") == 0)
-            Driver.SetSpeed(ILabelWriterDriver::psHigh);
+            Driver.setSpeed(ILabelWriterDriver::psHigh);
         else
             fprintf(stderr, "WARNING: Unknown DymoPrintSpeed option value = %s\n", option);
 
-        Driver.SetSupportHighSpeed(true);
+        Driver.setSupportHighSpeed(true);
     }
 
     // Handle TwinTurbo roll selection
@@ -88,118 +88,118 @@ void LabelWriterDriverInitializer::ProcessCupsOptions(LabelWriterDriver& Driver,
         ppd_file_t* ppd = ppdOpenFile(getenv("PPD"));
         if (ppd)
         {
-            ppd_choice_t* choice = CupsUtils::FindMarkedChoice(ppd, "InputSlot");
+            ppd_choice_t* choice = CupsUtils::findMarkedChoice(ppd, "InputSlot");
             if (choice)
             {
                 if (!strcasecmp(choice->choice, "Left"))
-                    twinTurboDriver->SetRoll(LabelWriterDriverTwinTurbo::rtLeft);
+                    twinTurboDriver->setRoll(LabelWriterDriverTwinTurbo::rtLeft);
                 else if (!strcasecmp(choice->choice, "Right"))
-                    twinTurboDriver->SetRoll(LabelWriterDriverTwinTurbo::rtRight);
+                    twinTurboDriver->setRoll(LabelWriterDriverTwinTurbo::rtRight);
                 else
-                    twinTurboDriver->SetRoll(LabelWriterDriverTwinTurbo::rtAuto);
+                    twinTurboDriver->setRoll(LabelWriterDriverTwinTurbo::rtAuto);
             }
             ppdClose(ppd);
         }
     }
 
-    option = CupsUtils::GetCupsOption("DymoMediaType", num_options, options, "Default");
+    option = CupsUtils::getCupsOption("DymoMediaType", num_options, options, "Default");
 
     if(strcasecmp(option, "Default") == 0)
-        Driver.SetMediaType(ILabelWriterDriver::mtDefault);
+        Driver.setMediaType(ILabelWriterDriver::mtDefault);
     else if(strcasecmp(option, "Durable") == 0)
-        Driver.SetMediaType(ILabelWriterDriver::mtDurable);
+        Driver.setMediaType(ILabelWriterDriver::mtDurable);
     else
         fprintf(stderr, "WARNING: Unknown DymoMediaType option value = %s\n", option);
 }
 
-void LabelWriterDriverInitializer::ProcessPPDOptions(LabelWriterDriver& Driver, DummyLanguageMonitor& LanguageMonitor, ppd_file_t* ppd)
+void LabelWriterDriverInitializer::processPPDOptions(LabelWriterDriver& Driver, DummyLanguageMonitor& LanguageMonitor, ppd_file_t* ppd)
 {
     if (!ppd)
         return;
 
     // Set device name from PPD
-    Driver.SetDeviceName(ppd->modelname);
+    Driver.setDeviceName(ppd->modelname);
 
     // Process quality from PPD
-    ppd_choice_t* choice = CupsUtils::FindMarkedChoice(ppd, "DymoPrintQuality");
+    ppd_choice_t* choice = CupsUtils::findMarkedChoice(ppd, "DymoPrintQuality");
     if (choice)
     {
         if (!strcasecmp(choice->choice, "Text"))
-            Driver.SetQuality(ILabelWriterDriver::pqText);
+            Driver.setQuality(ILabelWriterDriver::pqText);
         else if (!strcasecmp(choice->choice, "Graphics"))
-            Driver.SetQuality(ILabelWriterDriver::pqBarcodeAndGraphics);
+            Driver.setQuality(ILabelWriterDriver::pqBarcodeAndGraphics);
     }
 
     // Process density from PPD
-    choice = CupsUtils::FindMarkedChoice(ppd, "DymoPrintDensity");
+    choice = CupsUtils::findMarkedChoice(ppd, "DymoPrintDensity");
     if (choice)
     {
         if (!strcasecmp(choice->choice, "Light"))
-            Driver.SetDensity(ILabelWriterDriver::pdLow);
+            Driver.setDensity(ILabelWriterDriver::pdLow);
         else if (!strcasecmp(choice->choice, "Medium"))
-            Driver.SetDensity(ILabelWriterDriver::pdMedium);
+            Driver.setDensity(ILabelWriterDriver::pdMedium);
         else if (!strcasecmp(choice->choice, "Normal"))
-            Driver.SetDensity(ILabelWriterDriver::pdNormal);
+            Driver.setDensity(ILabelWriterDriver::pdNormal);
         else if (!strcasecmp(choice->choice, "Dark"))
-            Driver.SetDensity(ILabelWriterDriver::pdHigh);
+            Driver.setDensity(ILabelWriterDriver::pdHigh);
     }
 
     // Set max printable width for specific models
     if (!strcasecmp(ppd->modelname, "DYMO LabelWriter 300")
      || !strcasecmp(ppd->modelname, "DYMO LabelWriter 310")
      || !strcasecmp(ppd->modelname, "DYMO LabelWriter 315"))
-        Driver.SetMaxPrintableWidth(58);
+        Driver.setMaxPrintableWidth(58);
 
     if (!strcasecmp(ppd->modelname, "DYMO LabelWriter 4XL"))
-        Driver.SetMaxPrintableWidth(156);
+        Driver.setMaxPrintableWidth(156);
 
     if (!strcasecmp(ppd->modelname, "DYMO LabelWriter SE450"))
-        Driver.SetMaxPrintableWidth(56);
+        Driver.setMaxPrintableWidth(56);
 
     // Handle TwinTurbo roll selection
     LabelWriterDriverTwinTurbo* twinTurboDriver = dynamic_cast<LabelWriterDriverTwinTurbo*>(&Driver);
     if (twinTurboDriver)
     {
-        choice = CupsUtils::FindMarkedChoice(ppd, "InputSlot");
+        choice = CupsUtils::findMarkedChoice(ppd, "InputSlot");
         if (choice)
         {
             if (!strcasecmp(choice->choice, "Left"))
-                twinTurboDriver->SetRoll(LabelWriterDriverTwinTurbo::rtLeft);
+                twinTurboDriver->setRoll(LabelWriterDriverTwinTurbo::rtLeft);
             else if (!strcasecmp(choice->choice, "Right"))
-                twinTurboDriver->SetRoll(LabelWriterDriverTwinTurbo::rtRight);
+                twinTurboDriver->setRoll(LabelWriterDriverTwinTurbo::rtRight);
             else
-                twinTurboDriver->SetRoll(LabelWriterDriverTwinTurbo::rtAuto);
+                twinTurboDriver->setRoll(LabelWriterDriverTwinTurbo::rtAuto);
         }
     }
 }
 
-void LabelWriterDriverInitializer::ProcessPageOptions(LabelWriterDriver& Driver, DummyLanguageMonitor& LanguageMonitor, cups_page_header2_t& PageHeader)
+void LabelWriterDriverInitializer::processPageOptions(LabelWriterDriver& Driver, DummyLanguageMonitor& LanguageMonitor, cups_page_header2_t& PageHeader)
 {
-    Driver.SetVerticalResolution(PageHeader.cupsHeight);
-    Driver.SetHorizontalResolution(PageHeader.cupsWidth);
+    Driver.setVerticalResolution(PageHeader.cupsHeight);
+    Driver.setHorizontalResolution(PageHeader.cupsWidth);
 
     if((PageHeader.cupsMediaType == int(IPrinterDriver::ptRegular)) || (PageHeader.cupsMediaType == int(IPrinterDriver::ptContinuous)))
-        Driver.SetPaperType(IPrinterDriver::paper_type_t(PageHeader.cupsMediaType));
+        Driver.setPaperType(IPrinterDriver::paper_type_t(PageHeader.cupsMediaType));
     else
-        Driver.SetPaperType(IPrinterDriver::ptRegular);
+        Driver.setPaperType(IPrinterDriver::ptRegular);
 }
 
-LabelWriterDriver* LabelWriterDriverInitializer::CreateDriver(IPrintEnvironment& Environment, ppd_file_t* ppd)
+LabelWriterDriver* LabelWriterDriverInitializer::createDriver(IPrintEnvironment& Environment, ppd_file_t* ppd)
 {
     if (!ppd)
         return new LabelWriterDriver(Environment);
 
-    if (IsTwinTurboPrinter(ppd->modelname))
+    if (isTwinTurboPrinter(ppd->modelname))
         return new LabelWriterDriverTwinTurbo(Environment);
-    else if (Is400SeriesPrinter(ppd->modelname))
+    else if (is400SeriesPrinter(ppd->modelname))
         return new LabelWriterDriver400(Environment);
     else
         return new LabelWriterDriver(Environment);
 }
 
-void LabelWriterDriverInitializerWithLM::ProcessCupsOptions(LabelWriterDriver& Driver, LabelWriterLanguageMonitor& LanguageMonitor, int num_options, cups_option_t* options)
+void LabelWriterDriverInitializerWithLM::processCupsOptions(LabelWriterDriver& Driver, LabelWriterLanguageMonitor& LanguageMonitor, int num_options, cups_option_t* options)
 {
-    LabelWriterDriverInitializer::ProcessCupsOptions(Driver, num_options, options);
+    LabelWriterDriverInitializer::processCupsOptions(Driver, num_options, options);
 
     // Handle TwinTurbo roll selection for Language Monitor
     LabelWriterDriverTwinTurbo* twinTurboDriver = dynamic_cast<LabelWriterDriverTwinTurbo*>(&Driver);
@@ -210,22 +210,22 @@ void LabelWriterDriverInitializerWithLM::ProcessCupsOptions(LabelWriterDriver& D
     }
 }
 
-void LabelWriterDriverInitializerWithLM::ProcessPPDOptions(LabelWriterDriver& Driver, DummyLanguageMonitor& LanguageMonitor, ppd_file_t* ppd)
+void LabelWriterDriverInitializerWithLM::processPPDOptions(LabelWriterDriver& Driver, DummyLanguageMonitor& LanguageMonitor, ppd_file_t* ppd)
 {
-    LabelWriterDriverInitializer::ProcessPPDOptions(Driver, LanguageMonitor, ppd);
+    LabelWriterDriverInitializer::processPPDOptions(Driver, LanguageMonitor, ppd);
 
     // Note: LabelWriterLanguageMonitor doesn't have SetDeviceName method
     // Device name is handled through the driver
 }
 
-void LabelWriterDriverInitializerWithLM::ProcessPageOptions(LabelWriterDriver& Driver, DummyLanguageMonitor& LanguageMonitor, cups_page_header2_t& PageHeader)
+void LabelWriterDriverInitializerWithLM::processPageOptions(LabelWriterDriver& Driver, DummyLanguageMonitor& LanguageMonitor, cups_page_header2_t& PageHeader)
 {
-    LabelWriterDriverInitializer::ProcessPageOptions(Driver, LanguageMonitor, PageHeader);
+    LabelWriterDriverInitializer::processPageOptions(Driver, LanguageMonitor, PageHeader);
 }
 
-LabelWriterDriver* LabelWriterDriverInitializerWithLM::CreateDriver(IPrintEnvironment& Environment, LabelWriterLanguageMonitor& LanguageMonitor, ppd_file_t* ppd)
+LabelWriterDriver* LabelWriterDriverInitializerWithLM::createDriver(IPrintEnvironment& Environment, LabelWriterLanguageMonitor& LanguageMonitor, ppd_file_t* ppd)
 {
-    LabelWriterDriver* driver = LabelWriterDriverInitializer::CreateDriver(Environment, ppd);
+    LabelWriterDriver* driver = LabelWriterDriverInitializer::createDriver(Environment, ppd);
     // Language Monitor initialization would go here if needed
     return driver;
 }

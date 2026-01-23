@@ -32,7 +32,7 @@ CupsPrintEnvironmentForDriver::~CupsPrintEnvironmentForDriver()
 
 
 bool
-CupsPrintEnvironmentForDriver::WriteData(const buffer_t& data_buffer)
+CupsPrintEnvironmentForDriver::writeData(const buffer_t& data_buffer)
 {
   fprintf(stderr, "DEBUG: CupsPrintEnvironmentForDriver::WriteData() buffer size is %i\n", (int)data_buffer.size());
 
@@ -51,13 +51,13 @@ CupsPrintEnvironmentForDriver::WriteData(const buffer_t& data_buffer)
       fprintf(stderr, "DEBUG: CupsPrintEnvironmentForDriver::WriteData() PRN fwrite result is %i\n", (int)res);
     }
 
-    LanguageMonitor_.ProcessData(data_buffer);
+    LanguageMonitor_.processData(data_buffer);
   }
   return true;
 }
 
 bool
-CupsPrintEnvironmentForDriver::ReadData(buffer_t& data_buffer)
+CupsPrintEnvironmentForDriver::readData(buffer_t& data_buffer)
 {
   // do nothing - driver is not able to read data, only LanguageMonitor is
 
@@ -66,13 +66,13 @@ CupsPrintEnvironmentForDriver::ReadData(buffer_t& data_buffer)
 }
 
 IPrintEnvironment::job_status_t
-CupsPrintEnvironmentForDriver::GetJobStatus()
+CupsPrintEnvironmentForDriver::getJobStatus()
 {
   return jsOK;
 }
 
 void
-CupsPrintEnvironmentForDriver::SetJobStatus(job_status_t job_status)
+CupsPrintEnvironmentForDriver::setJobStatus(job_status_t job_status)
 {
 }
 
@@ -91,7 +91,7 @@ CupsPrintEnvironmentForLM::~CupsPrintEnvironmentForLM()
 
 
 bool
-CupsPrintEnvironmentForLM::WriteData(const buffer_t& data_buffer)
+CupsPrintEnvironmentForLM::writeData(const buffer_t& data_buffer)
 {
   fprintf(stderr, "DEBUG: CupsPrintEnvironmentForLM::WriteData() buffer size is %i\n", (int)data_buffer.size());
   if (data_buffer.size())
@@ -108,7 +108,7 @@ CupsPrintEnvironmentForLM::WriteData(const buffer_t& data_buffer)
 }
 
 bool
-CupsPrintEnvironmentForLM::ReadData(buffer_t& data_buffer)
+CupsPrintEnvironmentForLM::readData(buffer_t& data_buffer)
 {
   //TODO: add the implementation here
   // note that CUPS 1.1 does not support reading data from the printer
@@ -141,13 +141,13 @@ CupsPrintEnvironmentForLM::ReadData(buffer_t& data_buffer)
 }
 
 IPrintEnvironment::job_status_t
-CupsPrintEnvironmentForLM::GetJobStatus()
+CupsPrintEnvironmentForLM::getJobStatus()
 {
   return JobStatus_;
 }
 
 void
-CupsPrintEnvironmentForLM::SetJobStatus(job_status_t job_status)
+CupsPrintEnvironmentForLM::setJobStatus(job_status_t job_status)
 {
     JobStatus_ = job_status;
 

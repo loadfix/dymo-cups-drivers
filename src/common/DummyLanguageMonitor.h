@@ -12,13 +12,13 @@ public:
    DummyLanguageMonitor(IPrintEnvironment& environment) : _environment(environment) {}
    virtual ~DummyLanguageMonitor() {}
 
-   virtual void StartDoc() {}
-   virtual void EndDoc() {}
+   virtual void startDoc() {}
+   virtual void endDoc() {}
 
-   virtual void StartPage() {}
-   virtual void EndPage() {}
+   virtual void startPage() {}
+   virtual void endPage() {}
 
-   virtual void ProcessData(const buffer_t& data) {}
+   virtual void processData(const buffer_t& data) {}
 
 private:
    IPrintEnvironment& _environment;

@@ -24,18 +24,18 @@ public:
    virtual ~HalftoneFilter() {}
 
    // Line-by-line interface
-   virtual bool IsProcessLineSupported() = 0;
-   virtual void ProcessLine(const buffer_t& input_line, buffer_t& output_line) = 0;
+   virtual bool isProcessLineSupported() = 0;
+   virtual void processLine(const buffer_t& input_line, buffer_t& output_line) = 0;
 
    // Full-image-at-once interface
-   virtual void ProcessImage(const void* image_data, size_t image_width, size_t image_height, size_t line_delta, std::vector<buffer_t>& output_image) = 0;
-   virtual void ProcessImage(const image_buffer_t& input_image, image_buffer_t& output_image) = 0;
+   virtual void processImage(const void* image_data, size_t image_width, size_t image_height, size_t line_delta, std::vector<buffer_t>& output_image) = 0;
+   virtual void processImage(const image_buffer_t& input_image, image_buffer_t& output_image) = 0;
 
-   image_t GetInputImageType() { return _inputImageType; }
-   image_t GetOutputImageType() { return _outputImageType; }
+   image_t getInputImageType() { return _inputImageType; }
+   image_t getOutputImageType() { return _outputImageType; }
 
    // Convert RGB value to Gray Scale
-   byte RGBToGrayScale(byte r, byte g, byte b)
+   byte convertRGBToGrayScale(byte r, byte g, byte b)
    {
       // White should remain white
       if((r == 255) && (g == 255) && (b == 255))
@@ -56,7 +56,7 @@ public:
    }
 
    // PixelValue (0 - white, 1 - black)
-   void SetPixelBW(buffer_t& buf, int pixel_no, int pixel_value)
+   void setPixelBW(buffer_t& buf, int pixel_no, int pixel_value)
    {
       if(pixel_value)
          buf[pixel_no / 8] |= (1 << (7 - pixel_no % 8));
@@ -65,7 +65,7 @@ public:
    }
 
    // Based on inputImageType extract color component of current pixel
-   void ExtractRGB(const buffer_t& input_line, int pixel_no, byte& r, byte& g, byte& b)
+   void extractRGB(const buffer_t& input_line, int pixel_no, byte& r, byte& g, byte& b)
    {
       switch(_inputImageType)
       {
@@ -86,7 +86,7 @@ public:
    }
 
    // Same as previous but return colors as packed integer value
-   int ExtractRGB(const buffer_t& input_line, int pixel_no)
+   int extractRGB(const buffer_t& input_line, int pixel_no)
    {
       switch(_inputImageType)
       {
@@ -107,7 +107,7 @@ public:
    }
 
    // Return imageWidth based on inputImageType and input line data
-   size_t CalcImageWidth(const buffer_t& input_line)
+   size_t calcImageWidth(const buffer_t& input_line)
    {
       switch(_inputImageType)
       {
@@ -124,7 +124,7 @@ public:
    }
 
    // Return buffer size needed to store an input line based on inputImageType
-   size_t CalcBufferSize(size_t image_width)
+   size_t calcBufferSize(size_t image_width)
    {
       switch(_inputImageType)
       {
@@ -141,7 +141,7 @@ public:
    }
 
    // Calc output buffer size
-   size_t CalcOutputBufferSize(size_t image_width)
+   size_t calcOutputBufferSize(size_t image_width)
    {
       switch(_outputImageType)
       {
@@ -174,7 +174,7 @@ public:
 
    EHalftoneError(error_t error_code) : _errorCode(error_code) {}
 
-   error_t GetErrorCode() { return _errorCode; }
+   error_t getErrorCode() { return _errorCode; }
 
 private:
    error_t _errorCode;

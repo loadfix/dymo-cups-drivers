@@ -15,10 +15,10 @@ class CupsPrintEnvironmentForDriver: public IPrintEnvironment
 public:
   CupsPrintEnvironmentForDriver(ILanguageMonitor& language_monitor);
   virtual ~CupsPrintEnvironmentForDriver();
-  virtual bool WriteData(const buffer_t& data_buffer);
-  virtual bool ReadData(buffer_t& data_buffer);
-  virtual job_status_t GetJobStatus();
-  virtual void SetJobStatus(job_status_t job_status);
+  virtual bool writeData(const buffer_t& data_buffer);
+  virtual bool readData(buffer_t& data_buffer);
+  virtual job_status_t getJobStatus();
+  virtual void setJobStatus(job_status_t job_status);
 
 private:
   FILE* PRNFile_;
@@ -32,10 +32,10 @@ class CupsPrintEnvironmentForLM: public IPrintEnvironment
 public:
   CupsPrintEnvironmentForLM();
   virtual ~CupsPrintEnvironmentForLM();
-  virtual bool WriteData(const buffer_t& data_buffer);
-  virtual bool ReadData(buffer_t& data_buffer);
-  virtual job_status_t GetJobStatus();
-  virtual void SetJobStatus(job_status_t job_status);
+  virtual bool writeData(const buffer_t& data_buffer);
+  virtual bool readData(buffer_t& data_buffer);
+  virtual job_status_t getJobStatus();
+  virtual void setJobStatus(job_status_t job_status);
 
 private:
   FILE* PRNFile_;

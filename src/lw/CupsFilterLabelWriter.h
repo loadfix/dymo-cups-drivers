@@ -16,30 +16,30 @@ namespace DymoPrinterDriver
 class DriverInitializerLabelWriter
 {
 public:
-  static void ProcessPPDOptions (LabelWriterDriver& driver, DummyLanguageMonitor& language_monitor, ppd_file_t* ppd);
-  static void ProcessPageOptions(LabelWriterDriver& driver, DummyLanguageMonitor& language_monitor, cups_page_header2_t& page_header);
+  static void processPPDOptions (LabelWriterDriver& driver, DummyLanguageMonitor& language_monitor, ppd_file_t* ppd);
+  static void processPageOptions(LabelWriterDriver& driver, DummyLanguageMonitor& language_monitor, cups_page_header2_t& page_header);
 };
 
 class DriverInitializerLabelWriterTwinTurbo
 {
 public:
-  static void ProcessPPDOptions (LabelWriterDriverTwinTurbo& driver, DummyLanguageMonitor& language_monitor, ppd_file_t* ppd);
-  static void ProcessPageOptions(LabelWriterDriverTwinTurbo& driver, DummyLanguageMonitor& language_monitor, cups_page_header2_t& page_header);
+  static void processPPDOptions (LabelWriterDriverTwinTurbo& driver, DummyLanguageMonitor& language_monitor, ppd_file_t* ppd);
+  static void processPageOptions(LabelWriterDriverTwinTurbo& driver, DummyLanguageMonitor& language_monitor, cups_page_header2_t& page_header);
 };
 
 class DriverInitializerLabelWriterWithLM
 {
 public:
-  static void ProcessPPDOptions (LabelWriterDriver& driver, LabelWriterLanguageMonitor& language_monitor, ppd_file_t* ppd);
-  static void ProcessPageOptions(LabelWriterDriver& driver, LabelWriterLanguageMonitor& language_monitor, cups_page_header2_t& page_header);
+  static void processPPDOptions (LabelWriterDriver& driver, LabelWriterLanguageMonitor& language_monitor, ppd_file_t* ppd);
+  static void processPageOptions(LabelWriterDriver& driver, LabelWriterLanguageMonitor& language_monitor, cups_page_header2_t& page_header);
 };
 
 
 class DriverInitializerLabelWriterTwinTurboWithLM
 {
 public:
-  static void ProcessPPDOptions (LabelWriterDriverTwinTurbo& driver, LabelWriterLanguageMonitor& language_monitor, ppd_file_t* ppd);
-  static void ProcessPageOptions(LabelWriterDriverTwinTurbo& driver, LabelWriterLanguageMonitor& language_monitor, cups_page_header2_t& page_header);
+  static void processPPDOptions (LabelWriterDriverTwinTurbo& driver, LabelWriterLanguageMonitor& language_monitor, ppd_file_t* ppd);
+  static void processPageOptions(LabelWriterDriverTwinTurbo& driver, LabelWriterLanguageMonitor& language_monitor, cups_page_header2_t& page_header);
 };
 
 }

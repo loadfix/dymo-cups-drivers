@@ -20,13 +20,13 @@ public:
 
    virtual ~IPrinterDriver() {}
 
-   virtual void StartDoc() = 0;
-   virtual void EndDoc() = 0;
+   virtual void startDoc() = 0;
+   virtual void endDoc() = 0;
 
-   virtual void StartPage() = 0;
-   virtual void EndPage() = 0;
+   virtual void startPage() = 0;
+   virtual void endPage() = 0;
 
-   virtual void ProcessRasterLine(const buffer_t& line_buffer) = 0;
+   virtual void processRasterLine(const buffer_t& line_buffer) = 0;
 };
 
 // Interface to monitor sending printer data
@@ -35,13 +35,13 @@ class ILanguageMonitor
 public:
    virtual ~ILanguageMonitor() {}
 
-   virtual void StartDoc() = 0;
-   virtual void EndDoc() = 0;
+   virtual void startDoc() = 0;
+   virtual void endDoc() = 0;
 
-   virtual void StartPage() = 0;
-   virtual void EndPage() = 0;
+   virtual void startPage() = 0;
+   virtual void endPage() = 0;
 
-   virtual void ProcessData(const buffer_t& data) = 0;
+   virtual void processData(const buffer_t& data) = 0;
 };
 
 // Provides interface to the environment
@@ -64,11 +64,11 @@ public:
 
    virtual ~IPrintEnvironment() {}
 
-   virtual bool WriteData(const buffer_t& data_buffer) = 0;
-   virtual bool ReadData(buffer_t& data_buffer) = 0;
+   virtual bool writeData(const buffer_t& data_buffer) = 0;
+   virtual bool readData(buffer_t& data_buffer) = 0;
 
-   virtual job_status_t GetJobStatus() = 0;
-   virtual void SetJobStatus(job_status_t job_status) = 0;
+   virtual job_status_t getJobStatus() = 0;
+   virtual void setJobStatus(job_status_t job_status) = 0;
 };
 
 }; // namespace

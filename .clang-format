@@ -1,8 +1,8 @@
 ---
 Language: Cpp
 BasedOnStyle: LLVM
-IndentWidth: 2
-TabWidth: 2
+IndentWidth: 4
+TabWidth: 4
 UseTab: Never
 ColumnLimit: 0
 AccessModifierOffset: -2
@@ -74,7 +74,6 @@ IncludeCategories:
 IncludeIsMainRegex: '(Test)?$'
 IndentCaseLabels: true
 IndentPPDirectives: None
-IndentWidth: 2
 IndentWrappedFunctionNames: false
 JavaScriptQuotes: Leave
 JavaScriptWrapImports: true
@@ -82,7 +81,7 @@ KeepEmptyLinesAtTheStartOfBlocks: true
 MacroBlockBegin: ''
 MacroBlockEnd: ''
 MaxEmptyLinesToKeep: 1
-NamespaceIndentation: None
+NamespaceIndentation: 2
 ObjCBinPackProtocolList: Auto
 ObjCBlockIndentWidth: 2
 ObjCSpaceAfterProperty: false
@@ -100,11 +99,11 @@ ReflowComments: true
 SortIncludes: true
 SortUsingDeclarations: true
 SpaceAfterCStyleCast: false
-SpaceAfterTemplateKeyword: true
+SpaceAfterTemplateKeyword: false
 SpaceBeforeAssignmentOperators: true
 SpaceBeforeParens: ControlStatements
 SpaceInEmptyParentheses: false
-SpacesBeforeTrailingComments: 1
+SpacesBeforeTrailingComments: 2
 SpacesInAngles: false
 SpacesInContainerLiterals: true
 SpacesInCStyleCastParentheses: false
@@ -114,6 +113,5 @@ Standard: Cpp17
 StatementMacros:
   - Q_UNUSED
   - QT_REQUIRE_VERSION
-TabWidth: 2
-UseTab: Never
+
 

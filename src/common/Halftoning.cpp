@@ -15,19 +15,19 @@ HalftoneFilter::~HalftoneFilter()
 }
 
 HalftoneFilter::image_t
-HalftoneFilter::GetInputImageType()
+HalftoneFilter::getInputImageType()
 {
   return InputImageType_;
 }
 
 HalftoneFilter::image_t
-HalftoneFilter::GetOutputImageType()
+HalftoneFilter::getOutputImageType()
 {
   return OutputImageType_;
 }
 
 byte
-HalftoneFilter::RGBToGrayScale(byte r, byte g, byte b)
+HalftoneFilter::convertRGBToGrayScale(byte r, byte g, byte b)
 {
   // white should remain white
   if ((r == 255) && (g == 255) && (b == 255))
@@ -46,7 +46,7 @@ HalftoneFilter::RGBToGrayScale(byte r, byte g, byte b)
 // set pixel pixelNo to
 // pixelValue (0 - white, 1 - black)
 void
-HalftoneFilter::SetPixelBW(buffer_t& buf, int pixel_no, int pixel_value)
+HalftoneFilter::setPixelBW(buffer_t& buf, int pixel_no, int pixel_value)
 {
   if (pixel_value)
     buf[pixel_no / 8] |= (1 << (7 - pixel_no % 8));
@@ -55,7 +55,7 @@ HalftoneFilter::SetPixelBW(buffer_t& buf, int pixel_no, int pixel_value)
 }
 
 void
-HalftoneFilter::ExtractRGB(const buffer_t& input_line, int pixel_no, byte& r, byte& g, byte& b)
+HalftoneFilter::extractRGB(const buffer_t& input_line, int pixel_no, byte& r, byte& g, byte& b)
 {
   switch (InputImageType_)
   {
@@ -75,7 +75,7 @@ HalftoneFilter::ExtractRGB(const buffer_t& input_line, int pixel_no, byte& r, by
 }
 
 size_t
-HalftoneFilter::CalcImageWidth(const buffer_t& input_line)
+HalftoneFilter::calcImageWidth(const buffer_t& input_line)
 {
   switch (InputImageType_)
   {
@@ -92,7 +92,7 @@ HalftoneFilter::CalcImageWidth(const buffer_t& input_line)
 
 
 size_t
-HalftoneFilter::CalcBufferSize(size_t image_width)
+HalftoneFilter::calcBufferSize(size_t image_width)
 {
   switch (InputImageType_)
   {
@@ -108,7 +108,7 @@ HalftoneFilter::CalcBufferSize(size_t image_width)
 }
 
 size_t
-HalftoneFilter::CalcOutputBufferSize(size_t image_width)
+HalftoneFilter::calcOutputBufferSize(size_t image_width)
 {
   switch (OutputImageType_)
   {
@@ -125,7 +125,7 @@ HalftoneFilter::CalcOutputBufferSize(size_t image_width)
 }
 
 int
-HalftoneFilter::ExtractRGB(const buffer_t& input_line, int pixel_no)
+HalftoneFilter::extractRGB(const buffer_t& input_line, int pixel_no)
 {
   switch (InputImageType_)
   {
@@ -155,7 +155,7 @@ EHalftoneError::EHalftoneError(error_t error_code): ErrorCode_(error_code)
 }
 
 EHalftoneError::error_t
-EHalftoneError::GetErrorCode()
+EHalftoneError::getErrorCode()
 {
   return ErrorCode_;
 }

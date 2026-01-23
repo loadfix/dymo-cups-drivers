@@ -29,32 +29,32 @@ namespace DymoPrinterDriver
         LabelManagerLanguageMonitor(IPrintEnvironment& environment, bool use_sleep = true, size_t read_status_timeout = 10);
         virtual ~LabelManagerLanguageMonitor();
 
-        virtual void StartDoc();
-        virtual void EndDoc();
+        virtual void startDoc();
+        virtual void endDoc();
 
-        virtual void StartPage();
-        virtual void EndPage();
+        virtual void startPage();
+        virtual void endPage();
 
-        virtual void ProcessData(const buffer_t& data);
+        virtual void processData(const buffer_t& data);
 
-        void SetDeviceName(const std::string& value);
-        void SetTapeWidth(LabelManagerDriver::tape_width_t value);
+        void setDeviceName(const std::string& value);
+        void setTapeWidth(LabelManagerDriver::tape_width_t value);
 
     protected:
     private:
         // check if printer is locally connected, i.e. to usb port
-        bool IsLocal();
+        bool isLocal();
 
         // checks status
-        void CheckStatus();
+        void checkStatus();
 
         // Read status byte from the printer
         // return true if status has been read, false otherwise
-        bool ReadStatus(buffer_t& status);
+        bool readStatus(buffer_t& status);
 
         // update job status based on status read from the printer
-        void SetJobStatus(byte status);
-        bool CheckTapeSize(buffer_t status);
+        void setJobStatus(byte status);
+        bool checkTapeSize(buffer_t status);
 
         IPrintEnvironment&                      Environment_;
         bool                                    IsFirstPage_;

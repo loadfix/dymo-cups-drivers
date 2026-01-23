@@ -14,29 +14,29 @@ DummyLanguageMonitor::~DummyLanguageMonitor()
 }
 
 void
-DummyLanguageMonitor::StartDoc()
+DummyLanguageMonitor::startDoc()
 {
 }
 
 void
-DummyLanguageMonitor::EndDoc()
+DummyLanguageMonitor::endDoc()
 {
 }
 
 void
-DummyLanguageMonitor::StartPage()
+DummyLanguageMonitor::startPage()
 {
 }
 
 void
-DummyLanguageMonitor::EndPage()
+DummyLanguageMonitor::endPage()
 {
 }
 
 
 
 void
-DummyLanguageMonitor::ProcessData(const buffer_t& data)
+DummyLanguageMonitor::processData(const buffer_t& data)
 {
 }
 

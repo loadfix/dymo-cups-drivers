@@ -11,15 +11,15 @@ class ErrorDiffusionHalftoning: public HalftoneFilter
 public:
    ErrorDiffusionHalftoning(image_t input_image_type, image_t output_image_type, bool use_printer_color_space = true) : HalftoneFilter(input_image_type, output_image_type), _imageWidth(0), _error(), _grayLine(), _usePrinterColorSpace(use_printer_color_space)
    {
-      if(GetOutputImageType() != itBW)
+      if(getOutputImageType() != itBW)
          throw EHalftoneError(EHalftoneError::heUnsupportedImageType);
    }
 
    virtual ~ErrorDiffusionHalftoning() {}
 
-   virtual bool IsProcessLineSupported() { return true; }
+   virtual bool isProcessLineSupported() { return true; }
 
-   virtual void ProcessLine(const buffer_t& InputLine, buffer_t& OutputLine)
+   virtual void processLine(const buffer_t& InputLine, buffer_t& OutputLine)
    {
       int pixelValue = 0;
       int error = 0;
@@ -27,10 +27,10 @@ public:
 
       // Set image  width
       if(!_imageWidth)
-         _imageWidth = CalcImageWidth(InputLine);
+         _imageWidth = calcImageWidth(InputLine);
 
       // Check buffer size
-      OutputLine.resize(CalcOutputBufferSize(_imageWidth));
+      OutputLine.resize(calcOutputBufferSize(_imageWidth));
       std::fill(OutputLine.begin(), OutputLine.end(), byte(0));
 
       // Initialize halftone errors array and line buffer
@@ -44,8 +44,8 @@ public:
       for(i = 0; i < _imageWidth; ++i)
       {
          byte R, G, B;
-         ExtractRGB(InputLine, i, R, G, B);
-         _grayLine[i] = RGBToGrayScale(R, G, B);
+         extractRGB(InputLine, i, R, G, B);
+         _grayLine[i] = convertRGBToGrayScale(R, G, B);
       }
 
       // Apply errors from prev line
@@ -74,9 +74,9 @@ public:
          error = _grayLine[i] - pixelValue * 255;
 
          if(_usePrinterColorSpace)
-            SetPixelBW(OutputLine, i, !pixelValue);
+            setPixelBW(OutputLine, i, !pixelValue);
          else
-            SetPixelBW(OutputLine, i, pixelValue);
+            setPixelBW(OutputLine, i, pixelValue);
 
          // Disribute error
          if(i > 0)
@@ -104,23 +104,23 @@ public:
       } // for all pixels
    }
 
-   virtual void ProcessImage(const void* ImageData, size_t ImageWidth, size_t ImageHeight, size_t LineDelta, std::vector<buffer_t>& OutputImage)
+   virtual void processImage(const void* ImageData, size_t ImageWidth, size_t ImageHeight, size_t LineDelta, std::vector<buffer_t>& OutputImage)
    {
       OutputImage.clear();
 
       buffer_t InputLine;
-      size_t BufferSize = CalcBufferSize(ImageWidth);
+      size_t BufferSize = calcBufferSize(ImageWidth);
       InputLine.resize(BufferSize, 0);
 
       for(size_t i = 0; i < ImageHeight; ++i)
       {
          InputLine.assign((byte*)ImageData + LineDelta * i, (byte*)ImageData + LineDelta * i + BufferSize);
          OutputImage.push_back(buffer_t());
-         ProcessLine(InputLine, OutputImage[OutputImage.size() - 1]);
+         processLine(InputLine, OutputImage[OutputImage.size() - 1]);
       }
    }
 
-   virtual void ProcessImage(const std::vector<buffer_t>& InputImage, std::vector<buffer_t>& OutputImage)
+   virtual void processImage(const std::vector<buffer_t>& InputImage, std::vector<buffer_t>& OutputImage)
    {
       OutputImage.clear();
 
@@ -128,13 +128,13 @@ public:
 
       for(std::vector<buffer_t>::const_iterator i = InputImage.begin(); i < InputImage.end(); ++i)
       {
-         ProcessLine(*i, OutputLine);
+         processLine(*i, OutputLine);
          OutputImage.push_back(OutputLine);
       }
    }
 
 protected:
-   size_t GetImageWidth() { return _imageWidth; }
+   size_t getImageWidth() { return _imageWidth; }
 
 private:
    size_t _imageWidth;         // image width in pixels

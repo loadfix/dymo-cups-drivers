@@ -4,43 +4,43 @@
 namespace DymoPrinterDriver
 {
 
-LabelWriterDriver400::LabelWriterDriver400(IPrintEnvironment& Environment) :
-   LabelWriterDriver(Environment)
+LabelWriterDriver400::LabelWriterDriver400(IPrintEnvironment& environment) :
+   LabelWriterDriver(environment)
 {
 }
 
-void LabelWriterDriver400::StartDoc()
+void LabelWriterDriver400::startDoc()
 {
-   LabelWriterDriver::StartDoc();
+   LabelWriterDriver::startDoc();
 }
 
-void LabelWriterDriver400::EndDoc()
+void LabelWriterDriver400::endDoc()
 {
-   SetFormFeed();
+   setFormFeed();
    // Note: 400 series doesn't send EndPrintJob command
 }
 
-void LabelWriterDriver400::EndPage()
+void LabelWriterDriver400::endPage()
 {
    // Increment page number (from base class)
    _dwPageNumber++;
 
    // 400 series uses short form feed at end of page
-   SendShortFormFeed();
+   sendShortFormFeed();
 }
 
-buffer_t LabelWriterDriver400::GetShortFormFeedCommand()
+buffer_t LabelWriterDriver400::getShortFormFeedCommand()
 {
    byte buf[] = {ESC, 'G'};
 
    return buffer_t(buf, buf + sizeof(buf));
 }
 
-void LabelWriterDriver400::SendShortFormFeed()
+void LabelWriterDriver400::sendShortFormFeed()
 {
    byte buf[] = {ESC, 'G'};
 
-   SendCommand(buffer_t(buf, buf + sizeof(buf)));
+   sendCommand(buffer_t(buf, buf + sizeof(buf)));
 }
 
 };
