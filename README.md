@@ -1,10 +1,22 @@
 # Dymo CUPS printer driver
 
-This repository contains an inofficial copy of Dymo's CUPS printer driver for Linux.
+This repository contains an inofficial fork of Dymo's official CUPS printer driver for Linux
+with enhancements contributed by various people.
 
 ## Authors
 
-* Vladimir Buzuev <vbuzuev@dymo.com>
+* Vladimir Buzuev
+* Matthias Bock
+* Calslock
+* Jose Marino
+* Andrew Bauer
+* Anil Pathak
+* Florian Knodt
+* Ying Huang
+* Michal Ulianko
+* John K. Luebs
+* Chris M. Lawson
+* Kevin Primm
 
 ## Command examples
 
@@ -25,19 +37,24 @@ This repository contains an inofficial copy of Dymo's CUPS printer driver for Li
 
 ## Supported devices
 
+### LabelManager Series
+
 * DYMO LabelMANAGER 400
 * DYMO LabelMANAGER 450
 * DYMO LabelMANAGER PC
-* DYMO LabelMANAGER PC II
 * DYMO LabelManager PnP*
 * DYMO LabelManager Wireless PnP*
-* DYMO LabelPOINT 350
+* DYMO MobileLabeler
+
+\* `usb_modeswitch` may be required when the printer is connected via USB and kernel module `usb_storage`  is loaded.
+
+### LabelWriter Series
 * DYMO LabelWriter 300
 * DYMO LabelWriter 310
 * DYMO LabelWriter 315
 * DYMO LabelWriter 320
 * DYMO LabelWriter 330
-* DYMO LabelWriter 330 Tubo
+* DYMO LabelWriter 330 Turbo
 * DYMO LabelWriter 400
 * DYMO LabelWriter 400 Turbo
 * DYMO LabelWriter 450
@@ -46,13 +63,22 @@ This repository contains an inofficial copy of Dymo's CUPS printer driver for Li
 * DYMO LabelWriter 450 Turbo
 * DYMO LabelWriter 450 Twin Turbo
 * DYMO LabelWriter 4XL
+* DYMO LabelWriter 550
+* DYMO LabelWriter 550 Pro
+* DYMO LabelWriter 550 Turbo
+* DYMO LabelWriter 550 Twin Pro
+* DYMO LabelWriter 5XL
+* DYMO LabelWriter 5XL Pro
 * DYMO LabelWriter DUO Label
 * DYMO LabelWriter DUO Tape
 * DYMO LabelWriter DUO Tape 128
 * DYMO LabelWriter SE450
 * DYMO LabelWriter Twin Turbo
+* DYMO LabelWriter Wireless
 
-*`usb_modeswitch` required (`usb_storage` kernel module loaded) when connected via USB
+### LabelPOINT Series
+
+* DYMO LabelPOINT 350
 
 ## Build instructions
 
