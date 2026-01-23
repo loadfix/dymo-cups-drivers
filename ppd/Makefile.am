@@ -1,3 +1,6 @@
+# Allow GNU make extensions (wildcard function and pattern rules)
+# This is the proper way to use these features in automake
+AUTOMAKE_OPTIONS = -Wno-portability
 
 # PPDC compiler
 PPDC = ppdc
@@ -48,7 +51,10 @@ PPD_FILES = \
 dist_cupsmodel_DATA = $(PPD_FILES)
 
 # Pattern rule: compile .drv to .ppd
-%.ppd: %.drv $(SHARED_DEF_FILES) $(SIZE_DEF_FILES)
+# Use automake's SUFFIXES to register .ppd as a valid suffix
+# The suffix rule syntax is POSIX-compliant
+SUFFIXES = .drv .ppd
+.drv.ppd: $(SHARED_DEF_FILES) $(SIZE_DEF_FILES)
 	$(PPDC) -d . $(PPDC_FLAGS) $<
 
 # Extra distribution files (source files)

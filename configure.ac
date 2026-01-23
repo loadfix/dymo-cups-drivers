@@ -1,27 +1,9 @@
-# $Id: CupsPrintEnvironment.cpp 1216 2006-12-18 16:51:12Z vbuzuev $
-
-# DYMO LabelWriter Drivers
-# Copyright (C) 2008 Sanford L.P.
-
-# This program is free software; you can redistribute it and/or
-# modify it under the terms of the GNU General Public License
-# as published by the Free Software Foundation; either version 2
-# of the License, or (at your option) any later version.
-
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 AC_PREREQ(2.59)
 AC_INIT(dymo-cups-drivers, 1.4.0.5, vbuzuev@dymo.com)
 AM_INIT_AUTOMAKE([subdir-objects])
 AC_CONFIG_SRCDIR([src/lw/CupsFilterLabelWriter.h])
-AC_CONFIG_HEADER([config.h])
+AC_CONFIG_HEADERS([config.h])
 
 # get cups dirs
 # if there is cups-config utility - use it
@@ -35,9 +17,9 @@ if test x"$cupsdatadir" = x; then
     cupsdatadir=$BUILDROOT/usr/share/cups
 fi
 
-if test x"$cupsserverbindir" = x; then    
+if test x"$cupsserverbindir" = x; then
     cupsserverbindir=$BUILDROOT/usr/lib/cups
-fi    
+fi
 
 #check for cups-config
 cupsc=""
@@ -46,7 +28,7 @@ if test x"$cupsc" != x; then
     cupsdatadir=$BUILDROOT`cups-config --datadir`
     cupsserverbindir=$BUILDROOT`cups-config --serverbin`
     cups_cflags=`cups-config --cflags`
-fi 
+fi
 
 cupsmodeldir=${cupsdatadir}/model
 cupsfilterdir=${cupsserverbindir}/filter
@@ -82,7 +64,7 @@ AM_CONDITIONAL([SAMPLES], [test x$samples = xtrue])
 #cups_version=`cups-config --api-version`
 #if test x"$cups_version" = x1.0; then
 #    AC_ERROR(CUPS version 1.1 is required)
-#fi 
+#fi
 
 AC_SUBST(cups_cflags)
 
@@ -92,12 +74,12 @@ optimization_flags="-O2"
 CXXFLAGS="${optimization_flags} ${warning_flags} ${debug_flags} ${cups_cflags}"
 
 
-AC_CHECK_LIB(cups, cupsMarkOptions, , AC_ERROR([Can't find cups library]))
-AC_CHECK_LIB(cupsimage, cupsRasterReadHeader, , AC_ERROR([Can't find cupsimage library]))
-AC_CHECK_HEADERS([cups/cups.h cups/raster.h],, AC_ERROR([Can't find cups headers]))
+AC_CHECK_LIB(cups, cupsMarkOptions, , AC_MSG_ERROR([Can't find cups library]))
+AC_CHECK_LIB(cupsimage, cupsRasterReadHeader, , AC_MSG_ERROR([Can't find cupsimage library]))
+AC_CHECK_HEADERS([cups/cups.h cups/raster.h],, AC_MSG_ERROR([Can't find cups headers]))
 
-AC_CHECK_LIB(pthread, pthread_create,, AC_ERROR([Can't find pthread library]))
-AC_CHECK_HEADERS([pthread.h],, AC_ERROR([Can't find pthread headers]))
+AC_CHECK_LIB(pthread, pthread_create,, AC_MSG_ERROR([Can't find pthread library]))
+AC_CHECK_HEADERS([pthread.h],, AC_MSG_ERROR([Can't find pthread headers]))
 
 #CUPS_LIBS=`cups-config --image --libs`
 #CUPS_LIBS="-lcups -lcupsimage"
@@ -111,7 +93,6 @@ AC_PROG_CC
 # Checks for libraries.
 
 # Checks for header files.
-AC_HEADER_STDC
 AC_CHECK_HEADERS([fcntl.h stdlib.h string.h unistd.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
@@ -119,12 +100,11 @@ AC_HEADER_STDBOOL
 AC_C_CONST
 AC_C_INLINE
 AC_TYPE_SIZE_T
+AC_TYPE_MODE_T
+AC_TYPE_SSIZE_T
 
 # Checks for library functions.
 AC_CHECK_FUNCS([memset strcasecmp])
 
-AC_CONFIG_FILES([Makefile src/Makefile src/common/tests/Makefile src/lm/Makefile src/lm/tests/Makefile src/lw/Makefile src/lw/tests/Makefile src_v2/Makefile src_v2/common/tests/Makefile src_v2/lm/Makefile src_v2/lm/tests/Makefile src_v2/lw/Makefile src_v2/lw/tests/Makefile ppd/Makefile docs/Makefile samples/Makefile samples/paper_list/Makefile samples/paper_bounds/Makefile samples/test_label/Makefile samples/custom_paper/Makefile samples/custom_paper_tape/Makefile])
+AC_CONFIG_FILES([Makefile src/Makefile src/common/tests/Makefile src/lm/Makefile src/lm/tests/Makefile src/lw/Makefile src/lw/tests/Makefile ppd/Makefile docs/Makefile samples/Makefile samples/paper_list/Makefile samples/paper_bounds/Makefile samples/test_label/Makefile samples/custom_paper/Makefile samples/custom_paper_tape/Makefile])
 AC_OUTPUT
-
-
-
