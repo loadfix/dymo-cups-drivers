@@ -21,7 +21,7 @@ using namespace DymoPrinterDriver;
 template<class Driver, class DriverInitializer, class LanguageMonitor>
 CupsFilter<Driver, DriverInitializer, LanguageMonitor>* gFilterPtr = nullptr;
 
-static bool isBackchannelSupported()
+static bool isBackChannelSupported()
 {
     return true;
 }
@@ -74,14 +74,14 @@ int main(int argc, char* argv[])
 {
     fputs("DEBUG: starting (raster2dymolm)\n", stderr);
 
-    if (isBackchannelSupported())
+    if (isBackChannelSupported())
     {
         // Note: LanguageMonitor support to be added later
         // For now using DummyLanguageMonitor until LabelManagerLanguageMonitor is copied
-        return runFilter<LabelManagerDriver, LabelManagerDriverInitializerWithLM, DummyLanguageMonitor>(argc, argv);
+        return runFilter<LabelManagerDriver, LabelManagerDriverInitializerWithLanguageMonitor, LanguageMonitor::Dummy>(argc, argv);
     }
     else
     {
-        return runFilter<LabelManagerDriver, LabelManagerDriverInitializer, DummyLanguageMonitor>(argc, argv);
+        return runFilter<LabelManagerDriver, LabelManagerDriverInitializer, LanguageMonitor::Dummy>(argc, argv);
     }
 }

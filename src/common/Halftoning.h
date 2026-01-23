@@ -20,7 +20,7 @@ public:
 
    typedef std::vector<buffer_t> image_buffer_t;
 
-   HalftoneFilter(image_t input_image_type, image_t output_image_type) : _inputImageType(input_image_type), _outputImageType(output_image_type) {}
+   HalftoneFilter(image_t input_image_type, image_t output_image_type) : inputImageType(input_image_type), outputImageType(output_image_type) {}
    virtual ~HalftoneFilter() {}
 
    // Line-by-line interface
@@ -31,8 +31,8 @@ public:
    virtual void processImage(const void* image_data, size_t image_width, size_t image_height, size_t line_delta, std::vector<buffer_t>& output_image) = 0;
    virtual void processImage(const image_buffer_t& input_image, image_buffer_t& output_image) = 0;
 
-   image_t getInputImageType() { return _inputImageType; }
-   image_t getOutputImageType() { return _outputImageType; }
+   image_t getInputImageType() { return inputImageType; }
+   image_t getOutputImageType() { return outputImageType; }
 
    // Convert RGB value to Gray Scale
    byte convertRGBToGrayScale(byte r, byte g, byte b)
@@ -56,28 +56,28 @@ public:
    }
 
    // PixelValue (0 - white, 1 - black)
-   void setPixelBW(buffer_t& buf, int pixel_no, int pixel_value)
+   void setPixelBW(buffer_t& buf, int pixelNumber, int pixel_value)
    {
       if(pixel_value)
-         buf[pixel_no / 8] |= (1 << (7 - pixel_no % 8));
+         buf[pixelNumber / 8] |= (1 << (7 - pixelNumber % 8));
       else
-         buf[pixel_no / 8] &= ~(1 << (7 - pixel_no % 8));
+         buf[pixelNumber / 8] &= ~(1 << (7 - pixelNumber % 8));
    }
 
    // Based on inputImageType extract color component of current pixel
-   void extractRGB(const buffer_t& input_line, int pixel_no, byte& r, byte& g, byte& b)
+   void extractRGB(const buffer_t& input_line, int pixelNumber, byte& r, byte& g, byte& b)
    {
-      switch(_inputImageType)
+      switch(inputImageType)
       {
          case itXRGB:
-            r = input_line[4 * pixel_no + 1];
-            g = input_line[4 * pixel_no + 2];
-            b = input_line[4 * pixel_no + 3];
+            r = input_line[4 * pixelNumber + 1];
+            g = input_line[4 * pixelNumber + 2];
+            b = input_line[4 * pixelNumber + 3];
             break;
          case itRGB:
-            r = input_line[3 * pixel_no + 0];
-            g = input_line[3 * pixel_no + 1];
-            b = input_line[3 * pixel_no + 2];
+            r = input_line[3 * pixelNumber + 0];
+            g = input_line[3 * pixelNumber + 1];
+            b = input_line[3 * pixelNumber + 2];
             break;
          default:
             // We shouldn't come here!
@@ -86,18 +86,18 @@ public:
    }
 
    // Same as previous but return colors as packed integer value
-   int extractRGB(const buffer_t& input_line, int pixel_no)
+   int extractRGB(const buffer_t& input_line, int pixelNumber)
    {
-      switch(_inputImageType)
+      switch(inputImageType)
       {
          case itXRGB:
-            return (int(input_line[4 * pixel_no + 1]) << 16)
-                   | (int(input_line[4 * pixel_no + 2]) << 8)
-                   | (input_line[4 * pixel_no + 3]);
+            return (int(input_line[4 * pixelNumber + 1]) << 16)
+                   | (int(input_line[4 * pixelNumber + 2]) << 8)
+                   | (input_line[4 * pixelNumber + 3]);
          case itRGB:
-            return (int(input_line[3 * pixel_no + 0]) << 16)
-                   | (int(input_line[3 * pixel_no + 1]) << 8)
-                   | (input_line[3 * pixel_no + 2]);
+            return (int(input_line[3 * pixelNumber + 0]) << 16)
+                   | (int(input_line[3 * pixelNumber + 1]) << 8)
+                   | (input_line[3 * pixelNumber + 2]);
          default:
             // We shouldn't come here!
             return -1;
@@ -109,7 +109,7 @@ public:
    // Return imageWidth based on inputImageType and input line data
    size_t calcImageWidth(const buffer_t& input_line)
    {
-      switch(_inputImageType)
+      switch(inputImageType)
       {
          case itXRGB:
             return input_line.size() / 4;
@@ -126,7 +126,7 @@ public:
    // Return buffer size needed to store an input line based on inputImageType
    size_t calcBufferSize(size_t image_width)
    {
-      switch(_inputImageType)
+      switch(inputImageType)
       {
          case itXRGB:
             return image_width * 4;
@@ -143,7 +143,7 @@ public:
    // Calc output buffer size
    size_t calcOutputBufferSize(size_t image_width)
    {
-      switch(_outputImageType)
+      switch(outputImageType)
       {
          case itBW:
             if(image_width % 8 == 0)
@@ -159,8 +159,8 @@ public:
    }
 
 private:
-  image_t _inputImageType;
-  image_t _outputImageType;
+  image_t inputImageType;
+  image_t outputImageType;
 };
 
 // Error Halftoning
@@ -172,12 +172,12 @@ public:
       heUnsupportedImageType = 1,
    } error_t;
 
-   EHalftoneError(error_t error_code) : _errorCode(error_code) {}
+   EHalftoneError(error_t error_code) : errorCode(error_code) {}
 
-   error_t getErrorCode() { return _errorCode; }
+   error_t getErrorCode() { return errorCode; }
 
 private:
-   error_t _errorCode;
+   error_t errorCode;
 };
 
 }

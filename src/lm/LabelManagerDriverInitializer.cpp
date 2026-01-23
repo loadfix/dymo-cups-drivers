@@ -55,7 +55,7 @@ void LabelManagerDriverInitializer::processCupsOptions(LabelManagerDriver& Drive
         fprintf(stderr, "WARNING: Unknown DymoPrintChainMarksAtDocEnd option value = %s\n", option);
 }
 
-void LabelManagerDriverInitializer::processPPDOptions(LabelManagerDriver& Driver, DummyLanguageMonitor& LanguageMonitor, ppd_file_t* ppd)
+void LabelManagerDriverInitializer::processPPDOptions(LabelManagerDriver& Driver, LanguageMonitor::Dummy& LanguageMonitor, ppd_file_t* ppd)
 {
     if (!ppd)
         return;
@@ -151,7 +151,7 @@ void LabelManagerDriverInitializer::processPPDOptions(LabelManagerDriver& Driver
     // Add more device-specific configurations as needed
 }
 
-void LabelManagerDriverInitializer::processPageOptions(LabelManagerDriver& Driver, DummyLanguageMonitor& LanguageMonitor, cups_page_header2_t& PageHeader)
+void LabelManagerDriverInitializer::processPageOptions(LabelManagerDriver& Driver, LanguageMonitor::Dummy& LanguageMonitor, cups_page_header2_t& PageHeader)
 {
     ILabelManagerDriver::tape_width_t TapeWidth = ILabelManagerDriver::tape_width_t(PageHeader.cupsMediaType & 0xff);
 
@@ -172,14 +172,14 @@ void LabelManagerDriverInitializer::processPageOptions(LabelManagerDriver& Drive
     }
 }
 
-void LabelManagerDriverInitializerWithLM::processCupsOptions(LabelManagerDriver& Driver, LabelManagerLanguageMonitor& LanguageMonitor, int num_options, cups_option_t* options)
+void LabelManagerDriverInitializerWithLanguageMonitor::processCupsOptions(LabelManagerDriver& Driver, LabelManagerLanguageMonitor& LanguageMonitor, int num_options, cups_option_t* options)
 {
     LabelManagerDriverInitializer::processCupsOptions(Driver, num_options, options);
 
     LanguageMonitor.setDeviceName(CupsUtils::getCupsOption("printer-make-and-model", num_options, options));
 }
 
-void LabelManagerDriverInitializerWithLM::processPPDOptions(LabelManagerDriver& Driver, DummyLanguageMonitor& LanguageMonitor, ppd_file_t* ppd)
+void LabelManagerDriverInitializerWithLanguageMonitor::processPPDOptions(LabelManagerDriver& Driver, LanguageMonitor::Dummy& LanguageMonitor, ppd_file_t* ppd)
 {
     LabelManagerDriverInitializer::processPPDOptions(Driver, LanguageMonitor, ppd);
 
@@ -189,7 +189,7 @@ void LabelManagerDriverInitializerWithLM::processPPDOptions(LabelManagerDriver& 
         labelManagerLanguageMonitor->setDeviceName(ppd->modelname);
 }
 
-void LabelManagerDriverInitializerWithLM::processPageOptions(LabelManagerDriver& Driver, DummyLanguageMonitor& LanguageMonitor, cups_page_header2_t& PageHeader)
+void LabelManagerDriverInitializerWithLanguageMonitor::processPageOptions(LabelManagerDriver& Driver, LanguageMonitor::Dummy& LanguageMonitor, cups_page_header2_t& PageHeader)
 {
     LabelManagerDriverInitializer::processPageOptions(Driver, LanguageMonitor, PageHeader);
 

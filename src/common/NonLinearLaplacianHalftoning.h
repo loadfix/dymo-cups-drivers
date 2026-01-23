@@ -6,11 +6,11 @@
 namespace DymoPrinterDriver
 {
 
-class NLLHalftoning: public HalftoneFilter
+class NonLinearLaplacianHalftoning: public HalftoneFilter
 {
 public:
-  NLLHalftoning(int threshold, image_t input_image_type, image_t output_image_type);
-  virtual ~NLLHalftoning();
+  NonLinearLaplacianHalftoning(int threshold, image_t input_image_type, image_t output_image_type);
+  virtual ~NonLinearLaplacianHalftoning();
 
   virtual bool isProcessLineSupported();
   virtual void processLine(const buffer_t& input_line, buffer_t& output_line);
@@ -20,14 +20,14 @@ public:
   int getThreshold();
 protected:
 private:
-  int Threshold_;  // constant used to separate a block to classes using NLL
+  int threshold;  // constant used to separate a block to classes using NonLinearLaplacian
 
-  size_t ImageWidth_;
-  size_t ImageHeight_;
+  size_t imageWidth;
+  size_t imageHeight;
 
   // split image to 18-pixels block be diagonal
   // return true if diagonal contains at least one Block inside image, so next diagonal should be processes
-  // on output (x1, y1) is coodrs of pixel #1 of topmost block in the diagonal
+  // on output (x1, y1) is coordinates of pixel #1 of topmost block in the diagonal
   bool processDiagonal(
     const std::vector<buffer_t>& input_image, std::vector<buffer_t>& output_image, size_t& x1, size_t& y1);
 

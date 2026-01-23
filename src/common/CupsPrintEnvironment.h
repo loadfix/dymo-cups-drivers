@@ -21,25 +21,25 @@ public:
   virtual void setJobStatus(job_status_t job_status);
 
 private:
-  FILE* PRNFile_;
-  ILanguageMonitor& LanguageMonitor_;
+  FILE* prnFile;
+  ILanguageMonitor& languageMonitor;
 };
 
 // this is environment for a language monitor
 // it simple output it is data to CUPS file descriptor
-class CupsPrintEnvironmentForLM: public IPrintEnvironment
+class CupsPrintEnvironmentForLanguageMonitor: public IPrintEnvironment
 {
 public:
-  CupsPrintEnvironmentForLM();
-  virtual ~CupsPrintEnvironmentForLM();
+  CupsPrintEnvironmentForLanguageMonitor();
+  virtual ~CupsPrintEnvironmentForLanguageMonitor();
   virtual bool writeData(const buffer_t& data_buffer);
   virtual bool readData(buffer_t& data_buffer);
   virtual job_status_t getJobStatus();
   virtual void setJobStatus(job_status_t job_status);
 
 private:
-  FILE* PRNFile_;
-  IPrintEnvironment::job_status_t JobStatus_;
+  FILE* prnFile;
+  IPrintEnvironment::job_status_t jobStatus;
 };
 
 };

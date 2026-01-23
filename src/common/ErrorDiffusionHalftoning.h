@@ -9,7 +9,7 @@ namespace DymoPrinterDriver
 class ErrorDiffusionHalftoning: public HalftoneFilter
 {
 public:
-   ErrorDiffusionHalftoning(image_t input_image_type, image_t output_image_type, bool use_printer_color_space = true) : HalftoneFilter(input_image_type, output_image_type), _imageWidth(0), _error(), _grayLine(), _usePrinterColorSpace(use_printer_color_space)
+   ErrorDiffusionHalftoning(image_t input_image_type, image_t output_image_type, bool use_printer_color_space = true) : HalftoneFilter(input_image_type, output_image_type), imageWidth(0), error(), grayLine(), usePrinterColorSpace(use_printer_color_space)
    {
       if(getOutputImageType() != itBW)
          throw EHalftoneError(EHalftoneError::heUnsupportedImageType);
@@ -22,83 +22,82 @@ public:
    virtual void processLine(const buffer_t& InputLine, buffer_t& OutputLine)
    {
       int pixelValue = 0;
-      int error = 0;
       size_t i = 0;
 
       // Set image  width
-      if(!_imageWidth)
-         _imageWidth = calcImageWidth(InputLine);
+      if(!imageWidth)
+         imageWidth = calcImageWidth(InputLine);
 
       // Check buffer size
-      OutputLine.resize(calcOutputBufferSize(_imageWidth));
+      OutputLine.resize(calcOutputBufferSize(imageWidth));
       std::fill(OutputLine.begin(), OutputLine.end(), byte(0));
 
       // Initialize halftone errors array and line buffer
-      if(_error.size() == 0)
-         _error.resize(_imageWidth, 0);
+      if(error.size() == 0)
+         error.resize(imageWidth, 0);
 
-      if(_grayLine.size() == 0)
-         _grayLine.resize(_imageWidth, 0);
+      if(grayLine.size() == 0)
+         grayLine.resize(imageWidth, 0);
 
       // Convert from RGB to GrayScale
-      for(i = 0; i < _imageWidth; ++i)
+      for(i = 0; i < imageWidth; ++i)
       {
          byte R, G, B;
          extractRGB(InputLine, i, R, G, B);
-         _grayLine[i] = convertRGBToGrayScale(R, G, B);
+         grayLine[i] = convertRGBToGrayScale(R, G, B);
       }
 
       // Apply errors from prev line
-      for(i = 0; i < _imageWidth; ++i)
+      for(i = 0; i < imageWidth; ++i)
       {
          // Only if not black and white
-         if((_grayLine[i] != 0) && (_grayLine[i] != 255))
+         if((grayLine[i] != 0) && (grayLine[i] != 255))
          {
-            if(_error[i] + _grayLine[i] >= 255)
-               _grayLine[i] = 255;
+            if(error[i] + grayLine[i] >= 255)
+               grayLine[i] = 255;
             else
-               if(_error[i] + _grayLine[i] <= 0)
-                  _grayLine[i] = 0;
+               if(error[i] + grayLine[i] <= 0)
+                  grayLine[i] = 0;
                else
-                  _grayLine[i] += _error[i];
+                  grayLine[i] += error[i];
          }
 
-         _error[i] = 0;
+         error[i] = 0;
       }
 
 
       // Compute output pixels and new errors
-      for(i = 0; i < _imageWidth; ++i)
+      for(i = 0; i < imageWidth; ++i)
       {
-         pixelValue = _grayLine[i] >= 128;
-         error = _grayLine[i] - pixelValue * 255;
+         pixelValue = grayLine[i] >= 128;
+         int pixelError = grayLine[i] - pixelValue * 255;
 
-         if(_usePrinterColorSpace)
+         if(usePrinterColorSpace)
             setPixelBW(OutputLine, i, !pixelValue);
          else
             setPixelBW(OutputLine, i, pixelValue);
 
          // Disribute error
          if(i > 0)
-            _error[i - 1] += (error * 3) / 16;
+            error[i - 1] += (pixelError * 3) / 16;
 
-         _error[i] += (error * 5) / 16;
+         error[i] += (pixelError * 5) / 16;
 
-         if(i < _imageWidth - 1)
+         if(i < imageWidth - 1)
          {
-            _error[i + 1] += (error * 1) / 16;
+            error[i + 1] += (pixelError * 1) / 16;
 
-            if((_grayLine[i + 1] != 0) && (_grayLine[i + 1] != 255))
+            if((grayLine[i + 1] != 0) && (grayLine[i + 1] != 255))
             {
-               error = (error * 7) / 16;
+               int nextPixelError = (pixelError * 7) / 16;
 
-               if(error + _grayLine[i + 1] >= 255)
-                  _grayLine[i + 1] = 255;
+               if(nextPixelError + grayLine[i + 1] >= 255)
+                  grayLine[i + 1] = 255;
                else
-                  if(error + _grayLine[i + 1] <= 0)
-                     _grayLine[i + 1] = 0;
+                  if(nextPixelError + grayLine[i + 1] <= 0)
+                     grayLine[i + 1] = 0;
                   else
-                     _grayLine[i + 1] += error;
+                     grayLine[i + 1] += nextPixelError;
             }
          }
       } // for all pixels
@@ -134,13 +133,13 @@ public:
    }
 
 protected:
-   size_t getImageWidth() { return _imageWidth; }
+   size_t getImageWidth() { return imageWidth; }
 
 private:
-   size_t _imageWidth;         // image width in pixels
-   std::vector<int> _error;    // error buffer
-   std::vector<int> _grayLine; // current line in gray scale color
-   bool _usePrinterColorSpace; // if true then use 1 as black, 0 - as white; otherwise 0 is black 1 - white
+   size_t imageWidth;         // image width in pixels
+   std::vector<int> error;    // error buffer
+   std::vector<int> grayLine; // current line in gray scale color
+   bool usePrinterColorSpace; // if true then use 1 as black, 0 - as white; otherwise 0 is black 1 - white
 };
 
 };

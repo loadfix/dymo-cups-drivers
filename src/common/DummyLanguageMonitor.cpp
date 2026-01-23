@@ -3,42 +3,46 @@
 namespace DymoPrinterDriver
 {
 
+namespace LanguageMonitor
+{
 
-DummyLanguageMonitor::DummyLanguageMonitor(IPrintEnvironment& environment):
-  Environment_(environment)
+
+Dummy::Dummy(IPrintEnvironment& environment):
+  environment(environment)
 {
 }
 
-DummyLanguageMonitor::~DummyLanguageMonitor()
-{
-}
-
-void
-DummyLanguageMonitor::startDoc()
-{
-}
-
-void
-DummyLanguageMonitor::endDoc()
+Dummy::~Dummy()
 {
 }
 
 void
-DummyLanguageMonitor::startPage()
+Dummy::startDoc()
 {
 }
 
 void
-DummyLanguageMonitor::endPage()
+Dummy::endDoc()
+{
+}
+
+void
+Dummy::startPage()
+{
+}
+
+void
+Dummy::endPage()
 {
 }
 
 
 
 void
-DummyLanguageMonitor::processData(const buffer_t& data)
+Dummy::processData(const buffer_t& data)
 {
 }
 
+} // namespace LanguageMonitor
 
 }; // namespace

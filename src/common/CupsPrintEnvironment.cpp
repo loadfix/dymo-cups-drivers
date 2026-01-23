@@ -9,7 +9,7 @@ namespace DymoPrinterDriver
 {
 
 CupsPrintEnvironmentForDriver::CupsPrintEnvironmentForDriver(ILanguageMonitor& language_monitor):
-  PRNFile_(NULL), LanguageMonitor_(language_monitor)
+  prnFile(NULL), languageMonitor(language_monitor)
 {
   const char* PrnDir = getenv("DYMO_PRN_DIR");
   if (PrnDir)
@@ -20,14 +20,14 @@ CupsPrintEnvironmentForDriver::CupsPrintEnvironmentForDriver(ILanguageMonitor& l
     else
       FileName += "~dymo";
     FileName += ".prn";
-    PRNFile_ = fopen(FileName.c_str(), "w+b");
+    prnFile = fopen(FileName.c_str(), "w+b");
   }
 }
 
 CupsPrintEnvironmentForDriver::~CupsPrintEnvironmentForDriver()
 {
-  if (PRNFile_)
-    fclose(PRNFile_);
+  if (prnFile)
+    fclose(prnFile);
 }
 
 
@@ -45,13 +45,13 @@ CupsPrintEnvironmentForDriver::writeData(const buffer_t& data_buffer)
       return false;
     }
 
-    if (PRNFile_)
+    if (prnFile)
     {
-      size_t res = fwrite(&data_buffer[0], 1, data_buffer.size(), PRNFile_);
+      size_t res = fwrite(&data_buffer[0], 1, data_buffer.size(), prnFile);
       fprintf(stderr, "DEBUG: CupsPrintEnvironmentForDriver::WriteData() PRN fwrite result is %i\n", (int)res);
     }
 
-    LanguageMonitor_.processData(data_buffer);
+    languageMonitor.processData(data_buffer);
   }
   return true;
 }
@@ -78,29 +78,29 @@ CupsPrintEnvironmentForDriver::setJobStatus(job_status_t job_status)
 
 
 ///////////////////////////////////////////////////////////////////////
-// CCupsPrintEnvironmentForLM
+// CupsPrintEnvironmentForLanguageMonitor
 ///////////////////////////////////////////////////////////////////////
 
-CupsPrintEnvironmentForLM::CupsPrintEnvironmentForLM()
+CupsPrintEnvironmentForLanguageMonitor::CupsPrintEnvironmentForLanguageMonitor()
 {
 }
 
-CupsPrintEnvironmentForLM::~CupsPrintEnvironmentForLM()
+CupsPrintEnvironmentForLanguageMonitor::~CupsPrintEnvironmentForLanguageMonitor()
 {
 }
 
 
 bool
-CupsPrintEnvironmentForLM::writeData(const buffer_t& data_buffer)
+CupsPrintEnvironmentForLanguageMonitor::writeData(const buffer_t& data_buffer)
 {
-  fprintf(stderr, "DEBUG: CupsPrintEnvironmentForLM::WriteData() buffer size is %i\n", (int)data_buffer.size());
+  fprintf(stderr, "DEBUG: CupsPrintEnvironmentForLanguageMonitor::WriteData() buffer size is %i\n", (int)data_buffer.size());
   if (data_buffer.size())
   {
     //fwrite(&data_buffer[0], 1, data_buffer.size(), stdout);
     //fflush(stdout);
     if (write(1, &data_buffer[0], data_buffer.size()) == -1)
     {
-      fprintf(stderr, "ERROR: CupsPrintEnvironmentForLM::WriteData() write() failed, errno=%d\n", errno);
+      fprintf(stderr, "ERROR: CupsPrintEnvironmentForLanguageMonitor::WriteData() write() failed, errno=%d\n", errno);
       return false;
     }
   }
@@ -108,7 +108,7 @@ CupsPrintEnvironmentForLM::writeData(const buffer_t& data_buffer)
 }
 
 bool
-CupsPrintEnvironmentForLM::readData(buffer_t& data_buffer)
+CupsPrintEnvironmentForLanguageMonitor::readData(buffer_t& data_buffer)
 {
   //TODO: add the implementation here
   // note that CUPS 1.1 does not support reading data from the printer
@@ -122,12 +122,12 @@ CupsPrintEnvironmentForLM::readData(buffer_t& data_buffer)
   ssize_t bytesRead = cupsBackChannelRead((char*)buf, sizeof(buf), 2.5);
   if (bytesRead == -1)
   {
-    fprintf(stderr, "DEBUG: CupsPrintEnvironmentForLM::ReadData() unable to read data, errno=%d\n", errno);
+    fprintf(stderr, "DEBUG: CupsPrintEnvironmentForLanguageMonitor::ReadData() unable to read data, errno=%d\n", errno);
     return false;
   }
   else if (bytesRead == 0)
   {
-    fprintf(stderr, "DEBUG: CupsPrintEnvironmentForLM::ReadData() no data\n");
+    fprintf(stderr, "DEBUG: CupsPrintEnvironmentForLanguageMonitor::ReadData() no data\n");
     return true; // No data is not an error
   }
   else
@@ -135,21 +135,21 @@ CupsPrintEnvironmentForLM::readData(buffer_t& data_buffer)
     //data_buffer.push_back(buf[bytesRead - 1]);
     data_buffer.insert(data_buffer.begin(), buf, buf + bytesRead);
 
-    fprintf(stderr, "DEBUG: CupsPrintEnvironmentForLM::ReadData() has read %i bytes %x\n", (int)bytesRead, int(data_buffer[0]));
+    fprintf(stderr, "DEBUG: CupsPrintEnvironmentForLanguageMonitor::ReadData() has read %i bytes %x\n", (int)bytesRead, int(data_buffer[0]));
     return true;
   }
 }
 
 IPrintEnvironment::job_status_t
-CupsPrintEnvironmentForLM::getJobStatus()
+CupsPrintEnvironmentForLanguageMonitor::getJobStatus()
 {
-  return JobStatus_;
+  return jobStatus;
 }
 
 void
-CupsPrintEnvironmentForLM::setJobStatus(job_status_t job_status)
+CupsPrintEnvironmentForLanguageMonitor::setJobStatus(job_status_t job_status)
 {
-    JobStatus_ = job_status;
+    jobStatus = job_status;
 
     switch (job_status)
     {

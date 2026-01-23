@@ -7,48 +7,48 @@ namespace DymoPrinterDriver
 {
 
 LabelManagerDriver::LabelManagerDriver(IPrintEnvironment& environment) :
-   _printEnvironment(environment),
-   _dwVerticalResolution(0),
-   _dwHorizontalResolution(0),
-   _dwPageNumber(0),
-   _dwJobID(0),
-   _jobDidStart(false),
-   _cutOptions(ILabelManagerDriver::coCut),
-   _alignment(ILabelManagerDriver::alCenter),
-   _dwTapeAlignmentOffset(0),
-   _deviceName(),
-   _supportAutoCut(true),
-   _printChainMarksAtDocEnd(false),
-   _dwMinPageLine(MIN_LABEL_LENGTH),
-   _dwHeight(0),
-   _dwMaxPrintableWidth(MAX_PRINTABLE_WIDTH),
-   _dwNormalLeader(NORMAL_LEADER),
-   _dwMinLeader(MIN_LEADER),
-   _dwAlignedLeader(MIN_ALIGNED_LEADER)
+   printEnvironment(environment),
+   verticalResolution(0),
+   horizontalResolution(0),
+   pageNumber(0),
+   jobID(0),
+   jobDidStart(false),
+   cutOptions(ILabelManagerDriver::coCut),
+   alignment(ILabelManagerDriver::alCenter),
+   tapeAlignmentOffset(0),
+   deviceName(),
+   supportAutoCut(true),
+   printChainMarksAtDocEnd(false),
+   minPageLine(MIN_LABEL_LENGTH),
+   height(0),
+   maxPrintableWidth(MAX_PRINTABLE_WIDTH),
+   normalLeader(NORMAL_LEADER),
+   minLeader(MIN_LEADER),
+   alignedLeader(MIN_ALIGNED_LEADER)
 { }
 
 void LabelManagerDriver::startDoc()
 {
-   _dwPageNumber = 1;
+   pageNumber = 1;
 
    // Generate random number for the job ID
    std::srand(static_cast<unsigned int>(std::time(0))); // use current time as seed for random generator
-   _dwJobID = std::rand();
+   jobID = std::rand();
 }
 
 void LabelManagerDriver::endDoc()
 {
-   if(!_jobDidStart)
+   if(!jobDidStart)
        return;
 
-   if(_printChainMarksAtDocEnd)
+   if(printChainMarksAtDocEnd)
        setCutterMark();
 
    // Advance to cutter
    setFormFeed();
 
    // Cut label at the end
-   if(_supportAutoCut && !_printChainMarksAtDocEnd)
+   if(supportAutoCut && !printChainMarksAtDocEnd)
       setCutCommand();
 
    // set end of file
@@ -58,54 +58,54 @@ void LabelManagerDriver::endDoc()
 void LabelManagerDriver::startPage()
 {
    // set the header for first page
-   if(_dwPageNumber <= 1)
+   if(pageNumber <= 1)
    {
-      setStartPrintJob(_dwJobID);
+      setStartPrintJob(jobID);
 
-      _jobDidStart = true;
+      jobDidStart = true;
    }
 
-   if(_dwPageNumber > 1)
+   if(pageNumber > 1)
    {
       // Advance to cutter
       setFormFeed();
 
-      if((_cutOptions == ILabelManagerDriver::coCut) && _supportAutoCut)
+      if((cutOptions == ILabelManagerDriver::coCut) && supportAutoCut)
          setCutCommand();
       else
          setCutterMark();
    }
 
    // Make sure the label is long enough
-   if(_dwHorizontalResolution > _dwMinPageLine)
+   if(horizontalResolution > minPageLine)
    {
       // Check if vertical resolution is byte aligned
-      _dwHeight = 0;
-      int remainder = _dwVerticalResolution % 8;
+      height = 0;
+      int remainder = verticalResolution % 8;
       if(remainder == 0)
-         _dwHeight = _dwVerticalResolution;
+         height = verticalResolution;
       else
-         _dwHeight = _dwVerticalResolution + 8 - remainder;
+         height = verticalResolution + 8 - remainder;
    }
    // TODO: else throw exception
    // Check if it is support by all platforms
 
    // set page number
-   setLabelIndex(_dwPageNumber);
+   setLabelIndex(pageNumber);
 
    // set leader
-   setLabelLeader(_dwNormalLeader - _dwMinLeader);
+   setLabelLeader(normalLeader - minLeader);
 
    // set trailer
-   setLabelTrailer(_dwAlignedLeader);
+   setLabelTrailer(alignedLeader);
 
    // set print data header
-   setPrintDataHeader(_dwVerticalResolution, _dwHorizontalResolution);
+   setPrintDataHeader(verticalResolution, horizontalResolution);
 }
 
 void LabelManagerDriver::endPage()
 {
-   _dwPageNumber++;
+   pageNumber++;
 }
 
 void LabelManagerDriver::processRasterLine(const buffer_t& lineBuffer)
@@ -113,119 +113,119 @@ void LabelManagerDriver::processRasterLine(const buffer_t& lineBuffer)
    buffer_t b = lineBuffer;
 
    // Make sure that the raster line is as long as it has been specified in the label header
-   unsigned int nHeight = _dwHeight / 8;
+   unsigned int nHeight = height / 8;
    if(b.size() > nHeight)
       b.resize(nHeight);
    else if(b.size() < nHeight)
       b.resize(nHeight, 0);
 
    // It should be always center aligned
-   if(_alignment != alLeft)
+   if(alignment != alLeft)
       processRasterLineInternal(b);
    // We don't have to save for future reversing since MLS prints just
    // center aligned which is taken care by the FW
       //RasterLines_.push_back(b); // save for future reversing
 }
 
-void LabelManagerDriver::setStartPrintJob(const dword dwJobID)
+void LabelManagerDriver::setStartPrintJob(const dword jobID)
 {
-   byte cmdBuffer[] = {ESC, 's', 0x00, 0x00, 0x00, 0x00};
+   byte commandBuffer[] = {ESC, 's', 0x00, 0x00, 0x00, 0x00};
 
-   cmdBuffer[5] = (byte)((dwJobID >> 24) & 0xff);
-   cmdBuffer[4] = (byte)((dwJobID >> 16) & 0xff);
-   cmdBuffer[3] = (byte)((dwJobID >> 8) & 0xff);
-   cmdBuffer[2] = (byte)(dwJobID & 0xff);
+   commandBuffer[5] = (byte)((jobID >> 24) & 0xff);
+   commandBuffer[4] = (byte)((jobID >> 16) & 0xff);
+   commandBuffer[3] = (byte)((jobID >> 8) & 0xff);
+   commandBuffer[2] = (byte)(jobID & 0xff);
 
-   sendCommand(buffer_t(cmdBuffer, cmdBuffer + sizeof(cmdBuffer)));
+   sendCommand(buffer_t(commandBuffer, commandBuffer + sizeof(commandBuffer)));
 }
 
 void LabelManagerDriver::setEndPrintJob()
 {
-   byte cmdBuffer[] = {ESC, 'Q'};
+   byte commandBuffer[] = {ESC, 'Q'};
 
-   sendCommand(buffer_t(cmdBuffer, cmdBuffer + sizeof(cmdBuffer)));
+   sendCommand(buffer_t(commandBuffer, commandBuffer + sizeof(commandBuffer)));
 }
 
-void LabelManagerDriver::setLabelIndex(const dword dwPageNumber)
+void LabelManagerDriver::setLabelIndex(const dword pageNumber)
 {
-   byte cmdBuffer[] = {ESC, 'n', 0x00, 0x00};
+   byte commandBuffer[] = {ESC, 'n', 0x00, 0x00};
 
-   cmdBuffer[3] = (byte)((dwPageNumber >> 8) & 0xff);
-   cmdBuffer[2] = (byte)(dwPageNumber & 0xff);
+   commandBuffer[3] = (byte)((pageNumber >> 8) & 0xff);
+   commandBuffer[2] = (byte)(pageNumber & 0xff);
 
-   sendCommand(buffer_t(cmdBuffer, cmdBuffer + sizeof(cmdBuffer)));
+   sendCommand(buffer_t(commandBuffer, commandBuffer + sizeof(commandBuffer)));
 }
 
-void LabelManagerDriver::setLabelLeader(const dword dwLength)
+void LabelManagerDriver::setLabelLeader(const dword length)
 {
-   byte cmdBuffer[] = {ESC, 'l', 0x00, 0x00, 0x00, 0x00};
+   byte commandBuffer[] = {ESC, 'l', 0x00, 0x00, 0x00, 0x00};
 
-   cmdBuffer[5] = (byte)((dwLength >> 24) & 0xff);
-   cmdBuffer[4] = (byte)((dwLength >> 16) & 0xff);
-   cmdBuffer[3] = (byte)((dwLength >> 8) & 0xff);
-   cmdBuffer[2] = (byte)(dwLength & 0xff);
+   commandBuffer[5] = (byte)((length >> 24) & 0xff);
+   commandBuffer[4] = (byte)((length >> 16) & 0xff);
+   commandBuffer[3] = (byte)((length >> 8) & 0xff);
+   commandBuffer[2] = (byte)(length & 0xff);
 
-   sendCommand(buffer_t(cmdBuffer, cmdBuffer + sizeof(cmdBuffer)));
+   sendCommand(buffer_t(commandBuffer, commandBuffer + sizeof(commandBuffer)));
 }
 
-void LabelManagerDriver::setLabelTrailer(const dword dwLength)
+void LabelManagerDriver::setLabelTrailer(const dword length)
 {
-   byte cmdBuffer[] = {ESC, 't', 0x00, 0x00, 0x00, 0x00};
+   byte commandBuffer[] = {ESC, 't', 0x00, 0x00, 0x00, 0x00};
 
-   cmdBuffer[5] = (byte)((dwLength >> 24) & 0xff);
-   cmdBuffer[4] = (byte)((dwLength >> 16) & 0xff);
-   cmdBuffer[3] = (byte)((dwLength >> 8) & 0xff);
-   cmdBuffer[2] = (byte)(dwLength & 0xff);
+   commandBuffer[5] = (byte)((length >> 24) & 0xff);
+   commandBuffer[4] = (byte)((length >> 16) & 0xff);
+   commandBuffer[3] = (byte)((length >> 8) & 0xff);
+   commandBuffer[2] = (byte)(length & 0xff);
 
-   sendCommand(buffer_t(cmdBuffer, cmdBuffer + sizeof(cmdBuffer)));
+   sendCommand(buffer_t(commandBuffer, commandBuffer + sizeof(commandBuffer)));
 }
 
-void LabelManagerDriver::setPrintDataHeader(const dword dwVerticalResolution, const dword dwHorizontalResolution)
+void LabelManagerDriver::setPrintDataHeader(const dword verticalResolution, const dword horizontalResolution)
 {
    // Monochrome data and bottom aligned
    byte dataBuffer[] = {ESC, 'D', 0x01, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 
    // Width
-   dataBuffer[7] = (byte)((dwHorizontalResolution >> 24) & 0xff);
-   dataBuffer[6] = (byte)((dwHorizontalResolution >> 16) & 0xff);
-   dataBuffer[5] = (byte)((dwHorizontalResolution >> 8) & 0xff);
-   dataBuffer[4] = (byte)(dwHorizontalResolution & 0xff);
+   dataBuffer[7] = (byte)((horizontalResolution >> 24) & 0xff);
+   dataBuffer[6] = (byte)((horizontalResolution >> 16) & 0xff);
+   dataBuffer[5] = (byte)((horizontalResolution >> 8) & 0xff);
+   dataBuffer[4] = (byte)(horizontalResolution & 0xff);
 
    // Height
-   dataBuffer[11] = (byte)((_dwHeight >> 24) & 0xff);
-   dataBuffer[10] = (byte)((_dwHeight >> 16) & 0xff);
-   dataBuffer[9] = (byte)((_dwHeight >> 8) & 0xff);
-   dataBuffer[8] = (byte)(_dwHeight & 0xff);
+   dataBuffer[11] = (byte)((height >> 24) & 0xff);
+   dataBuffer[10] = (byte)((height >> 16) & 0xff);
+   dataBuffer[9] = (byte)((height >> 8) & 0xff);
+   dataBuffer[8] = (byte)(height & 0xff);
 
    sendCommand(buffer_t(dataBuffer, dataBuffer + sizeof(dataBuffer)));
 }
 
 void LabelManagerDriver::setFormFeed()
 {
-   byte cmdBuffer[] = {ESC, 'E'};
+   byte commandBuffer[] = {ESC, 'E'};
 
-   sendCommand(buffer_t(cmdBuffer, cmdBuffer + sizeof(cmdBuffer)));
+   sendCommand(buffer_t(commandBuffer, commandBuffer + sizeof(commandBuffer)));
 }
 
 void LabelManagerDriver::setShortFormFeed()
 {
-   byte cmdBuffer[] = {ESC, 'G'};
+   byte commandBuffer[] = {ESC, 'G'};
 
-   sendCommand(buffer_t(cmdBuffer, cmdBuffer + sizeof(cmdBuffer)));
+   sendCommand(buffer_t(commandBuffer, commandBuffer + sizeof(commandBuffer)));
 }
 
 void LabelManagerDriver::setCutCommand()
 {
-   byte cmdBuffer[] = {ESC, 'p', 0x30};
+   byte commandBuffer[] = {ESC, 'p', 0x30};
 
-   sendCommand(buffer_t(cmdBuffer, cmdBuffer + sizeof(cmdBuffer)));
+   sendCommand(buffer_t(commandBuffer, commandBuffer + sizeof(commandBuffer)));
 }
 
 void LabelManagerDriver::setCutterMark()
 {
-   byte cmdBuffer[] = {ESC, 'p', 0x31};
+   byte commandBuffer[] = {ESC, 'p', 0x31};
 
-   sendCommand(buffer_t(cmdBuffer, cmdBuffer + sizeof(cmdBuffer)));
+   sendCommand(buffer_t(commandBuffer, commandBuffer + sizeof(commandBuffer)));
 }
 
 void LabelManagerDriver::processRasterLineInternal(const buffer_t& LineBuffer)
@@ -287,12 +287,12 @@ void LabelManagerDriver::shiftDataRight(const buffer_t& Buf, buffer_t& shiftedBu
 
 int LabelManagerDriver::getShiftValue(size_t RasterLineSize)
 {
-   return _dwTapeAlignmentOffset;
+   return tapeAlignmentOffset;
 }
 
-void LabelManagerDriver::sendCommand(const buffer_t& cmdBuffer)
+void LabelManagerDriver::sendCommand(const buffer_t& commandBuffer)
 {
-   _printEnvironment.writeData(cmdBuffer);
+   printEnvironment.writeData(commandBuffer);
 }
 
 buffer_t LabelManagerDriver::getRequestStatusCommand()

@@ -32,12 +32,14 @@
 #include "LabelWriterDriverInitializer.h"
 
 using namespace DymoPrinterDriver;
+using DymoPrinterDriver::LabelWriter::Driver::isTwinTurboPrinter;
+using DymoPrinterDriver::LabelWriter::Driver::is400SeriesPrinter;
 
 // Global filter pointer for signal handling
 template<class Driver, class DriverInitializer, class LanguageMonitor>
 CupsFilter<Driver, DriverInitializer, LanguageMonitor>* gFilterPtr = nullptr;
 
-static bool isBackchannelSupported()
+static bool isBackChannelSupported()
 {
     return true;
 }
@@ -95,52 +97,52 @@ int main(int argc, char* argv[])
     {
         perror("WARNING: Unable to open ppd file, use default settings - ");
 
-        if (isBackchannelSupported())
+        if (isBackChannelSupported())
         {
             // Note: LanguageMonitor support to be added later
-            return runFilter<LabelWriterDriver, LabelWriterDriverInitializerWithLM, DummyLanguageMonitor>(argc, argv);
+            return runFilter<LabelWriterDriver, LabelWriter::Driver::InitializerWithLanguageMonitor, LanguageMonitor::Dummy>(argc, argv);
         }
         else
         {
-            return runFilter<LabelWriterDriver, LabelWriterDriverInitializer, DummyLanguageMonitor>(argc, argv);
+            return runFilter<LabelWriterDriver, LabelWriter::Driver::Initializer, LanguageMonitor::Dummy>(argc, argv);
         }
     }
     else
     {
         if (isTwinTurboPrinter(ppd->modelname))
         {
-            if (isBackchannelSupported())
+            if (isBackChannelSupported())
             {
                 // Note: LanguageMonitor support to be added later
-                return runFilter<LabelWriterDriverTwinTurbo, LabelWriterDriverInitializerWithLM, DummyLanguageMonitor>(argc, argv);
+                return runFilter<LabelWriterDriverTwinTurbo, LabelWriter::Driver::InitializerWithLanguageMonitor, LanguageMonitor::Dummy>(argc, argv);
             }
             else
             {
-                return runFilter<LabelWriterDriverTwinTurbo, LabelWriterDriverInitializer, DummyLanguageMonitor>(argc, argv);
+                return runFilter<LabelWriterDriverTwinTurbo, LabelWriter::Driver::Initializer, LanguageMonitor::Dummy>(argc, argv);
             }
         }
         else if (is400SeriesPrinter(ppd->modelname))
         {
-            if (isBackchannelSupported())
+            if (isBackChannelSupported())
             {
                 // Note: LanguageMonitor support to be added later
-                return runFilter<LabelWriterDriver400, LabelWriterDriverInitializerWithLM, DummyLanguageMonitor>(argc, argv);
+                return runFilter<LabelWriterDriver400, LabelWriter::Driver::InitializerWithLanguageMonitor, LanguageMonitor::Dummy>(argc, argv);
             }
             else
             {
-                return runFilter<LabelWriterDriver400, LabelWriterDriverInitializer, DummyLanguageMonitor>(argc, argv);
+                return runFilter<LabelWriterDriver400, LabelWriter::Driver::Initializer, LanguageMonitor::Dummy>(argc, argv);
             }
         }
         else
         {
-            if (isBackchannelSupported())
+            if (isBackChannelSupported())
             {
                 // Note: LanguageMonitor support to be added later
-                return runFilter<LabelWriterDriver, LabelWriterDriverInitializerWithLM, DummyLanguageMonitor>(argc, argv);
+                return runFilter<LabelWriterDriver, LabelWriter::Driver::InitializerWithLanguageMonitor, LanguageMonitor::Dummy>(argc, argv);
             }
             else
             {
-                return runFilter<LabelWriterDriver, LabelWriterDriverInitializer, DummyLanguageMonitor>(argc, argv);
+                return runFilter<LabelWriterDriver, LabelWriter::Driver::Initializer, LanguageMonitor::Dummy>(argc, argv);
             }
         }
 

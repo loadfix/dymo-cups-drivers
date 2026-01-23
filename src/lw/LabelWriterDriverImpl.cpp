@@ -7,29 +7,29 @@ namespace DymoPrinterDriver
 {
 
 LabelWriterDriver::LabelWriterDriver(IPrintEnvironment& environment) :
-   _printEnvironment(environment),
-   _dwVerticalResolution(0),
-   _dwHorizontalResolution(0),
-   _dwPageNumber(0),
-   _dwJobID(0),
-   _deviceName(),
-   _dwHeight(0),
-   _dwMaxPrintableWidth(MAX_PRINTABLE_WIDTH),
-   _density(pdNormal),
-   _quality(pqText),
-   _speed(psNormal),
-   _paperType(ptRegular),
-   _mediaType(mtDefault),
-   _support_high_speed(false)
+   printEnvironment(environment),
+   verticalResolution(0),
+   horizontalResolution(0),
+   pageNumber(0),
+   jobID(0),
+   deviceName(),
+   height(0),
+   maxPrintableWidth(MAX_PRINTABLE_WIDTH),
+   density(pdNormal),
+   quality(pqText),
+   speed(psNormal),
+   paperType(ptRegular),
+   mediaType(mtDefault),
+   supportHighSpeed(false)
 { }
 
 void LabelWriterDriver::startDoc()
 {
-   _dwPageNumber = 1;
+   pageNumber = 1;
 
    // Generate random number for the job ID
    std::srand(static_cast<unsigned int>(std::time(0))); // use current time as seed for random generator
-   _dwJobID = std::rand();
+   jobID = std::rand();
 }
 
 void LabelWriterDriver::endDoc()
@@ -41,16 +41,16 @@ void LabelWriterDriver::endDoc()
 void LabelWriterDriver::startPage()
 {
     // set the header for first page
-    if(_dwPageNumber <= 1)
+    if(pageNumber <= 1)
     {
-        setStartPrintJob(_dwJobID);
+        setStartPrintJob(jobID);
         setPrintDensity();
         setPrintQuality();
         setPrintSpeed();
         setPrintMedia();
     }
 
-    if(_paperType == IPrinterDriver::ptContinuous)
+    if(paperType == IPrinterDriver::ptContinuous)
         setLabelLength(0xFFFF);
     else
         setLabelLength(0);
@@ -60,23 +60,23 @@ void LabelWriterDriver::startPage()
         //setShortFormFeed();
 
     // Check if vertical resolution is byte aligned
-    _dwHeight = 0;
-    int remainder = _dwVerticalResolution % 8;
+    height = 0;
+    int remainder = verticalResolution % 8;
     if(remainder == 0)
-        _dwHeight = _dwVerticalResolution;
+        height = verticalResolution;
     else
-        _dwHeight = _dwVerticalResolution + 8 - remainder;
+        height = verticalResolution + 8 - remainder;
 
     // set page number
-    setLabelIndex(_dwPageNumber);
+    setLabelIndex(pageNumber);
 
     // set print data header
-    setPrintDataHeader(_dwVerticalResolution, _dwHorizontalResolution);
+    setPrintDataHeader(verticalResolution, horizontalResolution);
 }
 
 void LabelWriterDriver::endPage()
 {
-   _dwPageNumber++;
+   pageNumber++;
 
    // PBB is feeding only the delta (form feed - short form feed) on form feed. Therefore
    // we have to do a short form feed at the end of each page.
@@ -88,7 +88,7 @@ void LabelWriterDriver::processRasterLine(const buffer_t& lineBuffer)
    buffer_t b = lineBuffer;
 
    // Make sure that the raster line is as long as it has been specified in the label header
-   unsigned int nHeight = _dwHeight / 8;
+   unsigned int nHeight = height / 8;
    if(b.size() > nHeight)
       b.resize(nHeight);
    else if(b.size() < nHeight)
@@ -110,162 +110,162 @@ bool LabelWriterDriver::isBlank(const buffer_t& buf)
     return true;
 }
 
-void LabelWriterDriver::setStartPrintJob(const dword dwJobID)
+void LabelWriterDriver::setStartPrintJob(const dword jobID)
 {
-   byte cmdBuffer[] = {ESC, 's', 0x00, 0x00, 0x00, 0x00};
+   byte commandBuffer[] = {ESC, 's', 0x00, 0x00, 0x00, 0x00};
 
-   cmdBuffer[5] = (byte)((dwJobID >> 24) & 0xff);
-   cmdBuffer[4] = (byte)((dwJobID >> 16) & 0xff);
-   cmdBuffer[3] = (byte)((dwJobID >> 8) & 0xff);
-   cmdBuffer[2] = (byte)(dwJobID & 0xff);
+   commandBuffer[5] = (byte)((jobID >> 24) & 0xff);
+   commandBuffer[4] = (byte)((jobID >> 16) & 0xff);
+   commandBuffer[3] = (byte)((jobID >> 8) & 0xff);
+   commandBuffer[2] = (byte)(jobID & 0xff);
 
-   sendCommand(buffer_t(cmdBuffer, cmdBuffer + sizeof(cmdBuffer)));
+   sendCommand(buffer_t(commandBuffer, commandBuffer + sizeof(commandBuffer)));
 }
 
 void LabelWriterDriver::setEndPrintJob()
 {
-   byte cmdBuffer[] = {ESC, 'Q'};
+   byte commandBuffer[] = {ESC, 'Q'};
 
-   sendCommand(buffer_t(cmdBuffer, cmdBuffer + sizeof(cmdBuffer)));
+   sendCommand(buffer_t(commandBuffer, commandBuffer + sizeof(commandBuffer)));
 }
 
-void LabelWriterDriver::setLabelIndex(const dword dwPageNumber)
+void LabelWriterDriver::setLabelIndex(const dword pageNumber)
 {
-   byte cmdBuffer[] = {ESC, 'n', 0x00, 0x00};
+   byte commandBuffer[] = {ESC, 'n', 0x00, 0x00};
 
-   cmdBuffer[3] = (byte)((dwPageNumber >> 8) & 0xff);
-   cmdBuffer[2] = (byte)(dwPageNumber & 0xff);
+   commandBuffer[3] = (byte)((pageNumber >> 8) & 0xff);
+   commandBuffer[2] = (byte)(pageNumber & 0xff);
 
-   sendCommand(buffer_t(cmdBuffer, cmdBuffer + sizeof(cmdBuffer)));
+   sendCommand(buffer_t(commandBuffer, commandBuffer + sizeof(commandBuffer)));
 }
 
-void LabelWriterDriver::setPrintDataHeader(const dword dwVerticalResolution, const dword dwHorizontalResolution)
+void LabelWriterDriver::setPrintDataHeader(const dword verticalResolution, const dword horizontalResolution)
 {
    // Monochrome data and bottom aligned
    byte dataBuffer[] = {ESC, 'D', 0x01, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 
    // Width
-   dataBuffer[7] = (byte)((dwHorizontalResolution >> 24) & 0xff);
-   dataBuffer[6] = (byte)((dwHorizontalResolution >> 16) & 0xff);
-   dataBuffer[5] = (byte)((dwHorizontalResolution >> 8) & 0xff);
-   dataBuffer[4] = (byte)(dwHorizontalResolution & 0xff);
+   dataBuffer[7] = (byte)((horizontalResolution >> 24) & 0xff);
+   dataBuffer[6] = (byte)((horizontalResolution >> 16) & 0xff);
+   dataBuffer[5] = (byte)((horizontalResolution >> 8) & 0xff);
+   dataBuffer[4] = (byte)(horizontalResolution & 0xff);
 
    // Height
-   dataBuffer[11] = (byte)((_dwHeight >> 24) & 0xff);
-   dataBuffer[10] = (byte)((_dwHeight >> 16) & 0xff);
-   dataBuffer[9] = (byte)((_dwHeight >> 8) & 0xff);
-   dataBuffer[8] = (byte)(_dwHeight & 0xff);
+   dataBuffer[11] = (byte)((height >> 24) & 0xff);
+   dataBuffer[10] = (byte)((height >> 16) & 0xff);
+   dataBuffer[9] = (byte)((height >> 8) & 0xff);
+   dataBuffer[8] = (byte)(height & 0xff);
 
    sendCommand(buffer_t(dataBuffer, dataBuffer + sizeof(dataBuffer)));
 }
 
 void LabelWriterDriver::setFormFeed()
 {
-    byte cmdBuffer[] = {ESC, 'E'};
+    byte commandBuffer[] = {ESC, 'E'};
 
-    sendCommand(buffer_t(cmdBuffer, cmdBuffer + sizeof(cmdBuffer)));
+    sendCommand(buffer_t(commandBuffer, commandBuffer + sizeof(commandBuffer)));
 }
 
 void LabelWriterDriver::setShortFormFeed()
 {
-    byte cmdBuffer[] = {ESC, 'G'};
+    byte commandBuffer[] = {ESC, 'G'};
 
-    sendCommand(buffer_t(cmdBuffer, cmdBuffer + sizeof(cmdBuffer)));
+    sendCommand(buffer_t(commandBuffer, commandBuffer + sizeof(commandBuffer)));
 }
 
 void LabelWriterDriver::setPrintDensity()
 {
-    byte cmdBuffer[] = {ESC, 'e'};
+    byte commandBuffer[] = {ESC, 'e'};
 
-    switch (_density)
+    switch (density)
     {
         case pdLow:
-            cmdBuffer[1] = 'c';
+            commandBuffer[1] = 'c';
             break;
         case pdMedium:
-            cmdBuffer[1] = 'd';
+            commandBuffer[1] = 'd';
             break;
         case pdNormal:
-            cmdBuffer[1] = 'e';
+            commandBuffer[1] = 'e';
             break;
         case pdHigh:
-            cmdBuffer[1] = 'g';
+            commandBuffer[1] = 'g';
             break;
         default:
             break;
     }
 
-    sendCommand(buffer_t(cmdBuffer, cmdBuffer + sizeof(cmdBuffer)));
+    sendCommand(buffer_t(commandBuffer, commandBuffer + sizeof(commandBuffer)));
 }
 
 void LabelWriterDriver::setPrintQuality()
 {
-    byte cmdBuffer[] = {ESC, 'h'};
+    byte commandBuffer[] = {ESC, 'h'};
 
-    switch(_quality)
+    switch(quality)
     {
         case pqText:
-            cmdBuffer[1] = 'h';
+            commandBuffer[1] = 'h';
             break;
         case pqBarcodeAndGraphics:
-            cmdBuffer[1] = 'i';
+            commandBuffer[1] = 'i';
             break;
         default:
             break;
     }
 
-    sendCommand(buffer_t(cmdBuffer, cmdBuffer + sizeof(cmdBuffer)));
+    sendCommand(buffer_t(commandBuffer, commandBuffer + sizeof(commandBuffer)));
 }
 
 void LabelWriterDriver::setPrintSpeed()
 {
-    if(!_support_high_speed)
+    if(!supportHighSpeed)
         return;
 
-    byte cmdBuffer[] = {ESC, 'T', 0x10};
+    byte commandBuffer[] = {ESC, 'T', 0x10};
 
-    switch(_speed)
+    switch(speed)
     {
         case psNormal:
-            cmdBuffer[2] = 0x10;
+            commandBuffer[2] = 0x10;
             break;
         case psHigh:
-            cmdBuffer[2] = 0x20;
+            commandBuffer[2] = 0x20;
             break;
         default:
             break;
     }
 
-    sendCommand(buffer_t(cmdBuffer, cmdBuffer + sizeof(cmdBuffer)));
+    sendCommand(buffer_t(commandBuffer, commandBuffer + sizeof(commandBuffer)));
 }
 
 void LabelWriterDriver::setPrintMedia()
 {
-    byte cmdBuffer[] = {ESC, 'M', 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+    byte commandBuffer[] = {ESC, 'M', 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 
-    switch(_mediaType)
+    switch(mediaType)
     {
         case mtDefault:
-            cmdBuffer[2] = 0x00;
+            commandBuffer[2] = 0x00;
             break;
         case mtDurable:
-            cmdBuffer[2] = 0x01;
+            commandBuffer[2] = 0x01;
             break;
         default:
             break;
     }
 
-    sendCommand(buffer_t(cmdBuffer, cmdBuffer + sizeof(cmdBuffer)));
+    sendCommand(buffer_t(commandBuffer, commandBuffer + sizeof(commandBuffer)));
 }
 
-void LabelWriterDriver::setLabelLength(const dword dwLength)
+void LabelWriterDriver::setLabelLength(const dword length)
 {
-    byte cmdBuffer[] = {ESC, 'L', 0, 0};
+    byte commandBuffer[] = {ESC, 'L', 0, 0};
 
-    cmdBuffer[3] = (byte)((dwLength >> 8) & 0xff);
-    cmdBuffer[2] = (byte)(dwLength & 0xff);
+    commandBuffer[3] = (byte)((length >> 8) & 0xff);
+    commandBuffer[2] = (byte)(length & 0xff);
 
-    sendCommand(buffer_t(cmdBuffer, cmdBuffer + sizeof(cmdBuffer)));
+    sendCommand(buffer_t(commandBuffer, commandBuffer + sizeof(commandBuffer)));
 }
 
 void LabelWriterDriver::processRasterLineInternal(const buffer_t& lineBuffer)
@@ -273,9 +273,9 @@ void LabelWriterDriver::processRasterLineInternal(const buffer_t& lineBuffer)
     sendCommand(lineBuffer);
 }
 
-void LabelWriterDriver::sendCommand(const buffer_t& cmdBuffer)
+void LabelWriterDriver::sendCommand(const buffer_t& commandBuffer)
 {
-    _printEnvironment.writeData(cmdBuffer);
+    printEnvironment.writeData(commandBuffer);
 }
 
 buffer_t LabelWriterDriver::getResetCommand()

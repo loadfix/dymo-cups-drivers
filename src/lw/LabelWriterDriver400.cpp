@@ -23,7 +23,7 @@ void LabelWriterDriver400::endDoc()
 void LabelWriterDriver400::endPage()
 {
    // Increment page number (from base class)
-   _dwPageNumber++;
+   pageNumber++;
 
    // 400 series uses short form feed at end of page
    sendShortFormFeed();

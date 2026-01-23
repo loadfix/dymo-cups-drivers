@@ -46,28 +46,28 @@ HalftoneFilter::convertRGBToGrayScale(byte r, byte g, byte b)
 // set pixel pixelNo to
 // pixelValue (0 - white, 1 - black)
 void
-HalftoneFilter::setPixelBW(buffer_t& buf, int pixel_no, int pixel_value)
+HalftoneFilter::setPixelBW(buffer_t& buf, int pixelNumber, int pixel_value)
 {
   if (pixel_value)
-    buf[pixel_no / 8] |= (1 << (7 - pixel_no % 8));
+    buf[pixelNumber / 8] |= (1 << (7 - pixelNumber % 8));
   else
-    buf[pixel_no / 8] &= ~(1 << (7 - pixel_no % 8));
+    buf[pixelNumber / 8] &= ~(1 << (7 - pixelNumber % 8));
 }
 
 void
-HalftoneFilter::extractRGB(const buffer_t& input_line, int pixel_no, byte& r, byte& g, byte& b)
+HalftoneFilter::extractRGB(const buffer_t& input_line, int pixelNumber, byte& r, byte& g, byte& b)
 {
-  switch (InputImageType_)
+  switch (inputImageType)
   {
     case itXRGB:
-      r = input_line[4*pixel_no + 1];
-      g = input_line[4*pixel_no + 2];
-      b = input_line[4*pixel_no + 3];
+      r = input_line[4*pixelNumber + 1];
+      g = input_line[4*pixelNumber + 2];
+      b = input_line[4*pixelNumber + 3];
       break;
     case itRGB:
-      r = input_line[3*pixel_no + 0];
-      g = input_line[3*pixel_no + 1];
-      b = input_line[3*pixel_no + 2];
+      r = input_line[3*pixelNumber + 0];
+      g = input_line[3*pixelNumber + 1];
+      b = input_line[3*pixelNumber + 2];
       break;
     default:
       assert(0);
@@ -77,7 +77,7 @@ HalftoneFilter::extractRGB(const buffer_t& input_line, int pixel_no, byte& r, by
 size_t
 HalftoneFilter::calcImageWidth(const buffer_t& input_line)
 {
-  switch (InputImageType_)
+  switch (inputImageType)
   {
     case itXRGB:
       return input_line.size() / 4;
@@ -94,7 +94,7 @@ HalftoneFilter::calcImageWidth(const buffer_t& input_line)
 size_t
 HalftoneFilter::calcBufferSize(size_t image_width)
 {
-  switch (InputImageType_)
+  switch (inputImageType)
   {
     case itXRGB:
       return image_width * 4;
@@ -110,7 +110,7 @@ HalftoneFilter::calcBufferSize(size_t image_width)
 size_t
 HalftoneFilter::calcOutputBufferSize(size_t image_width)
 {
-  switch (OutputImageType_)
+  switch (outputImageType)
   {
     case itBW:
       if (image_width % 8 == 0)
@@ -125,20 +125,20 @@ HalftoneFilter::calcOutputBufferSize(size_t image_width)
 }
 
 int
-HalftoneFilter::extractRGB(const buffer_t& input_line, int pixel_no)
+HalftoneFilter::extractRGB(const buffer_t& input_line, int pixelNumber)
 {
-  switch (InputImageType_)
+  switch (inputImageType)
   {
     case itXRGB:
       return
-        (int(input_line[4*pixel_no + 1]) << 16)
-        | (int(input_line[4*pixel_no + 2]) << 8)
-        | (input_line[4*pixel_no + 3] );
+        (int(input_line[4*pixelNumber + 1]) << 16)
+        | (int(input_line[4*pixelNumber + 2]) << 8)
+        | (input_line[4*pixelNumber + 3] );
     case itRGB:
       return
-        (int(input_line[3*pixel_no + 0]) << 16)
-        | (int(input_line[3*pixel_no + 1]) << 8)
-        | (input_line[3*pixel_no + 2] );
+        (int(input_line[3*pixelNumber + 0]) << 16)
+        | (int(input_line[3*pixelNumber + 1]) << 8)
+        | (input_line[3*pixelNumber + 2] );
     default:
       assert(0);
   }
@@ -150,14 +150,14 @@ HalftoneFilter::extractRGB(const buffer_t& input_line, int pixel_no)
 // EHalftoneError
 /////////////////////////////////////////////////////////////////////////
 
-EHalftoneError::EHalftoneError(error_t error_code): ErrorCode_(error_code)
+EHalftoneError::EHalftoneError(error_t error_code): errorCode(error_code)
 {
 }
 
 EHalftoneError::error_t
 EHalftoneError::getErrorCode()
 {
-  return ErrorCode_;
+  return errorCode;
 }
 
 

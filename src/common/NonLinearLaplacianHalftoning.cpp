@@ -5,11 +5,11 @@ namespace DymoPrinterDriver
 {
 
 // helper class defines image 'block' of 18 pixels
-class NLLBlock
+class NonLinearLaplacianBlock
 {
 public:
   // create a block from image with coordinates of pixel #1 at (x1, y1)
-  NLLBlock(NLLHalftoning& Parent, const HalftoneFilter::image_buffer_t& Image, int x1, int y1, HalftoneFilter::image_buffer_t& OutputImage);
+  NonLinearLaplacianBlock(NonLinearLaplacianHalftoning& parent, const HalftoneFilter::image_buffer_t& image, int x1, int y1, HalftoneFilter::image_buffer_t& outputImage);
 
   // return true if at least on pixels of the block is insize the image
   bool isInImage();
@@ -23,40 +23,40 @@ private:
   size_t getBlockIntenseValue();
 
   // fill info for one of 18 pixels
-  // PixelNo - ordinal number of the pixel in the block
-  // (x, y)  - coords of the pixel in original image
-  void fillPixel(size_t PixelNo, int x, int y);
+  // pixelNumber - ordinal number of the pixel in the block
+  // (x, y)  - coordinates of the pixel in original image
+  void fillPixel(size_t pixelNumber, int x, int y);
 
   // Split class 1 pixels to class 2 and class 5 to class 4
   void reduceClasses();
-  void reduceClasses(size_t ClassFrom, size_t ClassTo);
+  void reduceClasses(size_t classFrom, size_t classTo);
 
-  // return Laplacian value for pixel with coords (x, y)
-  int calculateNll(int x, int y);
+  // return Laplacian value for pixel with coordinates (x, y)
+  int calculateNonLinearLaplacian(int x, int y);
 
-  // return grayscale value [0, 255] of pixel with coords (x, y)
+  // return grayscale value [0, 255] of pixel with coordinates (x, y)
   int getPixelGray(int x, int y);
 
   // output Pixels of specific class
   // return number of pixels drawn
-  size_t  outputClass(size_t ClassNo, size_t MaxPixelsToOutput);
+  size_t  outputClass(size_t classNumber, size_t maxPixelsToOutput);
 
-  void outputPixel(size_t PixelNo);
+  void outputPixel(size_t pixelNumber);
   void outputPixel(int x, int y);
 
   // return true if pixel (x, y) is inside image
   bool isInImage(int x, int y);
 
-  NLLHalftoning&                         Parent_;
-  const HalftoneFilter::image_buffer_t&  Image_;
-  HalftoneFilter::image_buffer_t&        OutputImage_;
-  int                                     x1_;
-  int                                     y1_;
+  NonLinearLaplacianHalftoning&                         parent;
+  const HalftoneFilter::image_buffer_t&  image;
+  HalftoneFilter::image_buffer_t&        outputImage;
+  int                                     x1;
+  int                                     y1;
 
-  std::vector<int>                        Pixels_;   // pixels' gray values
-  std::vector<size_t>                     Classes_;  // pixels' classes
-  size_t                                  ImageWidth_;
-  size_t                                  ImageHeight_;
+  std::vector<int>                        pixels;   // pixels' gray values
+  std::vector<size_t>                     classes;  // pixels' classes
+  size_t                                  imageWidth;
+  size_t                                  imageHeight;
 
   typedef struct
   {
@@ -72,14 +72,14 @@ private:
     size_t p4;
   } square_block_t;
 
-  static const point_t        PixelOffsets_[18];
-  static const square_block_t Squares_[8];
+  static const point_t        pixelOffsets[18];
+  static const square_block_t squares[8];
 };
 
 
 
 
-const NLLBlock::point_t NLLBlock::PixelOffsets_[18] =
+const NonLinearLaplacianBlock::point_t NonLinearLaplacianBlock::pixelOffsets[18] =
 {
   { 0,  0},
   {-1,  1},
@@ -101,7 +101,7 @@ const NLLBlock::point_t NLLBlock::PixelOffsets_[18] =
   { 1,  0},
 };
 
-const NLLBlock::square_block_t NLLBlock::Squares_[8] =
+const NonLinearLaplacianBlock::square_block_t NonLinearLaplacianBlock::squares[8] =
 {
   {17,  8,  3, 13},
   {11,  3,  6, 10},
@@ -115,31 +115,31 @@ const NLLBlock::square_block_t NLLBlock::Squares_[8] =
 
 
 
-NLLHalftoning::NLLHalftoning(int Threshold, image_t InputImageType, image_t OutputImageType):
-  HalftoneFilter(InputImageType, OutputImageType), Threshold_(Threshold)
+NonLinearLaplacianHalftoning::NonLinearLaplacianHalftoning(int threshold, image_t inputImageType, image_t outputImageType):
+  HalftoneFilter(inputImageType, outputImageType), threshold(threshold)
 {
   if (getOutputImageType() != itBW)
     throw EHalftoneError(EHalftoneError::heUnsupportedImageType);
 }
 
-NLLHalftoning::~NLLHalftoning()
+NonLinearLaplacianHalftoning::~NonLinearLaplacianHalftoning()
 {
 }
 
 bool
-NLLHalftoning::isProcessLineSupported()
+NonLinearLaplacianHalftoning::isProcessLineSupported()
 {
   return false;
 }
 
 void
-NLLHalftoning::processLine(
+NonLinearLaplacianHalftoning::processLine(
   const buffer_t& InputLine, buffer_t& OutputLine)
 {
 }
 
 void
-NLLHalftoning::processImage(
+NonLinearLaplacianHalftoning::processImage(
   const void* ImageData, size_t ImageWidth, size_t ImageHeight, size_t LineDelta, std::vector<buffer_t>& OutputImage)
 {
   // TODO: non-implemented yet
@@ -148,18 +148,18 @@ NLLHalftoning::processImage(
 
 
 void
-NLLHalftoning::processImage(const std::vector<buffer_t>& InputImage, std::vector<buffer_t>& OutputImage)
+NonLinearLaplacianHalftoning::processImage(const std::vector<buffer_t>& InputImage, std::vector<buffer_t>& OutputImage)
 {
   OutputImage.clear();
   if (InputImage.size() == 0) return;
 
-  ImageWidth_   = calcImageWidth(InputImage[0]);
-  ImageHeight_  = InputImage.size();
+  imageWidth   = calcImageWidth(InputImage[0]);
+  imageHeight  = InputImage.size();
 
   // create an empty output image
-  buffer_t EmptyLine;
-  EmptyLine.resize(ImageWidth_ / 8 + 1, 0);
-  OutputImage.resize(ImageHeight_, EmptyLine);
+  buffer_t emptyLine;
+  emptyLine.resize(imageWidth / 8 + 1, 0);
+  OutputImage.resize(imageHeight, emptyLine);
 
   // split the image to 18-pixels block
   size_t RowCount = (InputImage.size() + 1) / 3 + 1;
@@ -171,12 +171,12 @@ NLLHalftoning::processImage(const std::vector<buffer_t>& InputImage, std::vector
 
     // for all blocks in the row
     // both leftest and rightest pixels of the block is
-    while ((x1 - 3 < ImageWidth_) || (x1 + 2 < ImageWidth_))
+    while ((x1 - 3 < imageWidth) || (x1 + 2 < imageWidth))
     {
-      NLLBlock Block(*this, InputImage, x1, y1, OutputImage);
+      NonLinearLaplacianBlock block(*this, InputImage, x1, y1, OutputImage);
 
-      Block.fillBlock();
-      Block.outputBlock();
+      block.fillBlock();
+      block.outputBlock();
 
 
       // advance to next block
@@ -187,7 +187,7 @@ NLLHalftoning::processImage(const std::vector<buffer_t>& InputImage, std::vector
 
 
 bool
-NLLHalftoning::processDiagonal(
+NonLinearLaplacianHalftoning::processDiagonal(
   const std::vector<buffer_t>& InputImage, std::vector<buffer_t>& OutputImage, size_t& x1, size_t& y1)
 {
   //fprintf(stderr, "processDiagonal(%i, %i)\n", x1, y1);
@@ -203,13 +203,13 @@ NLLHalftoning::processDiagonal(
   size_t y            = y1 + 3;
   while (true)
   {
-    NLLBlock Block(*this, InputImage, x, y, OutputImage);
+    NonLinearLaplacianBlock block(*this, InputImage, x, y, OutputImage);
 
-    if (Block.isInImage())
+    if (block.isInImage())
     {
       //fprintf(stderr, "down Block (%i, %i)\n", x, y);
-      Block.fillBlock();
-      Block.outputBlock();
+      block.fillBlock();
+      block.outputBlock();
       Result = true;
 
       if (!HasDownBlocks)
@@ -231,14 +231,14 @@ NLLHalftoning::processDiagonal(
   y   = y1;
   while (true)
   {
-    NLLBlock Block(*this, InputImage, x, y, OutputImage);
+    NonLinearLaplacianBlock block(*this, InputImage, x, y, OutputImage);
 
-    if (Block.isInImage())
+    if (block.isInImage())
     {
       //fprintf(stderr, "up Block (%i, %i)\n", x, y);
 
-      Block.fillBlock();
-      Block.outputBlock();
+      block.fillBlock();
+      block.outputBlock();
       Result = true;
       HasUpBlocks = true;
 
@@ -262,99 +262,99 @@ NLLHalftoning::processDiagonal(
 }
 
 int
-NLLHalftoning::getThreshold()
+NonLinearLaplacianHalftoning::getThreshold()
 {
-  return Threshold_;
+  return threshold;
 }
 
 ////////////////////////////////////////////////////////////////////////
 // Block class methods
 ////////////////////////////////////////////////////////////////////////
 
-NLLBlock::NLLBlock(
-  NLLHalftoning& parent, const HalftoneFilter::image_buffer_t& image, int x1, int y1, HalftoneFilter::image_buffer_t& output_image):
-  Parent_(parent), Image_(image), OutputImage_(output_image), x1_(x1), y1_(y1), Pixels_(18, 0), Classes_(18, 0)
+NonLinearLaplacianBlock::NonLinearLaplacianBlock(
+  NonLinearLaplacianHalftoning& parent, const HalftoneFilter::image_buffer_t& image, int x1, int y1, HalftoneFilter::image_buffer_t& outputImage):
+  parent(parent), image(image), outputImage(outputImage), x1(x1), y1(y1), pixels(18, 0), classes(18, 0)
 {
-  ImageWidth_   = Parent_.calcImageWidth(Image_[0]);
-  ImageHeight_  = Image_.size();
+  imageWidth   = parent.calcImageWidth(image[0]);
+  imageHeight  = image.size();
 }
 
 void
-NLLBlock::fillBlock()
+NonLinearLaplacianBlock::fillBlock()
 {
-  for (size_t i = 0; i < Pixels_.size(); ++i)
-    fillPixel(i + 1, x1_ + PixelOffsets_[i].x, y1_ + PixelOffsets_[i].y);
+  for (size_t i = 0; i < pixels.size(); ++i)
+    fillPixel(i + 1, x1 + pixelOffsets[i].x, y1 + pixelOffsets[i].y);
 
   reduceClasses();
 
 }
 
 void
-NLLBlock::reduceClasses()
+NonLinearLaplacianBlock::reduceClasses()
 {
   //reduceClasses(1, 2);
   //reduceClasses(5, 4);
 }
 
 void
-NLLBlock::reduceClasses(size_t class_from, size_t class_to)
+NonLinearLaplacianBlock::reduceClasses(size_t class_from, size_t class_to)
 {
   for (size_t i = 0; i < 8; ++i)
   {
-    if ((Classes_[Squares_[i].p1 - 1] == class_from)
-    && (Classes_[Squares_[i].p2 - 1] == class_from)
-    && (Classes_[Squares_[i].p3 - 1] == class_from)
-    && (Classes_[Squares_[i].p4 - 1] == class_from))
+    if ((classes[squares[i].p1 - 1] == class_from)
+    && (classes[squares[i].p2 - 1] == class_from)
+    && (classes[squares[i].p3 - 1] == class_from)
+    && (classes[squares[i].p4 - 1] == class_from))
     {
-      Classes_[Squares_[i].p1 - 1] = class_to;
-      Classes_[Squares_[i].p3 - 1] = class_to;
+      classes[squares[i].p1 - 1] = class_to;
+      classes[squares[i].p3 - 1] = class_to;
     }
   }
 }
 
 void
-NLLBlock::fillPixel(size_t pixel_no, int x, int y)
+NonLinearLaplacianBlock::fillPixel(size_t pixelNumber, int x, int y)
 {
   // fill pixels
-  Pixels_[pixel_no - 1] = getPixelGray(x, y);
+  pixels[pixelNumber - 1] = getPixelGray(x, y);
 
   // fill classes
-  int nll = calculateNll(x, y);
-  int threshold = Parent_.getThreshold();
+  int nll = calculateNonLinearLaplacian(x, y);
+  int threshold = parent.getThreshold();
 
   // we added to new classes to those described in the papers
   // 0 - (same as 1) - it is set for black pixels, those should remeined black
   // 6 - (same as 5) - it is set for white pixels, those should remeined white
 
-  if (Pixels_[pixel_no - 1] == 0)
-    Classes_[pixel_no - 1] = 0;
-  else if (Pixels_[pixel_no - 1] == 255)
-    Classes_[pixel_no - 1] = 6;
+  if (pixels[pixelNumber - 1] == 0)
+    classes[pixelNumber - 1] = 0;
+  else if (pixels[pixelNumber - 1] == 255)
+    classes[pixelNumber - 1] = 6;
   else // as in papers
     if (nll < -threshold)
-      Classes_[pixel_no - 1] = 1;
+      classes[pixelNumber - 1] = 1;
     else if (nll > threshold)
-      Classes_[pixel_no - 1] = 5;
+      classes[pixelNumber - 1] = 5;
     else
-      Classes_[pixel_no - 1] = 3;
+      classes[pixelNumber - 1] = 3;
 
 }
 
 int
-NLLBlock::getPixelGray(int x, int y)
+NonLinearLaplacianBlock::getPixelGray(int x, int y)
 {
   if (isInImage(x, y))
   {
     byte R, G, B;
-    Parent_.extractRGB(Image_[y], x, R, G, B);
-    return Parent_.convertRGBToGrayScale(R, G, B);
+    parent.extractRGB(image[y], x, R, G, B);
+    return parent.convertRGBToGrayScale(R, G, B);
   }
   else
     return 255; // white
 }
 
 int
-NLLBlock::calculateNll(int x, int y)
+NonLinearLaplacianBlock::calculateNonLinearLaplacian(int x, int y)
 {
   int A =
     getPixelGray(x, y)
@@ -381,19 +381,19 @@ NLLBlock::calculateNll(int x, int y)
 
 
 size_t
-NLLBlock::getBlockIntenseValue()
+NonLinearLaplacianBlock::getBlockIntenseValue()
 {
-  size_t Intense = 128;
-  for (size_t i = 0; i < Pixels_.size(); ++i)
-    Intense += Pixels_[i];
+  size_t intense = 128;
+  for (size_t i = 0; i < pixels.size(); ++i)
+    intense += pixels[i];
 
-  size_t result =  18 - std::min(Intense / 255, size_t(18));
+  size_t result =  18 - std::min(intense / 255, size_t(18));
   //fprintf(stderr, "getBlockIntenseValue() = %d\n", result);
   return result;
 }
 
 void
-NLLBlock::outputBlock()
+NonLinearLaplacianBlock::outputBlock()
 {
   size_t RemainedPixels = getBlockIntenseValue();
   size_t PixelCount       = 0;
@@ -412,9 +412,9 @@ NLLBlock::outputBlock()
 }
 
 size_t
-NLLBlock::outputClass(size_t class_no, size_t max_pixels_to_output)
+NonLinearLaplacianBlock::outputClass(size_t classNumber, size_t max_pixels_to_output)
 {
-  //fprintf(stderr, "outputClass(%i, %i)\n", class_no, max_pixels_to_output);
+  //fprintf(stderr, "outputClass(%i, %i)\n", classNumber, max_pixels_to_output);
 
   if (max_pixels_to_output == 0)
     return 0;
@@ -422,8 +422,8 @@ NLLBlock::outputClass(size_t class_no, size_t max_pixels_to_output)
   std::vector<size_t> Pixels;
 
   // collect all pixels of a class
-  for (size_t i = 0; i < Classes_.size(); ++i)
-    if (Classes_[i] == class_no)
+  for (size_t i = 0; i < classes.size(); ++i)
+    if (classes[i] == classNumber)
       Pixels.push_back(i + 1);
 
   // sort pixels, so output it in order
@@ -445,32 +445,32 @@ NLLBlock::outputClass(size_t class_no, size_t max_pixels_to_output)
 }
 
 void
-NLLBlock::outputPixel(size_t pixel_no)
+NonLinearLaplacianBlock::outputPixel(size_t pixelNumber)
 {
-  outputPixel(x1_ + PixelOffsets_[pixel_no - 1].x, y1_ + PixelOffsets_[pixel_no - 1].y);
+  outputPixel(x1 + pixelOffsets[pixelNumber - 1].x, y1 + pixelOffsets[pixelNumber - 1].y);
 }
 
 void
-NLLBlock::outputPixel(int x, int y)
+NonLinearLaplacianBlock::outputPixel(int x, int y)
 {
   if (isInImage(x, y))
-    Parent_.setPixelBW(OutputImage_[y], x, 1);
+    parent.setPixelBW(outputImage[y], x, 1);
 }
 
 bool
-NLLBlock::isInImage()
+NonLinearLaplacianBlock::isInImage()
 {
-  for (size_t i = 0; i < Pixels_.size(); ++i)
-    if (isInImage(x1_ + PixelOffsets_[i].x, y1_ + PixelOffsets_[i].y))
+  for (size_t i = 0; i < pixels.size(); ++i)
+    if (isInImage(x1 + pixelOffsets[i].x, y1 + pixelOffsets[i].y))
       return true;
 
   return false;
 }
 
 bool
-NLLBlock::isInImage(int x, int y)
+NonLinearLaplacianBlock::isInImage(int x, int y)
 {
-  return (x >= 0) && (size_t(x) < ImageWidth_) && (y >= 0) && (size_t(y) < ImageHeight_);
+  return (x >= 0) && (size_t(x) < imageWidth) && (y >= 0) && (size_t(y) < imageHeight);
 }
 
 

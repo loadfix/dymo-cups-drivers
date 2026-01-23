@@ -16,18 +16,18 @@ namespace DymoPrinterDriver
 class DriverInitializerLabelWriter
 {
 public:
-  static void processPPDOptions (LabelWriterDriver& driver, DummyLanguageMonitor& language_monitor, ppd_file_t* ppd);
-  static void processPageOptions(LabelWriterDriver& driver, DummyLanguageMonitor& language_monitor, cups_page_header2_t& page_header);
+  static void processPPDOptions (LabelWriterDriver& driver, LanguageMonitor::Dummy& language_monitor, ppd_file_t* ppd);
+  static void processPageOptions(LabelWriterDriver& driver, LanguageMonitor::Dummy& language_monitor, cups_page_header2_t& page_header);
 };
 
 class DriverInitializerLabelWriterTwinTurbo
 {
 public:
-  static void processPPDOptions (LabelWriterDriverTwinTurbo& driver, DummyLanguageMonitor& language_monitor, ppd_file_t* ppd);
-  static void processPageOptions(LabelWriterDriverTwinTurbo& driver, DummyLanguageMonitor& language_monitor, cups_page_header2_t& page_header);
+  static void processPPDOptions (LabelWriterDriverTwinTurbo& driver, LanguageMonitor::Dummy& language_monitor, ppd_file_t* ppd);
+  static void processPageOptions(LabelWriterDriverTwinTurbo& driver, LanguageMonitor::Dummy& language_monitor, cups_page_header2_t& page_header);
 };
 
-class DriverInitializerLabelWriterWithLM
+class DriverInitializerLabelWriterWithLanguageMonitor
 {
 public:
   static void processPPDOptions (LabelWriterDriver& driver, LabelWriterLanguageMonitor& language_monitor, ppd_file_t* ppd);
@@ -35,7 +35,7 @@ public:
 };
 
 
-class DriverInitializerLabelWriterTwinTurboWithLM
+class DriverInitializerLabelWriterTwinTurboWithLanguageMonitor
 {
 public:
   static void processPPDOptions (LabelWriterDriverTwinTurbo& driver, LabelWriterLanguageMonitor& language_monitor, ppd_file_t* ppd);

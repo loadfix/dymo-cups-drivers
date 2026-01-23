@@ -28,20 +28,20 @@ public:
 private:
   void initDocument(const char* opts);
 
-  CupsPrintEnvironmentForLM          PrintEnvironmentForLM_;
-  LanguageMonitor                     LanguageMonitor_;
-  CupsPrintEnvironmentForDriver      PrintEnvironmentForDriver_;
-  Driver                              Driver_;
+  CupsPrintEnvironmentForLanguageMonitor          printEnvironmentForLanguageMonitor;
+  LanguageMonitor                     languageMonitor;
+  CupsPrintEnvironmentForDriver      printEnvironmentForDriver;
+  Driver                              driver;
 
-  std::string                         HalftoningMethod_;
+  std::string                         halftoningMethod;
 };
 
 
 template <class Driver, class DriverInitializer, class LanguageMonitor>
 CupsFilter<Driver, DriverInitializer, LanguageMonitor>::CupsFilter():
-  PrintEnvironmentForLM_(), LanguageMonitor_(PrintEnvironmentForLM_),
-  PrintEnvironmentForDriver_(LanguageMonitor_), Driver_(PrintEnvironmentForDriver_),
-  HalftoningMethod_()
+  printEnvironmentForLanguageMonitor(), languageMonitor(printEnvironmentForLanguageMonitor),
+  printEnvironmentForDriver(languageMonitor), driver(printEnvironmentForDriver),
+  halftoningMethod()
 {
 }
 
@@ -79,8 +79,8 @@ CupsFilter<Driver, DriverInitializer, LanguageMonitor>::run(int argc, char* argv
 
   initDocument(argv[5]);
 
-  LanguageMonitor_.startDoc();
-  Driver_.startDoc();
+  languageMonitor.startDoc();
+  driver.startDoc();
 
   int Page = 0;
   cups_page_header2_t PageHeader;
@@ -98,13 +98,13 @@ CupsFilter<Driver, DriverInitializer, LanguageMonitor>::run(int argc, char* argv
     buffer_t Buffer;
     Buffer.resize(PageHeader.cupsBytesPerLine, 0);
 
-    DriverInitializer::processPageOptions(Driver_, LanguageMonitor_, PageHeader);
-    LanguageMonitor_.startPage();
+    DriverInitializer::processPageOptions(driver, languageMonitor, PageHeader);
+    languageMonitor.startPage();
 
-    if(PrintEnvironmentForLM_.getJobStatus() != IPrintEnvironment::jsOK)
+    if(printEnvironmentForLanguageMonitor.getJobStatus() != IPrintEnvironment::jsOK)
         break;
 
-    Driver_.startPage();
+    driver.startPage();
 
     buffer_t InputLine;
     buffer_t OutputLine;
@@ -116,8 +116,8 @@ CupsFilter<Driver, DriverInitializer, LanguageMonitor>::run(int argc, char* argv
     std::unique_ptr<HalftoneFilter> H;
     if (UseCustomHalftoning)
     {
-      if (HalftoningMethod_ == "NLL")
-        H.reset(new NLLHalftoning(5, HalftoneFilter::itRGB, HalftoneFilter::itBW));
+      if (halftoningMethod == "NonLinearLaplacian")
+        H.reset(new NonLinearLaplacianHalftoning(5, HalftoneFilter::itRGB, HalftoneFilter::itBW));
       else // error diffusion is default
         H.reset(new ErrorDiffusionHalftoning(HalftoneFilter::itRGB, HalftoneFilter::itBW));
 
@@ -146,13 +146,13 @@ CupsFilter<Driver, DriverInitializer, LanguageMonitor>::run(int argc, char* argv
         if (IsProcessLineSupported)
         {
           H->processLine(Buffer, OutputLine);
-          Driver_.processRasterLine(OutputLine);
+          driver.processRasterLine(OutputLine);
         }
         else
           InputImage.push_back(Buffer); // cache for later processing
       }
       else
-        Driver_.processRasterLine(Buffer); // process line as-is, because it is already B&W
+        driver.processRasterLine(Buffer); // process line as-is, because it is already B&W
 
     } // all lines
 
@@ -162,16 +162,16 @@ CupsFilter<Driver, DriverInitializer, LanguageMonitor>::run(int argc, char* argv
       HalftoneFilter::image_buffer_t OutputImage;
       H->processImage(InputImage, OutputImage);
       for (size_t i = 0; i < OutputImage.size(); ++i)
-        Driver_.processRasterLine(OutputImage[i]);
+        driver.processRasterLine(OutputImage[i]);
 
     }
 
-    Driver_.endPage();
-    LanguageMonitor_.endPage();
+    driver.endPage();
+    languageMonitor.endPage();
   }
 
-  Driver_.endDoc();
-  LanguageMonitor_.endDoc();
+  driver.endDoc();
+  languageMonitor.endDoc();
 
   cupsRasterClose(RasterData);
   if (fd != 0)
@@ -218,12 +218,12 @@ CupsFilter<Driver, DriverInitializer, LanguageMonitor>::initDocument(const char*
   // do CUPS specific
   cupsMarkOptions(ppd, OptionCount, Options);
 
-  DriverInitializer::processPPDOptions(Driver_, LanguageMonitor_, ppd);
+  DriverInitializer::processPPDOptions(driver, languageMonitor, ppd);
 
   // extract halftoning method used
   ppd_choice_t* choice = CupsUtils::findMarkedChoice(ppd, "DymoHalftoning");
   if (choice)
-    HalftoningMethod_ = choice->choice;
+    halftoningMethod = choice->choice;
 
   cupsFreeOptions(OptionCount, Options);
   ppdClose(ppd);

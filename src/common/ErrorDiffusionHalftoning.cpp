@@ -6,7 +6,7 @@ namespace DymoPrinterDriver
 
 
 ErrorDiffusionHalftoning::ErrorDiffusionHalftoning(image_t input_image_type, image_t output_image_type, bool use_printer_color_space):
-  HalftoneFilter(input_image_type, output_image_type), ImageWidth_(0), Errors_(), GrayLine_(), UsePrinterColorSpace_(use_printer_color_space)
+  HalftoneFilter(input_image_type, output_image_type), imageWidth(0), error(), grayLine(), usePrinterColorSpace(use_printer_color_space)
 {
   if (getOutputImageType() != itBW)
     throw EHalftoneError(EHalftoneError::heUnsupportedImageType);
@@ -32,55 +32,55 @@ ErrorDiffusionHalftoning::processLine(
   size_t    i           = 0;
 
   // set image  width
-  if (!ImageWidth_)
-    ImageWidth_ = calcImageWidth(InputLine);
+  if (!imageWidth)
+    imageWidth = calcImageWidth(InputLine);
 
   // check buffer size
-  OutputLine.resize(calcOutputBufferSize(ImageWidth_));
+  OutputLine.resize(calcOutputBufferSize(imageWidth));
   std::fill(OutputLine.begin(), OutputLine.end(), byte(0));
 
   // initialize halftone errors array and line buffer
-  if (Errors_.size() == 0)
-    Errors_.resize(ImageWidth_, 0);
+  if (error.size() == 0)
+    error.resize(imageWidth, 0);
 
-  if (GrayLine_.size() == 0)
-    GrayLine_.resize(ImageWidth_, 0);
+  if (grayLine.size() == 0)
+    grayLine.resize(imageWidth, 0);
 
   // convert from RGB to GrayScale
-  for (i = 0; i < ImageWidth_; ++i)
+  for (i = 0; i < imageWidth; ++i)
   {
     byte R, G, B;
     extractRGB(InputLine, i, R, G, B);
-    GrayLine_[i] = convertRGBToGrayScale(R, G, B);
+    grayLine[i] = convertRGBToGrayScale(R, G, B);
   }
 
   // apply errors from prev line
-  for (i = 0; i < ImageWidth_; ++i)
+  for (i = 0; i < imageWidth; ++i)
   {
-    //fprintf(stderr, "%i ", Errors_[i]);
+    //fprintf(stderr, "%i ", error[i]);
     // only if not black and white
-    if ((GrayLine_[i] != 0) && (GrayLine_[i] != 255))
+    if ((grayLine[i] != 0) && (grayLine[i] != 255))
     {
-      if (Errors_[i] + GrayLine_[i] >= 255)
-        GrayLine_[i] = 255;
+      if (error[i] + grayLine[i] >= 255)
+        grayLine[i] = 255;
       else
-        if (Errors_[i] + GrayLine_[i] <= 0)
-          GrayLine_[i] = 0;
+        if (error[i] + grayLine[i] <= 0)
+          grayLine[i] = 0;
         else
-          GrayLine_[i] += Errors_[i];
+          grayLine[i] += error[i];
     }
 
-    Errors_[i] = 0;
+    error[i] = 0;
   }
 
 
   // compute output pixels and new errors
-  for (i = 0; i < ImageWidth_; ++i)
+  for (i = 0; i < imageWidth; ++i)
   {
-    pixelValue = GrayLine_[i] >= 128;
-    error = GrayLine_[i] - pixelValue * 255;
+    pixelValue = grayLine[i] >= 128;
+    int pixelError = grayLine[i] - pixelValue * 255;
 
-    if (UsePrinterColorSpace_)
+    if (usePrinterColorSpace)
       setPixelBW(OutputLine, i, !pixelValue);
     else
       setPixelBW(OutputLine, i, pixelValue);
@@ -88,25 +88,25 @@ ErrorDiffusionHalftoning::processLine(
 
     // disribute error
     if (i > 0)
-      Errors_[i - 1] += (error * 3) / 16;
+      error[i - 1] += (pixelError * 3) / 16;
 
-    Errors_[i] += (error * 5) / 16;
+    error[i] += (pixelError * 5) / 16;
 
-    if (i < ImageWidth_ - 1)
+    if (i < imageWidth - 1)
     {
-      Errors_[i + 1] += (error * 1) / 16;
+      error[i + 1] += (pixelError * 1) / 16;
 
-      if ((GrayLine_[i + 1] != 0) && (GrayLine_[i + 1] != 255))
+      if ((grayLine[i + 1] != 0) && (grayLine[i + 1] != 255))
       {
-        error = (error * 7) / 16;
+        int nextPixelError = (pixelError * 7) / 16;
 
-        if (error + GrayLine_[i + 1] >= 255)
-          GrayLine_[i + 1] = 255;
+        if (nextPixelError + grayLine[i + 1] >= 255)
+          grayLine[i + 1] = 255;
         else
-          if (error + GrayLine_[i + 1] <= 0)
-            GrayLine_[i + 1] = 0;
+          if (nextPixelError + grayLine[i + 1] <= 0)
+            grayLine[i + 1] = 0;
           else
-            GrayLine_[i + 1] += error;
+            grayLine[i + 1] += nextPixelError;
       }
     }
 

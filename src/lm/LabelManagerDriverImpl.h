@@ -23,71 +23,71 @@ public:
    virtual void processRasterLine(const buffer_t& line_buffer);
 
    // Device Name
-   void setDeviceName(const std::string& value) { _deviceName = value; }
-   const std::string& getDeviceName() const { return _deviceName; }
+   void setDeviceName(const std::string& value) { deviceName = value; }
+   const std::string& getDeviceName() const { return deviceName; }
 
    // Auto Cut Support
-   virtual void setSupportAutoCut(const bool value) { _supportAutoCut = value; }
-   virtual bool getSupportAutoCut() const { return _supportAutoCut; }
+   virtual void setSupportAutoCut(const bool value) { supportAutoCut = value; }
+   virtual bool getSupportAutoCut() const { return supportAutoCut; }
 
    // Cut, cutter marks or nothing
-   virtual void setCutOption(const ILabelManagerDriver::cut_t value) { _cutOptions = value; fprintf(stderr, "TEST: setCutOption = %d\n", value); }
-   virtual ILabelManagerDriver::cut_t getCutOption() const { return _cutOptions; }
+   virtual void setCutOption(const ILabelManagerDriver::cut_t value) { cutOptions = value; fprintf(stderr, "TEST: setCutOption = %d\n", value); }
+   virtual ILabelManagerDriver::cut_t getCutOption() const { return cutOptions; }
 
    // Label alignment on the tape
-   virtual void setAlignment(const ILabelManagerDriver::alignment_t value) { _alignment = value; fprintf(stderr, "TEST: setAlignment = %d\n", value); }
-   virtual ILabelManagerDriver::alignment_t getAlignment() const { return _alignment; }
+   virtual void setAlignment(const ILabelManagerDriver::alignment_t value) { alignment = value; fprintf(stderr, "TEST: setAlignment = %d\n", value); }
+   virtual ILabelManagerDriver::alignment_t getAlignment() const { return alignment; }
 
    // Label height
-   virtual void setVerticalResolution(const dword value) { _dwVerticalResolution = value; }
-   virtual dword getVerticalResolution() const { return _dwVerticalResolution; }
+   virtual void setVerticalResolution(const dword value) { verticalResolution = value; }
+   virtual dword getVerticalResolution() const { return verticalResolution; }
 
    // Label width
-   virtual void setHorizontalResolution(const dword value) { _dwHorizontalResolution = value; }
-   virtual dword getHorizontalResolution() const { return _dwHorizontalResolution; }
+   virtual void setHorizontalResolution(const dword value) { horizontalResolution = value; }
+   virtual dword getHorizontalResolution() const { return horizontalResolution; }
 
-   void setPrintChainMarksAtDocEnd(const bool value) { _printChainMarksAtDocEnd = value; fprintf(stderr, "TEST: setPrintChainMarksAtDocEnd = %d\n", value); }
-   bool getPrintChainMarksAtDocEnd() const { return _printChainMarksAtDocEnd; }
+   void setPrintChainMarksAtDocEnd(const bool value) { printChainMarksAtDocEnd = value; fprintf(stderr, "TEST: setPrintChainMarksAtDocEnd = %d\n", value); }
+   bool getPrintChainMarksAtDocEnd() const { return printChainMarksAtDocEnd; }
 
    // Min label length in dots at printer DPI (300dpi -> 300 dots for 1 inch)
-   void setMinLabelLength(const dword value) { _dwMinPageLine = value; }
-   dword getMinLabelLength() const { return _dwMinPageLine; }
+   void setMinLabelLength(const dword value) { minPageLine = value; }
+   dword getMinLabelLength() const { return minPageLine; }
 
    // Tape alignment offset
-   void setTapeAlignmentOffset(const dword value) { _dwTapeAlignmentOffset = value; fprintf(stderr, "INFORMATION - Setting shift value: %d\n", _dwTapeAlignmentOffset); }
-   dword getTapeAlignmentOffset() const { return _dwTapeAlignmentOffset; }
+   void setTapeAlignmentOffset(const dword value) { tapeAlignmentOffset = value; fprintf(stderr, "INFORMATION - Setting shift value: %d\n", tapeAlignmentOffset); }
+   dword getTapeAlignmentOffset() const { return tapeAlignmentOffset; }
 
    // Normal leader - no padding required since FW prints center aligned
-   void setNormalLeader(const dword value) { _dwNormalLeader = value; }
-   dword getNormalLeader() const { return _dwNormalLeader; }
+   void setNormalLeader(const dword value) { normalLeader = value; }
+   dword getNormalLeader() const { return normalLeader; }
 
    // Min leader - no padding required since FW prints center aligned
-   void setMinLeader(const dword value) { _dwMinLeader = value; }
-   dword getMinLeader() const { return _dwMinLeader; }
+   void setMinLeader(const dword value) { minLeader = value; }
+   dword getMinLeader() const { return minLeader; }
 
    // Aligned leader - no padding required since FW prints center aligned
-   void setAlignedLeader(const dword value) { _dwAlignedLeader = value; }
-   dword getAlignedLeader() const { return _dwAlignedLeader; }
+   void setAlignedLeader(const dword value) { alignedLeader = value; }
+   dword getAlignedLeader() const { return alignedLeader; }
 
    // Max printable width
-   void setMaxPrintableWidth(const dword value) { _dwMaxPrintableWidth = value; }
-   dword getMaxPrintableWidth() const { return _dwMaxPrintableWidth; }
+   void setMaxPrintableWidth(const dword value) { maxPrintableWidth = value; }
+   dword getMaxPrintableWidth() const { return maxPrintableWidth; }
 
    // Paper type
-   void setPaperType (const paper_type_t value) { _paperType = value; }
-   paper_type_t getPaperType() const { return _paperType; }
+   void setPaperType (const paper_type_t value) { paperType = value; }
+   paper_type_t getPaperType() const { return paperType; }
 
    static bool isBlank(const buffer_t& buf) { return false; }
    static buffer_t getRequestStatusCommand();
 
 protected:
    // helper function
-   virtual void setStartPrintJob(const dword dw_job_id);
+   virtual void setStartPrintJob(const dword job_id);
    virtual void setEndPrintJob();
-   virtual void setLabelIndex(const dword dw_page_number);
-   virtual void setLabelLeader(const dword dw_length);
-   virtual void setLabelTrailer(const dword dw_length);
-   virtual void setPrintDataHeader(const dword dw_vertical_resolution, const dword dw_horizontal_resolution);
+   virtual void setLabelIndex(const dword page_number);
+   virtual void setLabelLeader(const dword length);
+   virtual void setLabelTrailer(const dword length);
+   virtual void setPrintDataHeader(const dword vertical_resolution, const dword horizontal_resolution);
    virtual void setFormFeed();
    virtual void setShortFormFeed();
 
@@ -101,10 +101,10 @@ protected:
    virtual void shiftDataRight(const buffer_t& buf, buffer_t& shifted_buf, size_t shift_value);
    virtual int getShiftValue(size_t raster_line_size);
 
-   virtual void sendCommand(const buffer_t& cmd_buffer);
+   virtual void sendCommand(const buffer_t& command_buffer);
 
 private:
-   IPrintEnvironment& _printEnvironment;
+   IPrintEnvironment& printEnvironment;
 
    enum { MIN_LABEL_LENGTH = 210 }; // Min label is 40mm - 11mm(leader) - 11mm(trailer) = 18mm -> ~ 210 dots/lines
    enum { MAX_PRINTABLE_WIDTH = 256 }; // Print head width
@@ -113,29 +113,29 @@ private:
    enum { MIN_ALIGNED_LEADER = 28 }; // Sync leader and trailer
 
    // job internal variables
-   dword _dwVerticalResolution;
-   dword _dwHorizontalResolution;
+   dword verticalResolution;
+   dword horizontalResolution;
 
    // job params
-   bool _jobDidStart;
-   dword _dwPageNumber;
-   dword _dwJobID;
-   ILabelManagerDriver::cut_t _cutOptions;
-   ILabelManagerDriver::alignment_t _alignment; // not being used since it will be always center aligned
-   dword _dwTapeAlignmentOffset;  // offset to justify output for the current label type. It is different for each tape size and model
-   paper_type_t _paperType;
+   bool jobDidStart;
+   dword pageNumber;
+   dword jobID;
+   ILabelManagerDriver::cut_t cutOptions;
+   ILabelManagerDriver::alignment_t alignment; // not being used since it will be always center aligned
+   dword tapeAlignmentOffset;  // offset to justify output for the current label type. It is different for each tape size and model
+   paper_type_t paperType;
 
    // device params
-   std::string _deviceName;
-   bool _supportAutoCut;
-   bool _printChainMarksAtDocEnd;
+   std::string deviceName;
+   bool supportAutoCut;
+   bool printChainMarksAtDocEnd;
 
-   dword _dwMinPageLine; // Min label
-   dword _dwHeight; // Vertical resolution / height in dots
-   dword _dwMaxPrintableWidth; // Printabel width in dots
-   dword _dwNormalLeader; // Normal leader in dots
-   dword _dwMinLeader; // Min leader in dots
-   dword _dwAlignedLeader; // Aligned leader in dots
+   dword minPageLine; // Min label
+   dword height; // Vertical resolution / height in dots
+   dword maxPrintableWidth; // Printabel width in dots
+   dword normalLeader; // Normal leader in dots
+   dword minLeader; // Min leader in dots
+   dword alignedLeader; // Aligned leader in dots
 };
 
 }

@@ -6,7 +6,7 @@ namespace DymoPrinterDriver
 {
 
 void
-DriverInitializerLabelManager::processPPDOptions(LabelManagerDriver& Driver, DummyLanguageMonitor& LanguageMonitor, ppd_file_t* ppd)
+DriverInitializerLabelManager::processPPDOptions(LabelManagerDriver& Driver, LanguageMonitor::Dummy& LanguageMonitor, ppd_file_t* ppd)
 {
   ppd_choice_t* choice = CupsUtils::findMarkedChoice(ppd, "DymoCutOptions");
   if (choice)
@@ -183,7 +183,7 @@ DriverInitializerLabelManager::processPPDOptions(LabelManagerDriver& Driver, Dum
 }
 
 void
-DriverInitializerLabelManager::processPageOptions(LabelManagerDriver& Driver, DummyLanguageMonitor& LanguageMonitor, cups_page_header2_t& PageHeader)
+DriverInitializerLabelManager::processPageOptions(LabelManagerDriver& Driver, LanguageMonitor::Dummy& LanguageMonitor, cups_page_header2_t& PageHeader)
 {
   //fprintf(stderr, "DEBUG: ------ PageHeader.cupsMediaType: %d\n", PageHeader.cupsMediaType);
 
@@ -250,17 +250,17 @@ DriverInitializerLabelManager::processPageOptions(LabelManagerDriver& Driver, Du
 }
 
 void
-DriverInitializerLabelManagerWithLM::processPPDOptions(LabelManagerDriver& Driver, LabelManagerLanguageMonitor& LanguageMonitor, ppd_file_t* ppd)
+DriverInitializerLabelManagerWithLanguageMonitor::processPPDOptions(LabelManagerDriver& Driver, LabelManagerLanguageMonitor& LanguageMonitor, ppd_file_t* ppd)
 {
-    DriverInitializerLabelManager::processPPDOptions(Driver, (DummyLanguageMonitor&)LanguageMonitor, ppd);
+    DriverInitializerLabelManager::processPPDOptions(Driver, (LanguageMonitor::Dummy&)LanguageMonitor, ppd);
 
     LanguageMonitor.setDeviceName(ppd->modelname);
 }
 
 void
-DriverInitializerLabelManagerWithLM::processPageOptions(LabelManagerDriver& Driver, LabelManagerLanguageMonitor& LanguageMonitor, cups_page_header2_t& PageHeader)
+DriverInitializerLabelManagerWithLanguageMonitor::processPageOptions(LabelManagerDriver& Driver, LabelManagerLanguageMonitor& LanguageMonitor, cups_page_header2_t& PageHeader)
 {
-    DriverInitializerLabelManager::processPageOptions(Driver, (DummyLanguageMonitor&)LanguageMonitor, PageHeader);
+    DriverInitializerLabelManager::processPageOptions(Driver, (LanguageMonitor::Dummy&)LanguageMonitor, PageHeader);
 
     LanguageMonitor.setTapeWidth(LabelManagerDriver::tape_width_t(PageHeader.cupsMediaType & 0xff));
 }

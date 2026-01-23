@@ -45,7 +45,7 @@ public:
 
 protected:
    // helper function
-   virtual void setStartPrintJob(const dword dw_job_id) = 0;
+   virtual void setStartPrintJob(const dword job_id) = 0;
    virtual void setEndPrintJob() = 0;
    virtual void setFormFeed() = 0;
    virtual void setShortFormFeed() = 0;
