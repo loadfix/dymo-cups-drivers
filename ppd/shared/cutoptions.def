@@ -1,0 +1,44 @@
+// Cut options for LabelManager models
+*OpenUI *DymoCutOptions/Cut Options: PickOne
+*OrderDependency: 20 AnySetup *DymoCutOptions
+*DefaultDymoCutOptions: Cut
+*DymoCutOptions Cut/Cut: ""
+*DymoCutOptions ChainMarks/Chain Marks: ""
+
+*de.Translation DymoCutOptions/Schnittoptionen: ""
+*de.DymoCutOptions Cut/Autom. schneiden: ""
+*de.DymoCutOptions ChainMarks/Schnittmarken drucken: ""
+
+*es.Translation DymoCutOptions/Opciones para cortar: ""
+*es.DymoCutOptions Cut/Corte automático: ""
+*es.DymoCutOptions ChainMarks/Imprimir marcas del corte: ""
+
+*es_CO.Translation DymoCutOptions/Opciones para cortar: ""
+*es_CO.DymoCutOptions Cut/Corte automático: ""
+*es_CO.DymoCutOptions ChainMarks/Imprimir marcas del corte: ""
+
+*fr.Translation DymoCutOptions/Options de coupe: ""
+*fr.DymoCutOptions Cut/Coupe automatique: ""
+*fr.DymoCutOptions ChainMarks/Imprimer les lignes pointillées: ""
+
+*fr_CA.Translation DymoCutOptions/Options de coupe: ""
+*fr_CA.DymoCutOptions Cut/Coupe automatique: ""
+*fr_CA.DymoCutOptions ChainMarks/Imprimer les lignes pointillées: ""
+
+*it.Translation DymoCutOptions/Opzioni di taglio: ""
+*it.DymoCutOptions Cut/Taglia: ""
+*it.DymoCutOptions ChainMarks/Crocini continui: ""
+
+*nl.Translation DymoCutOptions/Knipopties: ""
+*nl.DymoCutOptions Cut/Automatisch knippen: ""
+*nl.DymoCutOptions ChainMarks/Scheidingslijnen afdrukken: ""
+
+*pt.Translation DymoCutOptions/Opções de corte: ""
+*pt.DymoCutOptions Cut/Corte automático: ""
+*pt.DymoCutOptions ChainMarks/Imprimir marcas de corte: ""
+
+*pt_BR.Translation DymoCutOptions/Opções de corte: ""
+*pt_BR.DymoCutOptions Cut/Corte automático: ""
+*pt_BR.DymoCutOptions ChainMarks/Imprimir marcas de corte: ""
+
+*CloseUI: *DymoCutOptions

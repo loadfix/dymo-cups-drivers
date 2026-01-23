@@ -17,8 +17,17 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+# PPDC compiler
+PPDC = ppdc
+PPDC_FLAGS = -I. -I./shared -I./shared/sizes
 
-dist_cupsmodel_DATA = \
+# Source files for PPD generation
+DRV_FILES = $(wildcard *.drv)
+SHARED_DEF_FILES = $(wildcard shared/*.def)
+SIZE_DEF_FILES = $(wildcard shared/sizes/*.def)
+
+# Generated PPD files
+PPD_FILES = \
     lm400.ppd \
     lm450.ppd \
     lmpc.ppd \
@@ -53,11 +62,20 @@ dist_cupsmodel_DATA = \
     lw5xl.ppd \
     lw5xlp.ppd \
     lww.ppd
-    
+
+dist_cupsmodel_DATA = $(PPD_FILES)
+
+# Pattern rule: compile .drv to .ppd
+%.ppd: %.drv $(SHARED_DEF_FILES) $(SIZE_DEF_FILES)
+	$(PPDC) $(PPDC_FLAGS) $<
+
+# Extra distribution files (source files)
+EXTRA_DIST = $(DRV_FILES) $(SHARED_DEF_FILES) $(SIZE_DEF_FILES) Makefile
+
 tests = testppd
 check_PROGRAMS = testppd
 
 testppd_SOURCES=
 
-testppd$(EXEEXT):
+testppd$(EXEEXT): $(PPD_FILES)
 	cupstestppd $(dist_cupsmodel_DATA)

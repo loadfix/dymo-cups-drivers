@@ -1,0 +1,44 @@
+// Continuous paper options for LabelManager models
+*OpenUI *DymoContinuousPaper/Continuous Paper: PickOne
+*OrderDependency: 20 AnySetup *DymoContinuousPaper
+*DefaultDymoContinuousPaper: 0
+*DymoContinuousPaper 0/Disabled: ""
+*DymoContinuousPaper 1/Enabled: ""
+
+*de.Translation DymoContinuousPaper/Endlospapier: ""
+*de.DymoContinuousPaper 0/Deaktiviert: ""
+*de.DymoContinuousPaper 1/Aktiviert: ""
+
+*es.Translation DymoContinuousPaper/Papel continuo: ""
+*es.DymoContinuousPaper 0/Inhabilitado: ""
+*es.DymoContinuousPaper 1/Habilitado: ""
+
+*es_CO.Translation DymoContinuousPaper/Papel continuo: ""
+*es_CO.DymoContinuousPaper 0/Inhabilitado: ""
+*es_CO.DymoContinuousPaper 1/Habilitado: ""
+
+*fr.Translation DymoContinuousPaper/Papier continu: ""
+*fr.DymoContinuousPaper 0/Désactivé: ""
+*fr.DymoContinuousPaper 1/Activé: ""
+
+*fr_CA.Translation DymoContinuousPaper/Papier continu: ""
+*fr_CA.DymoContinuousPaper 0/Désactivé: ""
+*fr_CA.DymoContinuousPaper 1/Activé: ""
+
+*it.Translation DymoContinuousPaper/Carta continua: ""
+*it.DymoContinuousPaper 0/Disabilitato: ""
+*it.DymoContinuousPaper 1/Abilitato: ""
+
+*nl.Translation DymoContinuousPaper/Kettingformulieren: ""
+*nl.DymoContinuousPaper 0/Uitgeschakeld: ""
+*nl.DymoContinuousPaper 1/Ingeschakeld: ""
+
+*pt.Translation DymoContinuousPaper/Papel contínuo: ""
+*pt.DymoContinuousPaper 0/Desativado: ""
+*pt.DymoContinuousPaper 1/Ativado: ""
+
+*pt_BR.Translation DymoContinuousPaper/Papel contínuo: ""
+*pt_BR.DymoContinuousPaper 0/Desativado: ""
+*pt_BR.DymoContinuousPaper 1/Ativado: ""
+
+*CloseUI: *DymoContinuousPaper

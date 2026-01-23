@@ -1,0 +1,37 @@
+// DYMO LabelWriter SE450 driver file
+// This file includes common definitions and specifies device-specific parameters
+
+#include "shared/printer.def"
+#include "shared/colorspace.def"
+#include "shared/fonts.def"
+#include "shared/errors.def"
+#include "shared/halftoning.def"
+#include "shared/options.def"
+#include "shared/sizes/labelwriter_standard.def"
+
+// Device-specific definitions
+*FileVersion:   "3.0"
+*PCFileName:    "SE450.PPD"
+*Product:   "(DYMO LabelWriter SE450)"
+*cupsFilter:    "application/vnd.cups-raster 0 raster2dymolw"
+
+*ModelName: "DYMO LabelWriter SE450"
+*NickName: "DYMO LabelWriter SE450"
+*ShortNickName: "DYMO LabelWriter SE450"
+
+// Resolution options
+*OpenUI *Resolution/Output Resolution: PickOne
+*OrderDependency: 20 AnySetup *Resolution
+*DefaultResolution: 203dpi
+*Resolution 203dpi/203 DPI: "<</HWResolution[203 203]>>setpagedevice"
+*CloseUI: *Resolution
+
+// Custom page size support
+*HWMargins:      0 0 0 0
+*NonUIOrderDependency: 100 AnySetup *CustomPageSize True
+*CustomPageSize True/Custom Page Size: "pop pop pop <</PageSize[5 -2 roll]/ImagingBBox null/cupsInteger0 0>>setpagedevice"
+*ParamCustomPageSize Width:        1 points 10 158.89
+*ParamCustomPageSize Height:       2 points 10 7680
+*ParamCustomPageSize WidthOffset/Width Offset:  3 points 0 0
+*ParamCustomPageSize HeightOffset/Height Offset: 4 points 0 0
+*ParamCustomPageSize Orientation:  5 int 0 0

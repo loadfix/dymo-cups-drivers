@@ -1,0 +1,116 @@
+// Common print options (PrintDensity, PrintQuality) and translations
+// Note: Not all models include these options - include conditionally in .drv files
+
+*OpenUI *DymoPrintDensity/Print Density: PickOne
+*OrderDependency: 20 AnySetup *DymoPrintDensity
+*DefaultDymoPrintDensity: Normal
+*DymoPrintDensity Light/Light: ""
+*DymoPrintDensity Medium/Medium: ""
+*DymoPrintDensity Normal/Normal: ""
+*DymoPrintDensity Dark/Dark: ""
+
+*de.Translation DymoPrintDensity/Druckdichte: ""
+*de.DymoPrintDensity Light/Niedrig: ""
+*de.DymoPrintDensity Medium/Mittel: ""
+*de.DymoPrintDensity Normal/Normal: ""
+*de.DymoPrintDensity Dark/Hoch: ""
+
+*es.Translation DymoPrintDensity/Densidad de impresión: ""
+*es.DymoPrintDensity Light/Bajo: ""
+*es.DymoPrintDensity Medium/Mediano: ""
+*es.DymoPrintDensity Normal/Normal: ""
+*es.DymoPrintDensity Dark/Alto: ""
+
+*es_CO.Translation DymoPrintDensity/Densidad de impresión: ""
+*es_CO.DymoPrintDensity Light/Bajo: ""
+*es_CO.DymoPrintDensity Medium/Mediano: ""
+*es_CO.DymoPrintDensity Normal/Normal: ""
+*es_CO.DymoPrintDensity Dark/Alto: ""
+
+*fr.Translation DymoPrintDensity/Densité d'impression: ""
+*fr.DymoPrintDensity Light/Faible: ""
+*fr.DymoPrintDensity Medium/Moyenne: ""
+*fr.DymoPrintDensity Normal/Normale: ""
+*fr.DymoPrintDensity Dark/Élevée: ""
+
+*fr_CA.Translation DymoPrintDensity/Densité d'impression: ""
+*fr_CA.DymoPrintDensity Light/Faible: ""
+*fr_CA.DymoPrintDensity Medium/Moyenne: ""
+*fr_CA.DymoPrintDensity Normal/Normale: ""
+*fr_CA.DymoPrintDensity Dark/Élevée: ""
+
+*it.Translation DymoPrintDensity/Densità di stampa: ""
+*it.DymoPrintDensity Light/Leggera: ""
+*it.DymoPrintDensity Medium/Media: ""
+*it.DymoPrintDensity Normal/Normale: ""
+*it.DymoPrintDensity Dark/Scura: ""
+
+*nl.Translation DymoPrintDensity/Afdrukdichtheid: ""
+*nl.DymoPrintDensity Light/Laag: ""
+*nl.DymoPrintDensity Medium/Middel: ""
+*nl.DymoPrintDensity Normal/Normaal: ""
+*nl.DymoPrintDensity Dark/Hoog: ""
+
+*pt.Translation DymoPrintDensity/Densid. de impressão: ""
+*pt.DymoPrintDensity Light/Baixo: ""
+*pt.DymoPrintDensity Medium/Médio: ""
+*pt.DymoPrintDensity Normal/Normal: ""
+*pt.DymoPrintDensity Dark/Alto: ""
+
+*pt_BR.Translation DymoPrintDensity/Densid. de impressão: ""
+*pt_BR.DymoPrintDensity Light/Baixo: ""
+*pt_BR.DymoPrintDensity Medium/Médio: ""
+*pt_BR.DymoPrintDensity Normal/Normal: ""
+*pt_BR.DymoPrintDensity Dark/Alto: ""
+
+*CloseUI: *DymoPrintDensity
+
+*OpenUI *DymoPrintQuality/Print Quality: PickOne
+*OrderDependency: 21 AnySetup *DymoPrintQuality
+*DefaultDymoPrintQuality: Text
+*DymoPrintQuality Text/Text Only: "<</HWResolution[300 300]>>setpagedevice"
+*DymoPrintQuality Graphics/Barcodes and Graphics: "<</HWResolution[300 600]>>setpagedevice"
+
+*de.Translation DymoPrintQuality/Druckqualität: ""
+*de.DymoPrintQuality Text/Nur Text: ""
+*de.DymoPrintQuality Graphics/Barcode und Grafik: ""
+
+*es.Translation DymoPrintQuality/Calidad de impresión: ""
+*es.DymoPrintQuality Text/Sólo texto: ""
+*es.DymoPrintQuality Graphics/Código de barras y gráficas: ""
+
+*es_CO.Translation DymoPrintQuality/Calidad de impresión: ""
+*es_CO.DymoPrintQuality Text/Sólo texto: ""
+*es_CO.DymoPrintQuality Graphics/Código de barras y gráficas: ""
+
+*fr.Translation DymoPrintQuality/Qualité d'impression: ""
+*fr.DymoPrintQuality Text/Texte uniquement: ""
+*fr.DymoPrintQuality Graphics/Code-barres et graphisme: ""
+
+*fr_CA.Translation DymoPrintQuality/Qualité d'impression: ""
+*fr_CA.DymoPrintQuality Text/Texte uniquement: ""
+*fr_CA.DymoPrintQuality Graphics/Code-barres et graphisme: ""
+
+*it.Translation DymoPrintQuality/Qualità della stampa: ""
+*it.DymoPrintQuality Text/Solo testo: ""
+*it.DymoPrintQuality Graphics/Codice a barre e grafica: ""
+
+*nl.Translation DymoPrintQuality/Afdrukkwaliteit: ""
+*nl.DymoPrintQuality Text/Alleen tekst: ""
+*nl.DymoPrintQuality Graphics/Streepjescode en afbeeldingen: ""
+
+*pt.Translation DymoPrintQuality/Qualid. da impressão: ""
+*pt.DymoPrintQuality Text/Somente texto: ""
+*pt.DymoPrintQuality Graphics/Código de barras e gráficos: ""
+
+*pt_BR.Translation DymoPrintQuality/Qualid. da impressão: ""
+*pt_BR.DymoPrintQuality Text/Somente texto: ""
+*pt_BR.DymoPrintQuality Graphics/Código de barras e gráficos: ""
+
+*CloseUI: *DymoPrintQuality
+
+*UIConstraints: *DymoPrintQuality Text       *Resolution       300x600dpi
+*UIConstraints: *DymoPrintQuality Graphics   *Resolution       300dpi
+*UIConstraints: *Resolution       300x600dpi *DymoPrintQuality Text
+*UIConstraints: *Resolution       300dpi     *DymoPrintQuality Graphics
+

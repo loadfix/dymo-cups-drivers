@@ -1,0 +1,77 @@
+// MediaType options for LabelManager models
+// Include this file for models that support MediaType selection
+
+*OpenUI *MediaType/Label Width: PickOne
+*OrderDependency: 9 AnySetup *MediaType
+*DefaultMediaType: 24mm
+*MediaType 06mm/06 mm (1/4"): "<</cupsMediaType 0>>setpagedevice"
+*MediaType 09mm/09 mm (3/8"): "<</cupsMediaType 1>>setpagedevice"
+*MediaType 12mm/12 mm (1/2"): "<</cupsMediaType 2>>setpagedevice"
+*MediaType 19mm/19 mm (3/4"): "<</cupsMediaType 3>>setpagedevice"
+*MediaType 24mm/24 mm (1"):   "<</cupsMediaType 4>>setpagedevice"
+
+*de.Translation MediaType/Bandbreite: ""
+*de.MediaType 06mm/06 mm (1/4"): ""
+*de.MediaType 09mm/09 mm (3/8"): ""
+*de.MediaType 12mm/12 mm (1/2"): ""
+*de.MediaType 19mm/19 mm (3/4"): ""
+*de.MediaType 24mm/24 mm (1"): ""
+
+*es.Translation MediaType/Ancho de la cinta: ""
+*es.MediaType 06mm/06 mm (1/4"): ""
+*es.MediaType 09mm/09 mm (3/8"): ""
+*es.MediaType 12mm/12 mm (1/2"): ""
+*es.MediaType 19mm/19 mm (3/4"): ""
+*es.MediaType 24mm/24 mm (1"): ""
+
+*es_CO.Translation MediaType/Ancho de la cinta: ""
+*es_CO.MediaType 06mm/06 mm (1/4"): ""
+*es_CO.MediaType 09mm/09 mm (3/8"): ""
+*es_CO.MediaType 12mm/12 mm (1/2"): ""
+*es_CO.MediaType 19mm/19 mm (3/4"): ""
+*es_CO.MediaType 24mm/24 mm (1"): ""
+
+*fr.Translation MediaType/Largeur de ruban: ""
+*fr.MediaType 06mm/06 mm (1/4"): ""
+*fr.MediaType 09mm/09 mm (3/8"): ""
+*fr.MediaType 12mm/12 mm (1/2"): ""
+*fr.MediaType 19mm/19 mm (3/4"): ""
+*fr.MediaType 24mm/24 mm (1"): ""
+
+*fr_CA.Translation MediaType/Largeur de ruban: ""
+*fr_CA.MediaType 06mm/06 mm (1/4"): ""
+*fr_CA.MediaType 09mm/09 mm (3/8"): ""
+*fr_CA.MediaType 12mm/12 mm (1/2"): ""
+*fr_CA.MediaType 19mm/19 mm (3/4"): ""
+*fr_CA.MediaType 24mm/24 mm (1"): ""
+
+*it.Translation MediaType/Larghezza etichetta: ""
+*it.MediaType 06mm/06 mm (1/4"): ""
+*it.MediaType 09mm/09 mm (3/8"): ""
+*it.MediaType 12mm/12 mm (1/2"): ""
+*it.MediaType 19mm/19 mm (3/4"): ""
+*it.MediaType 24mm/24 mm (1"): ""
+
+*nl.Translation MediaType/Tapebreedte: ""
+*nl.MediaType 06mm/06 mm (1/4"): ""
+*nl.MediaType 09mm/09 mm (3/8"): ""
+*nl.MediaType 12mm/12 mm (1/2"): ""
+*nl.MediaType 19mm/19 mm (3/4"): ""
+*nl.MediaType 24mm/24 mm (1"): ""
+
+*pt.Translation MediaType/Largura da fita: ""
+*pt.MediaType 06mm/06 mm (1/4"): ""
+*pt.MediaType 09mm/09 mm (3/8"): ""
+*pt.MediaType 12mm/12 mm (1/2"): ""
+*pt.MediaType 19mm/19 mm (3/4"): ""
+*pt.MediaType 24mm/24 mm (1"): ""
+
+*pt_BR.Translation MediaType/Largura da fita: ""
+*pt_BR.MediaType 06mm/06 mm (1/4"): ""
+*pt_BR.MediaType 09mm/09 mm (3/8"): ""
+*pt_BR.MediaType 12mm/12 mm (1/2"): ""
+*pt_BR.MediaType 19mm/19 mm (3/4"): ""
+*pt_BR.MediaType 24mm/24 mm (1"): ""
+
+*CloseUI: *MediaType
+

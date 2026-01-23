@@ -1,0 +1,17 @@
+// Common printer attributes for all DYMO printers
+
+DriverType ps
+
+Attribute FormatVersion "" "4.3"
+Attribute LanguageVersion "" English
+Attribute LanguageEncoding "" ISOLatin1
+Manufacturer "DYMO"
+Attribute cupsVersion "" 1.2
+Attribute cupsManualCopies "" False
+Attribute cupsModelNumber "" 0
+Attribute PSVersion "" "(3010.000) 550"
+Attribute LanguageLevel "" "3"
+Attribute FileSystem "" False
+Throughput 8
+Attribute LandscapeOrientation "" Minus90
+Attribute TTRasterizer "" Type42

@@ -1,0 +1,45 @@
+// Label alignment options for LabelManager models
+*OpenUI *DymoLabelAlignment/Label Alignment: PickOne
+*OrderDependency: 20 AnySetup *DymoLabelAlignment
+*DefaultDymoLabelAlignment: Center
+*DymoLabelAlignment Center/Centered: ""
+*DymoLabelAlignment Left/Left Aligned: ""
+*DymoLabelAlignment Right/Right Aligned: ""
+
+*de.Translation DymoLabelAlignment/Ausrichtung: ""
+*de.DymoLabelAlignment Center/Zentriert: ""
+*de.DymoLabelAlignment Left/Linksbündig: ""
+*de.DymoLabelAlignment Right/Rechtsbündig: ""
+
+*es.Translation DymoLabelAlignment/Alineación: ""
+*es.DymoLabelAlignment Center/Centrada: ""
+*es.DymoLabelAlignment Left/Alineada a la izquierda: ""
+*es.DymoLabelAlignment Right/Alineada a la derecha: ""
+
+*es_CO.Translation DymoLabelAlignment/Alineación: ""
+*es_CO.DymoLabelAlignment Center/Centrada: ""
+*es_CO.DymoLabelAlignment Left/Alineada a la izquierda: ""
+*es_CO.DymoLabelAlignment Right/Alineada a la derecha: ""
+
+*fr.Translation DymoLabelAlignment/Alignement: ""
+*fr.DymoLabelAlignment Center/Centré: ""
+*fr.DymoLabelAlignment Left/Aligné à gauche: ""
+*fr.DymoLabelAlignment Right/Aligné à droite: ""
+
+*fr_CA.Translation DymoLabelAlignment/Alignement: ""
+*fr_CA.DymoLabelAlignment Center/Centré: ""
+*fr_CA.DymoLabelAlignment Left/Aligné à gauche: ""
+*fr_CA.DymoLabelAlignment Right/Aligné à droite: ""
+
+*it.Translation DymoLabelAlignment/Allineamento: ""
+*it.DymoLabelAlignment Center/Centrato: ""
+*it.DymoLabelAlignment Left/Sinistra: ""
+*it.DymoLabelAlignment Right/Destra: ""
+
+*nl.Translation DymoLabelAlignment/Uitlijning: ""
+*nl.DymoLabelAlignment Center/Gecentreerd: ""
+*nl.DymoLabelAlignment Left/Links uitgelijnd: ""
+*nl.DymoLabelAlignment Right/Rechts uitgelijnd: ""
+
+*pt.Translation DymoLabelAlignment/Alinhamento: ""
+*pt.DymoLabelAlignment Center/Centralizado: ""
