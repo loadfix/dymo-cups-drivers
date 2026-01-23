@@ -64,7 +64,7 @@ void CLabelManagerDriverInitializer::ProcessPPDOptions(CLabelManagerDriver& Driv
     Driver.SetDeviceName(ppd->modelname);
 
     // Process cut options from PPD
-    ppd_choice_t* choice = ppdFindMarkedChoice(ppd, "DymoCutOptions");
+    ppd_choice_t* choice = CCupsUtils::FindMarkedChoice(ppd, "DymoCutOptions");
     if (choice)
     {
         if (!strcasecmp(choice->choice, "Cut"))
@@ -74,7 +74,7 @@ void CLabelManagerDriverInitializer::ProcessPPDOptions(CLabelManagerDriver& Driv
     }
 
     // Process label alignment from PPD
-    choice = ppdFindMarkedChoice(ppd, "DymoLabelAlignment");
+    choice = CCupsUtils::FindMarkedChoice(ppd, "DymoLabelAlignment");
     if (choice)
     {
         if (!strcasecmp(choice->choice, "Center"))
@@ -86,14 +86,14 @@ void CLabelManagerDriverInitializer::ProcessPPDOptions(CLabelManagerDriver& Driv
     }
 
     // Process chain marks at doc end from PPD
-    choice = ppdFindMarkedChoice(ppd, "DymoPrintChainMarksAtDocEnd");
+    choice = CCupsUtils::FindMarkedChoice(ppd, "DymoPrintChainMarksAtDocEnd");
     if (choice)
     {
         Driver.SetPrintChainMarksAtDocEnd(atoi(choice->choice) != 0);
     }
 
     // Process continuous paper from PPD
-    choice = ppdFindMarkedChoice(ppd, "DymoContinuousPaper");
+    choice = CCupsUtils::FindMarkedChoice(ppd, "DymoContinuousPaper");
     if (choice)
     {
         if (atoi(choice->choice) != 0)

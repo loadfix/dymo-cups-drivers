@@ -9,6 +9,7 @@
 #include "CupsPrintEnvironment.h"
 #include "ErrorDiffusionHalftoning.h"
 #include "NonLinearLaplacianHalftoning.h"
+#include "CupsUtils.h"
 
 namespace DymoPrinterDriver
 {
@@ -220,7 +221,7 @@ CCupsFilter<D, DI, LM>::InitDocument(const char* opts)
   DI::ProcessPPDOptions(Driver_, LanguageMonitor_, ppd);
 
   // extract halftoning method used
-  ppd_choice_t* choice = ppdFindMarkedChoice(ppd, "DymoHalftoning");
+  ppd_choice_t* choice = CCupsUtils::FindMarkedChoice(ppd, "DymoHalftoning");
   if (choice)
     HalftoningMethod_ = choice->choice;
 

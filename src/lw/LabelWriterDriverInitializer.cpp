@@ -88,7 +88,7 @@ void CLabelWriterDriverInitializer::ProcessCupsOptions(CLabelWriterDriver& Drive
         ppd_file_t* ppd = ppdOpenFile(getenv("PPD"));
         if (ppd)
         {
-            ppd_choice_t* choice = ppdFindMarkedChoice(ppd, "InputSlot");
+            ppd_choice_t* choice = CCupsUtils::FindMarkedChoice(ppd, "InputSlot");
             if (choice)
             {
                 if (!strcasecmp(choice->choice, "Left"))
@@ -121,7 +121,7 @@ void CLabelWriterDriverInitializer::ProcessPPDOptions(CLabelWriterDriver& Driver
     Driver.SetDeviceName(ppd->modelname);
 
     // Process quality from PPD
-    ppd_choice_t* choice = ppdFindMarkedChoice(ppd, "DymoPrintQuality");
+    ppd_choice_t* choice = CCupsUtils::FindMarkedChoice(ppd, "DymoPrintQuality");
     if (choice)
     {
         if (!strcasecmp(choice->choice, "Text"))
@@ -131,7 +131,7 @@ void CLabelWriterDriverInitializer::ProcessPPDOptions(CLabelWriterDriver& Driver
     }
 
     // Process density from PPD
-    choice = ppdFindMarkedChoice(ppd, "DymoPrintDensity");
+    choice = CCupsUtils::FindMarkedChoice(ppd, "DymoPrintDensity");
     if (choice)
     {
         if (!strcasecmp(choice->choice, "Light"))
@@ -160,7 +160,7 @@ void CLabelWriterDriverInitializer::ProcessPPDOptions(CLabelWriterDriver& Driver
     CLabelWriterDriverTwinTurbo* twinTurboDriver = dynamic_cast<CLabelWriterDriverTwinTurbo*>(&Driver);
     if (twinTurboDriver)
     {
-        choice = ppdFindMarkedChoice(ppd, "InputSlot");
+        choice = CCupsUtils::FindMarkedChoice(ppd, "InputSlot");
         if (choice)
         {
             if (!strcasecmp(choice->choice, "Left"))

@@ -1,4 +1,5 @@
 #include "CupsFilterLabelWriter.h"
+#include "CupsUtils.h"
 
 namespace DymoPrinterDriver
 {
@@ -9,7 +10,7 @@ void CDriverInitializerLabelWriter::ProcessPPDOptions(CLabelWriterDriver& Driver
   // The legacy SetResolution method is not available in the new driver implementation
   // Resolution is handled through SetVerticalResolution and SetHorizontalResolution
 
-  ppd_choice_t* choice = ppdFindMarkedChoice(ppd, "DymoPrintQuality");
+  ppd_choice_t* choice = CCupsUtils::FindMarkedChoice(ppd, "DymoPrintQuality");
   if (choice)
   {
     if (!strcasecmp(choice->choice, "Text"))
@@ -21,7 +22,7 @@ void CDriverInitializerLabelWriter::ProcessPPDOptions(CLabelWriterDriver& Driver
     fputs("WARNING: unable to get PrintQuality choice\n", stderr);
 
 
-  choice = ppdFindMarkedChoice(ppd, "DymoPrintDensity");
+  choice = CCupsUtils::FindMarkedChoice(ppd, "DymoPrintDensity");
   if (choice)
   {
     if (!strcasecmp(choice->choice, "Light"))
@@ -71,7 +72,7 @@ CDriverInitializerLabelWriterTwinTurbo::ProcessPPDOptions(CLabelWriterDriverTwin
 {
   CDriverInitializerLabelWriter::ProcessPPDOptions(Driver, LM, ppd);
 
-  ppd_choice_t* choice = ppdFindMarkedChoice(ppd, "InputSlot");
+  ppd_choice_t* choice = CCupsUtils::FindMarkedChoice(ppd, "InputSlot");
   if (choice)
   {
     if (!strcasecmp(choice->choice, "Left"))

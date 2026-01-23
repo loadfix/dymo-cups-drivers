@@ -1,5 +1,6 @@
 #include <cups/ppd.h>
 #include "CupsFilterLabelManager.h"
+#include "CupsUtils.h"
 
 namespace DymoPrinterDriver
 {
@@ -7,7 +8,7 @@ namespace DymoPrinterDriver
 void
 CDriverInitializerLabelManager::ProcessPPDOptions(CLabelManagerDriver& Driver, CDummyLanguageMonitor& LM, ppd_file_t* ppd)
 {
-  ppd_choice_t* choice = ppdFindMarkedChoice(ppd, "DymoCutOptions");
+  ppd_choice_t* choice = CCupsUtils::FindMarkedChoice(ppd, "DymoCutOptions");
   if (choice)
   {
     if (!strcasecmp(choice->choice, "Cut"))
@@ -19,7 +20,7 @@ CDriverInitializerLabelManager::ProcessPPDOptions(CLabelManagerDriver& Driver, C
   //    fputs("WARNING: unable to get CutOptions choice\n", stderr);
 
 
-  choice = ppdFindMarkedChoice(ppd, "DymoLabelAlignment");
+  choice = CCupsUtils::FindMarkedChoice(ppd, "DymoLabelAlignment");
   if (choice)
   {
     //fprintf(stderr, "DEBUG: ----------- Process LabelAlignemnt %s----------\n", choice->choice);
@@ -34,7 +35,7 @@ CDriverInitializerLabelManager::ProcessPPDOptions(CLabelManagerDriver& Driver, C
   else
     fputs("WARNING: unable to get LabelAlignment choice\n", stderr);
 
-  choice = ppdFindMarkedChoice(ppd, "DymoPrintChainMarksAtDocEnd");
+  choice = CCupsUtils::FindMarkedChoice(ppd, "DymoPrintChainMarksAtDocEnd");
   if (choice)
   {
     Driver.SetPrintChainMarksAtDocEnd((atoi(choice->choice)));
@@ -42,7 +43,7 @@ CDriverInitializerLabelManager::ProcessPPDOptions(CLabelManagerDriver& Driver, C
   else
     fputs("WARNING: unable to get PrintChainMarksAtDocEnd choice\n", stderr);
 
-  choice = ppdFindMarkedChoice(ppd, "DymoContinuousPaper");
+  choice = CCupsUtils::FindMarkedChoice(ppd, "DymoContinuousPaper");
   if (choice)
   {
     // Note: SetContinuousPaper doesn't exist in new driver, use SetPaperType instead
