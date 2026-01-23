@@ -8,7 +8,7 @@
 namespace DymoPrinterDriver
 {
 
-    class CLabelManagerLanguageMonitor: public ILanguageMonitor
+    class LabelManagerLanguageMonitor: public ILanguageMonitor
     {
     public:
         enum status_bits
@@ -26,8 +26,8 @@ namespace DymoPrinterDriver
             INCORRECT_SIZE_BIT  = 0xFF
         };
 
-        CLabelManagerLanguageMonitor(IPrintEnvironment& Environment, bool UseSleep = true, size_t ReadStatusTimeout = 10);
-        virtual ~CLabelManagerLanguageMonitor();
+        LabelManagerLanguageMonitor(IPrintEnvironment& Environment, bool UseSleep = true, size_t ReadStatusTimeout = 10);
+        virtual ~LabelManagerLanguageMonitor();
 
         virtual void StartDoc();
         virtual void EndDoc();
@@ -38,7 +38,7 @@ namespace DymoPrinterDriver
         virtual void ProcessData(const buffer_t& Data);
 
         void SetDeviceName(const std::string& Value);
-        void SetTapeWidth(CLabelManagerDriver::tape_width_t Value);
+        void SetTapeWidth(LabelManagerDriver::tape_width_t Value);
 
     protected:
     private:
@@ -61,7 +61,7 @@ namespace DymoPrinterDriver
         buffer_t                                PageData_;
 
         std::string                             DeviceName_;
-        CLabelManagerDriver::tape_width_t       TapeWidth_;
+        LabelManagerDriver::tape_width_t       TapeWidth_;
 
         bool                                    UseSleep_; // for test purpose only
         bool                                    LastReadStatusResult_;

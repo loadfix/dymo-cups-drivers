@@ -7,7 +7,7 @@
 
 namespace DymoPrinterDriver
 {
-    class CCupsUtils
+    class CupsUtils
     {
     public:
         static const char* GetCupsOption(const char* name, int num_options, cups_option_t* options, const char* value = NULL);

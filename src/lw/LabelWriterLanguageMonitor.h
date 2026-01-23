@@ -11,7 +11,7 @@ namespace DymoPrinterDriver
 
 
 
-class CLabelWriterLanguageMonitor: public ILanguageMonitor
+class LabelWriterLanguageMonitor: public ILanguageMonitor
 {
 public:
   enum status_bits
@@ -23,8 +23,8 @@ public:
     ERROR_BIT           = 0x80,
   };
 
-  CLabelWriterLanguageMonitor(IPrintEnvironment& Environment, bool UseSleep = true, size_t ReadStatusTimeout = 10);
-  virtual ~CLabelWriterLanguageMonitor();
+  LabelWriterLanguageMonitor(IPrintEnvironment& Environment, bool UseSleep = true, size_t ReadStatusTimeout = 10);
+  virtual ~LabelWriterLanguageMonitor();
 
   virtual void StartDoc();
   virtual void EndDoc();
@@ -35,8 +35,8 @@ public:
   virtual void ProcessData(const buffer_t& Data);
 
   // some values used by driver is also interesting for the language monitor
-  void SetPaperType(CLabelWriterDriver::paper_type_t  Value);
-  void SetRoll(CLabelWriterDriverTwinTurbo::roll_t    Value);
+  void SetPaperType(LabelWriterDriver::paper_type_t  Value);
+  void SetRoll(LabelWriterDriverTwinTurbo::roll_t    Value);
 
 
 protected:
@@ -70,8 +70,8 @@ private:
 
   IPrintEnvironment&                      Environment_;
 
-  CLabelWriterDriver::paper_type_t        PaperType_;
-  CLabelWriterDriverTwinTurbo::roll_t     Roll_;
+  LabelWriterDriver::paper_type_t        PaperType_;
+  LabelWriterDriverTwinTurbo::roll_t     Roll_;
   bool                                    RollUsed_;
   bool                                    IsFirstPage_;
 

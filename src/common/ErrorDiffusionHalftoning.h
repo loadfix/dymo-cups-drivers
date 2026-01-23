@@ -6,16 +6,16 @@
 namespace DymoPrinterDriver
 {
 
-class CErrorDiffusionHalftoning: public CHalftoneFilter
+class ErrorDiffusionHalftoning: public HalftoneFilter
 {
 public:
-   CErrorDiffusionHalftoning(image_t InputImageType, image_t OutputImageType, bool UsePrinterColorSpace = true) : CHalftoneFilter(InputImageType, OutputImageType), _imageWidth(0), _error(), _grayLine(), _usePrinterColorSpace(UsePrinterColorSpace)
+   ErrorDiffusionHalftoning(image_t InputImageType, image_t OutputImageType, bool UsePrinterColorSpace = true) : HalftoneFilter(InputImageType, OutputImageType), _imageWidth(0), _error(), _grayLine(), _usePrinterColorSpace(UsePrinterColorSpace)
    {
       if(GetOutputImageType() != itBW)
          throw EHalftoneError(EHalftoneError::heUnsupportedImageType);
    }
 
-   virtual ~CErrorDiffusionHalftoning() {}
+   virtual ~ErrorDiffusionHalftoning() {}
 
    virtual bool IsProcessLineSupported() { return true; }
 

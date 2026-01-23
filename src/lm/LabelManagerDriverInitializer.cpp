@@ -12,11 +12,11 @@
 namespace DymoPrinterDriver
 {
 
-void CLabelManagerDriverInitializer::ProcessCupsOptions(CLabelManagerDriver& Driver, int num_options, cups_option_t* options)
+void LabelManagerDriverInitializer::ProcessCupsOptions(LabelManagerDriver& Driver, int num_options, cups_option_t* options)
 {
-    const char* option = CCupsUtils::GetCupsOption("DymoCutOptions", num_options, options, "Cut");
+    const char* option = CupsUtils::GetCupsOption("DymoCutOptions", num_options, options, "Cut");
 
-    Driver.SetDeviceName(CCupsUtils::GetCupsOption("printer-make-and-model", num_options, options));
+    Driver.SetDeviceName(CupsUtils::GetCupsOption("printer-make-and-model", num_options, options));
 
     if(strcasecmp(option, "Cut") == 0)
         Driver.SetCutOption(ILabelManagerDriver::coCut);
@@ -25,7 +25,7 @@ void CLabelManagerDriverInitializer::ProcessCupsOptions(CLabelManagerDriver& Dri
     else
         fprintf(stderr, "WARNING: Unknown DymoCutOptions option value = %s\n", option);
 
-    option = CCupsUtils::GetCupsOption("DymoLabelAlignment", num_options, options, "Center");
+    option = CupsUtils::GetCupsOption("DymoLabelAlignment", num_options, options, "Center");
 
     if(strcasecmp(option, "Center") == 0)
         Driver.SetAlignment(ILabelManagerDriver::alCenter);
@@ -36,7 +36,7 @@ void CLabelManagerDriverInitializer::ProcessCupsOptions(CLabelManagerDriver& Dri
     else
         fprintf(stderr, "WARNING: Unknown DymoLabelAlignment option value = %s\n", option);
 
-    option = CCupsUtils::GetCupsOption("DymoContinuousPaper", num_options, options, "0");
+    option = CupsUtils::GetCupsOption("DymoContinuousPaper", num_options, options, "0");
 
     if(strcasecmp(option, "0") == 0)
         Driver.SetPaperType(IPrinterDriver::ptRegular);
@@ -45,7 +45,7 @@ void CLabelManagerDriverInitializer::ProcessCupsOptions(CLabelManagerDriver& Dri
     else
         fprintf(stderr, "WARNING: Unknown DymoContinuousPaper option value = %s\n", option);
 
-    option = CCupsUtils::GetCupsOption("DymoPrintChainMarksAtDocEnd", num_options, options, "0");
+    option = CupsUtils::GetCupsOption("DymoPrintChainMarksAtDocEnd", num_options, options, "0");
 
     if(strcasecmp(option, "0") == 0)
         Driver.SetPrintChainMarksAtDocEnd(false);
@@ -55,7 +55,7 @@ void CLabelManagerDriverInitializer::ProcessCupsOptions(CLabelManagerDriver& Dri
         fprintf(stderr, "WARNING: Unknown DymoPrintChainMarksAtDocEnd option value = %s\n", option);
 }
 
-void CLabelManagerDriverInitializer::ProcessPPDOptions(CLabelManagerDriver& Driver, CDummyLanguageMonitor& LM, ppd_file_t* ppd)
+void LabelManagerDriverInitializer::ProcessPPDOptions(LabelManagerDriver& Driver, DummyLanguageMonitor& LM, ppd_file_t* ppd)
 {
     if (!ppd)
         return;
@@ -64,7 +64,7 @@ void CLabelManagerDriverInitializer::ProcessPPDOptions(CLabelManagerDriver& Driv
     Driver.SetDeviceName(ppd->modelname);
 
     // Process cut options from PPD
-    ppd_choice_t* choice = CCupsUtils::FindMarkedChoice(ppd, "DymoCutOptions");
+    ppd_choice_t* choice = CupsUtils::FindMarkedChoice(ppd, "DymoCutOptions");
     if (choice)
     {
         if (!strcasecmp(choice->choice, "Cut"))
@@ -74,7 +74,7 @@ void CLabelManagerDriverInitializer::ProcessPPDOptions(CLabelManagerDriver& Driv
     }
 
     // Process label alignment from PPD
-    choice = CCupsUtils::FindMarkedChoice(ppd, "DymoLabelAlignment");
+    choice = CupsUtils::FindMarkedChoice(ppd, "DymoLabelAlignment");
     if (choice)
     {
         if (!strcasecmp(choice->choice, "Center"))
@@ -86,14 +86,14 @@ void CLabelManagerDriverInitializer::ProcessPPDOptions(CLabelManagerDriver& Driv
     }
 
     // Process chain marks at doc end from PPD
-    choice = CCupsUtils::FindMarkedChoice(ppd, "DymoPrintChainMarksAtDocEnd");
+    choice = CupsUtils::FindMarkedChoice(ppd, "DymoPrintChainMarksAtDocEnd");
     if (choice)
     {
         Driver.SetPrintChainMarksAtDocEnd(atoi(choice->choice) != 0);
     }
 
     // Process continuous paper from PPD
-    choice = CCupsUtils::FindMarkedChoice(ppd, "DymoContinuousPaper");
+    choice = CupsUtils::FindMarkedChoice(ppd, "DymoContinuousPaper");
     if (choice)
     {
         if (atoi(choice->choice) != 0)
@@ -151,7 +151,7 @@ void CLabelManagerDriverInitializer::ProcessPPDOptions(CLabelManagerDriver& Driv
     // Add more device-specific configurations as needed
 }
 
-void CLabelManagerDriverInitializer::ProcessPageOptions(CLabelManagerDriver& Driver, CDummyLanguageMonitor& LM, cups_page_header2_t& PageHeader)
+void LabelManagerDriverInitializer::ProcessPageOptions(LabelManagerDriver& Driver, DummyLanguageMonitor& LM, cups_page_header2_t& PageHeader)
 {
     ILabelManagerDriver::tape_width_t TapeWidth = ILabelManagerDriver::tape_width_t(PageHeader.cupsMediaType & 0xff);
 
@@ -172,29 +172,29 @@ void CLabelManagerDriverInitializer::ProcessPageOptions(CLabelManagerDriver& Dri
     }
 }
 
-void CLabelManagerDriverInitializerWithLM::ProcessCupsOptions(CLabelManagerDriver& Driver, CLabelManagerLanguageMonitor& LM, int num_options, cups_option_t* options)
+void LabelManagerDriverInitializerWithLM::ProcessCupsOptions(LabelManagerDriver& Driver, LabelManagerLanguageMonitor& LM, int num_options, cups_option_t* options)
 {
-    CLabelManagerDriverInitializer::ProcessCupsOptions(Driver, num_options, options);
+    LabelManagerDriverInitializer::ProcessCupsOptions(Driver, num_options, options);
 
-    LM.SetDeviceName(CCupsUtils::GetCupsOption("printer-make-and-model", num_options, options));
+    LM.SetDeviceName(CupsUtils::GetCupsOption("printer-make-and-model", num_options, options));
 }
 
-void CLabelManagerDriverInitializerWithLM::ProcessPPDOptions(CLabelManagerDriver& Driver, CDummyLanguageMonitor& LM, ppd_file_t* ppd)
+void LabelManagerDriverInitializerWithLM::ProcessPPDOptions(LabelManagerDriver& Driver, DummyLanguageMonitor& LM, ppd_file_t* ppd)
 {
-    CLabelManagerDriverInitializer::ProcessPPDOptions(Driver, LM, ppd);
+    LabelManagerDriverInitializer::ProcessPPDOptions(Driver, LM, ppd);
 
-    // Only set device name if LM is actually a CLabelManagerLanguageMonitor
-    CLabelManagerLanguageMonitor* labelManagerLM = dynamic_cast<CLabelManagerLanguageMonitor*>(&LM);
+    // Only set device name if LM is actually a LabelManagerLanguageMonitor
+    LabelManagerLanguageMonitor* labelManagerLM = dynamic_cast<LabelManagerLanguageMonitor*>(&LM);
     if (labelManagerLM && ppd)
         labelManagerLM->SetDeviceName(ppd->modelname);
 }
 
-void CLabelManagerDriverInitializerWithLM::ProcessPageOptions(CLabelManagerDriver& Driver, CDummyLanguageMonitor& LM, cups_page_header2_t& PageHeader)
+void LabelManagerDriverInitializerWithLM::ProcessPageOptions(LabelManagerDriver& Driver, DummyLanguageMonitor& LM, cups_page_header2_t& PageHeader)
 {
-    CLabelManagerDriverInitializer::ProcessPageOptions(Driver, LM, PageHeader);
+    LabelManagerDriverInitializer::ProcessPageOptions(Driver, LM, PageHeader);
 
-    // Only set tape width if LM is actually a CLabelManagerLanguageMonitor
-    CLabelManagerLanguageMonitor* labelManagerLM = dynamic_cast<CLabelManagerLanguageMonitor*>(&LM);
+    // Only set tape width if LM is actually a LabelManagerLanguageMonitor
+    LabelManagerLanguageMonitor* labelManagerLM = dynamic_cast<LabelManagerLanguageMonitor*>(&LM);
     if (labelManagerLM)
         labelManagerLM->SetTapeWidth(ILabelManagerDriver::tape_width_t(PageHeader.cupsMediaType & 0xff));
 }

@@ -5,7 +5,7 @@
 namespace DymoPrinterDriver
 {
 
-const char* CCupsUtils::GetCupsOption(const char* name, int num_options, cups_option_t* options, const char* value)
+const char* CupsUtils::GetCupsOption(const char* name, int num_options, cups_option_t* options, const char* value)
 {
     const char* option = cupsGetOption(name, num_options, options);
 
@@ -17,7 +17,7 @@ const char* CCupsUtils::GetCupsOption(const char* name, int num_options, cups_op
 
 // Replacement for deprecated ppdFindMarkedChoice
 // Uses ppdFindOption and iterates through choices to find the marked one
-ppd_choice_t* CCupsUtils::FindMarkedChoice(ppd_file_t* ppd, const char* keyword)
+ppd_choice_t* CupsUtils::FindMarkedChoice(ppd_file_t* ppd, const char* keyword)
 {
     if (!ppd || !keyword)
         return NULL;

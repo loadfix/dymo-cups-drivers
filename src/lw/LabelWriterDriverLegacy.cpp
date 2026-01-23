@@ -6,19 +6,19 @@ const byte ESC = 0x1B;
 const byte SYN = 0x16;
 const byte ETB = 0x17;
 
-CLabelWriterDriver::CLabelWriterDriver(IPrintEnvironment& Environment):
+LabelWriterDriver::LabelWriterDriver(IPrintEnvironment& Environment):
   Environment_(Environment),
   Resolution_(resUnknown), Density_(pdNormal), Quality_(pqText), PageHeight_(0x0800), PaperType_(ptRegular),
   MaxPrintWidth_(84),PageOffset_(0, 0),LastDotTab_(size_t(-1)), LastBytesPerLine_(size_t(-1)), EmptyLinesCount_(0)
 {
 }
 
-CLabelWriterDriver::~CLabelWriterDriver()
+LabelWriterDriver::~LabelWriterDriver()
 {
 }
 
 void
-CLabelWriterDriver::StartDoc()
+LabelWriterDriver::StartDoc()
 {
   SendCommand(GetResetCommand());
   SendResolution(Resolution_);
@@ -29,12 +29,12 @@ CLabelWriterDriver::StartDoc()
 }
 
 void
-CLabelWriterDriver::EndDoc()
+LabelWriterDriver::EndDoc()
 {
 }
 
 void
-CLabelWriterDriver::StartPage()
+LabelWriterDriver::StartPage()
 {
   switch (PaperType_)
   {
@@ -49,14 +49,14 @@ CLabelWriterDriver::StartPage()
 }
 
 void
-CLabelWriterDriver::EndPage()
+LabelWriterDriver::EndPage()
 {
   SendFormFeed();
 }
 
 
 void
-CLabelWriterDriver::SendNotCompressedData(
+LabelWriterDriver::SendNotCompressedData(
   const buffer_t& Buf, size_t LeaderBlanks, size_t TrailerBlanks)
 {
   byte syn = SYN;
@@ -75,7 +75,7 @@ CLabelWriterDriver::SendNotCompressedData(
 }
 
 void
-CLabelWriterDriver::SendCompressedData(
+LabelWriterDriver::SendCompressedData(
   const buffer_t& CompressedBuf, size_t NotCompressedSize)
 {
   byte etb = ETB;
@@ -92,7 +92,7 @@ CLabelWriterDriver::SendCompressedData(
 }
 
 void
-CLabelWriterDriver::GetBlanks(
+LabelWriterDriver::GetBlanks(
   const buffer_t& Buf, size_t& LeaderBlanks, size_t& TrailerBlanks)
 {
   size_t i = 0;
@@ -246,7 +246,7 @@ ShiftData(const buffer_t& Buf, buffer_t& ShiftedBuf, int ShiftValue)
 }
 
 void
-CLabelWriterDriver::ProcessRasterLine(const buffer_t& lineBuffer)
+LabelWriterDriver::ProcessRasterLine(const buffer_t& lineBuffer)
 {
   buffer_t b = lineBuffer;
 
@@ -259,7 +259,7 @@ CLabelWriterDriver::ProcessRasterLine(const buffer_t& lineBuffer)
 
   if (b.size() > MaxPrintWidth_)
   {
-    fputs("WARNING: CLabelWriterDriver::ProcessRasterLine(): page width is greater max page width, truncated\n", stderr);
+    fputs("WARNING: LabelWriterDriver::ProcessRasterLine(): page width is greater max page width, truncated\n", stderr);
     b = buffer_t(b.begin(), b.begin() + MaxPrintWidth_);
   }
 
@@ -307,91 +307,91 @@ CLabelWriterDriver::ProcessRasterLine(const buffer_t& lineBuffer)
 
 
 void
-CLabelWriterDriver::SendCommand(const byte* Buf, size_t BufSize)
+LabelWriterDriver::SendCommand(const byte* Buf, size_t BufSize)
 {
   Environment_.WriteData(buffer_t(Buf, Buf + BufSize));
 }
 
 void
-CLabelWriterDriver::SendCommand(const buffer_t& Buf)
+LabelWriterDriver::SendCommand(const buffer_t& Buf)
 {
   Environment_.WriteData(Buf);
 }
 
-CLabelWriterDriver::resolution_t
-CLabelWriterDriver::GetResolution()
+LabelWriterDriver::resolution_t
+LabelWriterDriver::GetResolution()
 {
   return Resolution_;
 }
 
-CLabelWriterDriver::density_t
-CLabelWriterDriver::GetDensity()
+LabelWriterDriver::density_t
+LabelWriterDriver::GetDensity()
 {
   return Density_;
 }
 
-CLabelWriterDriver::quality_t
-CLabelWriterDriver::GetQuality()
+LabelWriterDriver::quality_t
+LabelWriterDriver::GetQuality()
 {
   return Quality_;
 }
 
 size_t
-CLabelWriterDriver::GetPageHeight()
+LabelWriterDriver::GetPageHeight()
 {
   return PageHeight_;
 }
 
-CLabelWriterDriver::paper_type_t
-CLabelWriterDriver::GetPaperType()
+LabelWriterDriver::paper_type_t
+LabelWriterDriver::GetPaperType()
 {
   return PaperType_;
 }
 
 void
-CLabelWriterDriver::SetResolution(CLabelWriterDriver::resolution_t Value)
+LabelWriterDriver::SetResolution(LabelWriterDriver::resolution_t Value)
 {
   Resolution_ = Value;
 }
 
 void
-CLabelWriterDriver::SetDensity(CLabelWriterDriver::density_t Value)
+LabelWriterDriver::SetDensity(LabelWriterDriver::density_t Value)
 {
   Density_ = Value;
 }
 
 void
-CLabelWriterDriver::SetQuality(CLabelWriterDriver::quality_t Value)
+LabelWriterDriver::SetQuality(LabelWriterDriver::quality_t Value)
 {
   Quality_ = Value;
 }
 
 void
-CLabelWriterDriver::SetPageHeight(size_t Value)
+LabelWriterDriver::SetPageHeight(size_t Value)
 {
   PageHeight_ = Value;
 }
 
 void
-CLabelWriterDriver::SetPaperType(CLabelWriterDriver::paper_type_t Value)
+LabelWriterDriver::SetPaperType(LabelWriterDriver::paper_type_t Value)
 {
   PaperType_ = Value;
 }
 
 void
-CLabelWriterDriver::SetMaxPrintWidth(size_t Value)
+LabelWriterDriver::SetMaxPrintWidth(size_t Value)
 {
   MaxPrintWidth_ = Value;
 }
 
 void
-CLabelWriterDriver::SetPageOffset(point_t Value)
+LabelWriterDriver::SetPageOffset(point_t Value)
 {
   PageOffset_ = Value;
 }
 
 void
-CLabelWriterDriver::SendLineTab(size_t Value)
+LabelWriterDriver::SendLineTab(size_t Value)
 {
   byte buf[] = {ESC, 'Q', 0, 0};
   buf[2] = (Value >> 8) & 0xff;
@@ -401,7 +401,7 @@ CLabelWriterDriver::SendLineTab(size_t Value)
 }
 
 void
-CLabelWriterDriver::SendDotTab(size_t Value)
+LabelWriterDriver::SendDotTab(size_t Value)
 {
   byte buf[] = {ESC, 'B', 0};
   buf[2] = Value;
@@ -410,7 +410,7 @@ CLabelWriterDriver::SendDotTab(size_t Value)
 }
 
 void
-CLabelWriterDriver::SendFormFeed()
+LabelWriterDriver::SendFormFeed()
 {
   byte buf[] = {ESC, 'E'};
 
@@ -418,7 +418,7 @@ CLabelWriterDriver::SendFormFeed()
 }
 
 void
-CLabelWriterDriver::SendBytesPerLine(size_t Value)
+LabelWriterDriver::SendBytesPerLine(size_t Value)
 {
   byte buf[] = {ESC, 'D', 0};
   buf[2] = Value;
@@ -427,7 +427,7 @@ CLabelWriterDriver::SendBytesPerLine(size_t Value)
 }
 
 void
-CLabelWriterDriver::SendSkipLines(size_t Value)
+LabelWriterDriver::SendSkipLines(size_t Value)
 {
   const size_t MAX_LINES = 255;
 
@@ -452,7 +452,7 @@ CLabelWriterDriver::SendSkipLines(size_t Value)
 }
 
 void
-CLabelWriterDriver::SendLabelLength(size_t Value)
+LabelWriterDriver::SendLabelLength(size_t Value)
 {
   byte buf[] = {ESC, 'L', 0, 0};
   buf[2] = (Value >> 8) & 0xff;
@@ -462,7 +462,7 @@ CLabelWriterDriver::SendLabelLength(size_t Value)
 }
 
 void
-CLabelWriterDriver::SendResolution(resolution_t Value)
+LabelWriterDriver::SendResolution(resolution_t Value)
 {
   if (Value == resUnknown)
     return;
@@ -485,7 +485,7 @@ CLabelWriterDriver::SendResolution(resolution_t Value)
 }
 
 void
-CLabelWriterDriver::SendPrintDensity(density_t Value)
+LabelWriterDriver::SendPrintDensity(density_t Value)
 {
   byte buf[] = {ESC, 'e'};
 
@@ -502,7 +502,7 @@ CLabelWriterDriver::SendPrintDensity(density_t Value)
 }
 
 void
-CLabelWriterDriver::SendPrintQuality(quality_t Value)
+LabelWriterDriver::SendPrintQuality(quality_t Value)
 {
   byte buf[] = {ESC, 'h'};
 
@@ -517,13 +517,13 @@ CLabelWriterDriver::SendPrintQuality(quality_t Value)
 }
 
 buffer_t
-CLabelWriterDriver::GetResetCommand()
+LabelWriterDriver::GetResetCommand()
 {
   return buffer_t(156, ESC);
 }
 
 buffer_t
-CLabelWriterDriver::GetRequestStatusCommand()
+LabelWriterDriver::GetRequestStatusCommand()
 {
   byte buf[] = {ESC, 'A'};
 
@@ -531,50 +531,50 @@ CLabelWriterDriver::GetRequestStatusCommand()
 }
 
 size_t
-CLabelWriterDriver::GetEmptyLinesCount()
+LabelWriterDriver::GetEmptyLinesCount()
 {
   return EmptyLinesCount_;
 }
 
 void
-CLabelWriterDriver::SetEmptyLinesCount(size_t Value)
+LabelWriterDriver::SetEmptyLinesCount(size_t Value)
 {
   EmptyLinesCount_ = Value;
 }
 
 ////////////////////////////////////////////////////////////////
-// CLabelWriterDriver400
+// LabelWriterDriver400
 ////////////////////////////////////////////////////////////////
 
-CLabelWriterDriver400::CLabelWriterDriver400(IPrintEnvironment& Environment):
-  CLabelWriterDriver(Environment)
+LabelWriterDriver400::LabelWriterDriver400(IPrintEnvironment& Environment):
+  LabelWriterDriver(Environment)
 {
 }
 
-CLabelWriterDriver400::~CLabelWriterDriver400()
+LabelWriterDriver400::~LabelWriterDriver400()
 {
 }
 
 void
-CLabelWriterDriver400::StartDoc()
+LabelWriterDriver400::StartDoc()
 {
-  CLabelWriterDriver::StartDoc();
+  LabelWriterDriver::StartDoc();
 }
 
 void
-CLabelWriterDriver400::EndDoc()
+LabelWriterDriver400::EndDoc()
 {
   SendFormFeed();
 }
 
 void
-CLabelWriterDriver400::EndPage()
+LabelWriterDriver400::EndPage()
 {
   SendShortFormFeed();
 }
 
 buffer_t
-CLabelWriterDriver400::GetShortFormFeedCommand()
+LabelWriterDriver400::GetShortFormFeedCommand()
 {
   byte buf[] = {ESC, 'G'};
 
@@ -582,7 +582,7 @@ CLabelWriterDriver400::GetShortFormFeedCommand()
 }
 
 void
-CLabelWriterDriver400::SendShortFormFeed()
+LabelWriterDriver400::SendShortFormFeed()
 {
   byte buf[] = {ESC, 'G'};
 
@@ -590,39 +590,39 @@ CLabelWriterDriver400::SendShortFormFeed()
 }
 
 ////////////////////////////////////////////////////////////////
-// CLabelWriterDriver TwinTurbo
+// LabelWriterDriver TwinTurbo
 ////////////////////////////////////////////////////////////////
 
-CLabelWriterDriverTwinTurbo::CLabelWriterDriverTwinTurbo(IPrintEnvironment& Environment):
-  CLabelWriterDriver400(Environment), Roll_(rtAuto)
+LabelWriterDriverTwinTurbo::LabelWriterDriverTwinTurbo(IPrintEnvironment& Environment):
+  LabelWriterDriver400(Environment), Roll_(rtAuto)
 {
 }
 
-CLabelWriterDriverTwinTurbo::~CLabelWriterDriverTwinTurbo()
+LabelWriterDriverTwinTurbo::~LabelWriterDriverTwinTurbo()
 {
 }
 
 void
-CLabelWriterDriverTwinTurbo::StartDoc()
+LabelWriterDriverTwinTurbo::StartDoc()
 {
-  CLabelWriterDriver400::StartDoc();
+  LabelWriterDriver400::StartDoc();
   SendRollSelect(Roll_);
 }
 
-CLabelWriterDriverTwinTurbo::roll_t
-CLabelWriterDriverTwinTurbo::GetRoll()
+LabelWriterDriverTwinTurbo::roll_t
+LabelWriterDriverTwinTurbo::GetRoll()
 {
   return Roll_;
 }
 
 void
-CLabelWriterDriverTwinTurbo::SetRoll(CLabelWriterDriverTwinTurbo::roll_t Value)
+LabelWriterDriverTwinTurbo::SetRoll(LabelWriterDriverTwinTurbo::roll_t Value)
 {
   Roll_ = Value;
 }
 
 buffer_t
-CLabelWriterDriverTwinTurbo::GetRollSelectCommand(roll_t Value)
+LabelWriterDriverTwinTurbo::GetRollSelectCommand(roll_t Value)
 {
   byte buf[] = {ESC, 'q', '0'};
 
@@ -637,7 +637,7 @@ CLabelWriterDriverTwinTurbo::GetRollSelectCommand(roll_t Value)
 }
 
 void
-CLabelWriterDriverTwinTurbo::SendRollSelect(CLabelWriterDriverTwinTurbo::roll_t Value)
+LabelWriterDriverTwinTurbo::SendRollSelect(LabelWriterDriverTwinTurbo::roll_t Value)
 {
   buffer_t buf = GetRollSelectCommand(Value);
 

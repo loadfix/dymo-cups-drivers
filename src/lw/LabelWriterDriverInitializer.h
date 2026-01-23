@@ -7,9 +7,9 @@
 
 namespace DymoPrinterDriver
 {
-    class CLabelWriterDriver;
-    class CLabelWriterLanguageMonitor;
-    class CDummyLanguageMonitor;
+    class LabelWriterDriver;
+    class LabelWriterLanguageMonitor;
+    class DummyLanguageMonitor;
     class IPrintEnvironment;
 }
 
@@ -20,26 +20,26 @@ bool IsLW5xxPrinter(std::string deviceName);
 bool IsTwinTurboPrinter(const char* modelName);
 bool Is400SeriesPrinter(const char* modelName);
 
-class CLabelWriterDriverInitializer
+class LabelWriterDriverInitializer
 {
 public:
-    static void ProcessCupsOptions(CLabelWriterDriver& Driver, int num_options, cups_option_t* options);
-    static void ProcessPPDOptions(CLabelWriterDriver& Driver, CDummyLanguageMonitor& LM, ppd_file_t* ppd);
-    static void ProcessPageOptions(CLabelWriterDriver& Driver, CDummyLanguageMonitor& LM, cups_page_header2_t& PageHeader);
+    static void ProcessCupsOptions(LabelWriterDriver& Driver, int num_options, cups_option_t* options);
+    static void ProcessPPDOptions(LabelWriterDriver& Driver, DummyLanguageMonitor& LM, ppd_file_t* ppd);
+    static void ProcessPageOptions(LabelWriterDriver& Driver, DummyLanguageMonitor& LM, cups_page_header2_t& PageHeader);
 
     // Factory method to create appropriate driver based on model
-    static CLabelWriterDriver* CreateDriver(IPrintEnvironment& Environment, ppd_file_t* ppd);
+    static LabelWriterDriver* CreateDriver(IPrintEnvironment& Environment, ppd_file_t* ppd);
 };
 
-class CLabelWriterDriverInitializerWithLM
+class LabelWriterDriverInitializerWithLM
 {
 public:
-    static void ProcessCupsOptions(CLabelWriterDriver& Driver, CLabelWriterLanguageMonitor& LM, int num_options, cups_option_t* options);
-    static void ProcessPPDOptions(CLabelWriterDriver& Driver, CDummyLanguageMonitor& LM, ppd_file_t* ppd);
-    static void ProcessPageOptions(CLabelWriterDriver& Driver, CDummyLanguageMonitor& LM, cups_page_header2_t& PageHeader);
+    static void ProcessCupsOptions(LabelWriterDriver& Driver, LabelWriterLanguageMonitor& LM, int num_options, cups_option_t* options);
+    static void ProcessPPDOptions(LabelWriterDriver& Driver, DummyLanguageMonitor& LM, ppd_file_t* ppd);
+    static void ProcessPageOptions(LabelWriterDriver& Driver, DummyLanguageMonitor& LM, cups_page_header2_t& PageHeader);
 
     // Factory method to create appropriate driver based on model
-    static CLabelWriterDriver* CreateDriver(IPrintEnvironment& Environment, CLabelWriterLanguageMonitor& LM, ppd_file_t* ppd);
+    static LabelWriterDriver* CreateDriver(IPrintEnvironment& Environment, LabelWriterLanguageMonitor& LM, ppd_file_t* ppd);
 };
 
 }

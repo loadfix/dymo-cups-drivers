@@ -6,7 +6,7 @@ namespace DymoPrinterDriver
 
 
 
-class CLabelWriterDriver: public IPrinterDriver
+class LabelWriterDriver: public IPrinterDriver
 {
 public:
   typedef enum
@@ -48,8 +48,8 @@ public:
     }
   };
 
-  CLabelWriterDriver(IPrintEnvironment& Environment);
-  virtual ~CLabelWriterDriver();
+  LabelWriterDriver(IPrintEnvironment& Environment);
+  virtual ~LabelWriterDriver();
 
   virtual void StartDoc();
   virtual void EndDoc();
@@ -116,11 +116,11 @@ private:
 
 };
 
-class CLabelWriterDriver400: public CLabelWriterDriver
+class LabelWriterDriver400: public LabelWriterDriver
 {
 public:
-  CLabelWriterDriver400(IPrintEnvironment& Environment);
-  virtual ~CLabelWriterDriver400();
+  LabelWriterDriver400(IPrintEnvironment& Environment);
+  virtual ~LabelWriterDriver400();
 
   virtual void StartDoc();
   virtual void EndDoc();
@@ -131,7 +131,7 @@ protected:
   void SendShortFormFeed();
 };
 
-class CLabelWriterDriverTwinTurbo: public CLabelWriterDriver400
+class LabelWriterDriverTwinTurbo: public LabelWriterDriver400
 {
 public:
   typedef enum
@@ -141,8 +141,8 @@ public:
     rtRight
   } roll_t;
 
-  CLabelWriterDriverTwinTurbo(IPrintEnvironment& Environment);
-  virtual ~CLabelWriterDriverTwinTurbo();
+  LabelWriterDriverTwinTurbo(IPrintEnvironment& Environment);
+  virtual ~LabelWriterDriverTwinTurbo();
 
   virtual void StartDoc();
 

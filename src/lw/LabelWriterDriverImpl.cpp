@@ -6,7 +6,7 @@
 namespace DymoPrinterDriver
 {
 
-CLabelWriterDriver::CLabelWriterDriver(IPrintEnvironment& Environment) :
+LabelWriterDriver::LabelWriterDriver(IPrintEnvironment& Environment) :
    _printEnvironment(Environment),
    _dwVerticalResolution(0),
    _dwHorizontalResolution(0),
@@ -23,7 +23,7 @@ CLabelWriterDriver::CLabelWriterDriver(IPrintEnvironment& Environment) :
    _support_high_speed(false)
 { }
 
-void CLabelWriterDriver::StartDoc()
+void LabelWriterDriver::StartDoc()
 {
    _dwPageNumber = 1;
 
@@ -32,13 +32,13 @@ void CLabelWriterDriver::StartDoc()
    _dwJobID = std::rand();
 }
 
-void CLabelWriterDriver::EndDoc()
+void LabelWriterDriver::EndDoc()
 {
    SetFormFeed();
    SetEndPrintJob();
 }
 
-void CLabelWriterDriver::StartPage()
+void LabelWriterDriver::StartPage()
 {
     // Set the header for first page
     if(_dwPageNumber <= 1)
@@ -74,7 +74,7 @@ void CLabelWriterDriver::StartPage()
     SetPrintDataHeader(_dwVerticalResolution, _dwHorizontalResolution);
 }
 
-void CLabelWriterDriver::EndPage()
+void LabelWriterDriver::EndPage()
 {
    _dwPageNumber++;
 
@@ -83,7 +83,7 @@ void CLabelWriterDriver::EndPage()
    SetShortFormFeed();
 }
 
-void CLabelWriterDriver::ProcessRasterLine(const buffer_t& lineBuffer)
+void LabelWriterDriver::ProcessRasterLine(const buffer_t& lineBuffer)
 {
    buffer_t b = lineBuffer;
 
@@ -97,7 +97,7 @@ void CLabelWriterDriver::ProcessRasterLine(const buffer_t& lineBuffer)
    ProcessRasterLineInternal(b);
 }
 
-bool CLabelWriterDriver::IsBlank(const buffer_t& buf)
+bool LabelWriterDriver::IsBlank(const buffer_t& buf)
 {
     size_t size = buf.size();
 
@@ -110,7 +110,7 @@ bool CLabelWriterDriver::IsBlank(const buffer_t& buf)
     return true;
 }
 
-void CLabelWriterDriver::SetStartPrintJob(const dword dwJobID)
+void LabelWriterDriver::SetStartPrintJob(const dword dwJobID)
 {
    byte cmdBuffer[] = {ESC, 's', 0x00, 0x00, 0x00, 0x00};
 
@@ -122,14 +122,14 @@ void CLabelWriterDriver::SetStartPrintJob(const dword dwJobID)
    SendCommand(buffer_t(cmdBuffer, cmdBuffer + sizeof(cmdBuffer)));
 }
 
-void CLabelWriterDriver::SetEndPrintJob()
+void LabelWriterDriver::SetEndPrintJob()
 {
    byte cmdBuffer[] = {ESC, 'Q'};
 
    SendCommand(buffer_t(cmdBuffer, cmdBuffer + sizeof(cmdBuffer)));
 }
 
-void CLabelWriterDriver::SetLabelIndex(const dword dwPageNumber)
+void LabelWriterDriver::SetLabelIndex(const dword dwPageNumber)
 {
    byte cmdBuffer[] = {ESC, 'n', 0x00, 0x00};
 
@@ -139,7 +139,7 @@ void CLabelWriterDriver::SetLabelIndex(const dword dwPageNumber)
    SendCommand(buffer_t(cmdBuffer, cmdBuffer + sizeof(cmdBuffer)));
 }
 
-void CLabelWriterDriver::SetPrintDataHeader(const dword dwVerticalResolution, const dword dwHorizontalResolution)
+void LabelWriterDriver::SetPrintDataHeader(const dword dwVerticalResolution, const dword dwHorizontalResolution)
 {
    // Monochrome data and bottom aligned
    byte dataBuffer[] = {ESC, 'D', 0x01, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
@@ -159,21 +159,21 @@ void CLabelWriterDriver::SetPrintDataHeader(const dword dwVerticalResolution, co
    SendCommand(buffer_t(dataBuffer, dataBuffer + sizeof(dataBuffer)));
 }
 
-void CLabelWriterDriver::SetFormFeed()
+void LabelWriterDriver::SetFormFeed()
 {
     byte cmdBuffer[] = {ESC, 'E'};
 
     SendCommand(buffer_t(cmdBuffer, cmdBuffer + sizeof(cmdBuffer)));
 }
 
-void CLabelWriterDriver::SetShortFormFeed()
+void LabelWriterDriver::SetShortFormFeed()
 {
     byte cmdBuffer[] = {ESC, 'G'};
 
     SendCommand(buffer_t(cmdBuffer, cmdBuffer + sizeof(cmdBuffer)));
 }
 
-void CLabelWriterDriver::SetPrintDensity()
+void LabelWriterDriver::SetPrintDensity()
 {
     byte cmdBuffer[] = {ESC, 'e'};
 
@@ -198,7 +198,7 @@ void CLabelWriterDriver::SetPrintDensity()
     SendCommand(buffer_t(cmdBuffer, cmdBuffer + sizeof(cmdBuffer)));
 }
 
-void CLabelWriterDriver::SetPrintQuality()
+void LabelWriterDriver::SetPrintQuality()
 {
     byte cmdBuffer[] = {ESC, 'h'};
 
@@ -217,7 +217,7 @@ void CLabelWriterDriver::SetPrintQuality()
     SendCommand(buffer_t(cmdBuffer, cmdBuffer + sizeof(cmdBuffer)));
 }
 
-void CLabelWriterDriver::SetPrintSpeed()
+void LabelWriterDriver::SetPrintSpeed()
 {
     if(!_support_high_speed)
         return;
@@ -239,7 +239,7 @@ void CLabelWriterDriver::SetPrintSpeed()
     SendCommand(buffer_t(cmdBuffer, cmdBuffer + sizeof(cmdBuffer)));
 }
 
-void CLabelWriterDriver::SetPrintMedia()
+void LabelWriterDriver::SetPrintMedia()
 {
     byte cmdBuffer[] = {ESC, 'M', 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 
@@ -258,7 +258,7 @@ void CLabelWriterDriver::SetPrintMedia()
     SendCommand(buffer_t(cmdBuffer, cmdBuffer + sizeof(cmdBuffer)));
 }
 
-void CLabelWriterDriver::SetLabelLength(const dword dwLength)
+void LabelWriterDriver::SetLabelLength(const dword dwLength)
 {
     byte cmdBuffer[] = {ESC, 'L', 0, 0};
 
@@ -268,22 +268,22 @@ void CLabelWriterDriver::SetLabelLength(const dword dwLength)
     SendCommand(buffer_t(cmdBuffer, cmdBuffer + sizeof(cmdBuffer)));
 }
 
-void CLabelWriterDriver::ProcessRasterLineInternal(const buffer_t& lineBuffer)
+void LabelWriterDriver::ProcessRasterLineInternal(const buffer_t& lineBuffer)
 {
     SendCommand(lineBuffer);
 }
 
-void CLabelWriterDriver::SendCommand(const buffer_t& cmdBuffer)
+void LabelWriterDriver::SendCommand(const buffer_t& cmdBuffer)
 {
     _printEnvironment.WriteData(cmdBuffer);
 }
 
-buffer_t CLabelWriterDriver::GetResetCommand()
+buffer_t LabelWriterDriver::GetResetCommand()
 {
     return buffer_t(156, ESC);
 }
 
-buffer_t CLabelWriterDriver::GetRequestStatusCommand()
+buffer_t LabelWriterDriver::GetRequestStatusCommand()
 {
     byte buf[] = {ESC, 'A'};
     return buffer_t(buf, buf + sizeof(buf));

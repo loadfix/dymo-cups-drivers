@@ -6,11 +6,11 @@
 namespace DymoPrinterDriver
 {
 // Driver for the printers supported LabelWriter 400 series command set
-class CLabelWriterDriver400 : public CLabelWriterDriver
+class LabelWriterDriver400 : public LabelWriterDriver
 {
 public:
-    CLabelWriterDriver400(IPrintEnvironment& Environment);
-    virtual ~CLabelWriterDriver400() {}
+    LabelWriterDriver400(IPrintEnvironment& Environment);
+    virtual ~LabelWriterDriver400() {}
 
     virtual void StartDoc();
     virtual void EndDoc();

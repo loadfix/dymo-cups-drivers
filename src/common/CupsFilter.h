@@ -18,19 +18,19 @@ namespace DymoPrinterDriver
 // D - Driver
 // DI - DriverInitializer - setup driver properties on different job steps
 template<class D, class DI, class LM>
-class CCupsFilter
+class CupsFilter
 {
 public:
-  CCupsFilter();
+  CupsFilter();
 
   int Run(int argc, char* argv[]);
 
 private:
   void InitDocument(const char* opts);
 
-  CCupsPrintEnvironmentForLM          PrintEnvironmentForLM_;
+  CupsPrintEnvironmentForLM          PrintEnvironmentForLM_;
   LM                                  LanguageMonitor_;
-  CCupsPrintEnvironmentForDriver      PrintEnvironmentForDriver_;
+  CupsPrintEnvironmentForDriver      PrintEnvironmentForDriver_;
   D                                   Driver_;
 
   std::string                         HalftoningMethod_;
@@ -38,7 +38,7 @@ private:
 
 
 template <class D, class DI, class LM>
-CCupsFilter<D, DI, LM>::CCupsFilter():
+CupsFilter<D, DI, LM>::CupsFilter():
   PrintEnvironmentForLM_(), LanguageMonitor_(PrintEnvironmentForLM_),
   PrintEnvironmentForDriver_(LanguageMonitor_), Driver_(PrintEnvironmentForDriver_),
   HalftoningMethod_()
@@ -47,7 +47,7 @@ CCupsFilter<D, DI, LM>::CCupsFilter():
 
 template <class D, class DI, class LM>
 int
-CCupsFilter<D, DI, LM>::Run(int argc, char* argv[])
+CupsFilter<D, DI, LM>::Run(int argc, char* argv[])
 {
   setbuf(stderr, NULL);
 
@@ -108,18 +108,18 @@ CCupsFilter<D, DI, LM>::Run(int argc, char* argv[])
 
     buffer_t InputLine;
     buffer_t OutputLine;
-    CHalftoneFilter::image_buffer_t InputImage;
+    HalftoneFilter::image_buffer_t InputImage;
 
     bool UseCustomHalftoning    = PageHeader.cupsBitsPerPixel > 1;
     bool IsProcessLineSupported = true;
 
-    std::unique_ptr<CHalftoneFilter> H;
+    std::unique_ptr<HalftoneFilter> H;
     if (UseCustomHalftoning)
     {
       if (HalftoningMethod_ == "NLL")
-        H.reset(new CNLLHalftoning(5, CHalftoneFilter::itRGB, CHalftoneFilter::itBW));
+        H.reset(new NLLHalftoning(5, HalftoneFilter::itRGB, HalftoneFilter::itBW));
       else // error diffusion is default
-        H.reset(new CErrorDiffusionHalftoning(CHalftoneFilter::itRGB, CHalftoneFilter::itBW));
+        H.reset(new ErrorDiffusionHalftoning(HalftoneFilter::itRGB, HalftoneFilter::itBW));
 
       IsProcessLineSupported = H->IsProcessLineSupported();
     }
@@ -159,7 +159,7 @@ CCupsFilter<D, DI, LM>::Run(int argc, char* argv[])
     // process cached image by custom halftoning if needed
     if (UseCustomHalftoning && !IsProcessLineSupported)
     {
-      CHalftoneFilter::image_buffer_t OutputImage;
+      HalftoneFilter::image_buffer_t OutputImage;
       H->ProcessImage(InputImage, OutputImage);
       for (size_t i = 0; i < OutputImage.size(); ++i)
         Driver_.ProcessRasterLine(OutputImage[i]);
@@ -192,7 +192,7 @@ CCupsFilter<D, DI, LM>::Run(int argc, char* argv[])
 
 template<class D, class DI, class LM>
 void
-CCupsFilter<D, DI, LM>::InitDocument(const char* opts)
+CupsFilter<D, DI, LM>::InitDocument(const char* opts)
 {
   fprintf(stderr, "DEBUG: -----------------------------options are: %s\n", opts);
 
@@ -221,7 +221,7 @@ CCupsFilter<D, DI, LM>::InitDocument(const char* opts)
   DI::ProcessPPDOptions(Driver_, LanguageMonitor_, ppd);
 
   // extract halftoning method used
-  ppd_choice_t* choice = CCupsUtils::FindMarkedChoice(ppd, "DymoHalftoning");
+  ppd_choice_t* choice = CupsUtils::FindMarkedChoice(ppd, "DymoHalftoning");
   if (choice)
     HalftoningMethod_ = choice->choice;
 

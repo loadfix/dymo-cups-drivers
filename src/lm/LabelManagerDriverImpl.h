@@ -8,11 +8,11 @@
 namespace DymoPrinterDriver
 {
 // Driver for the printers supported LabelManager command set
-class CLabelManagerDriver : public ILabelManagerDriver
+class LabelManagerDriver : public ILabelManagerDriver
 {
 public:
-   CLabelManagerDriver(IPrintEnvironment& Environment);
-   virtual ~CLabelManagerDriver() {}
+   LabelManagerDriver(IPrintEnvironment& Environment);
+   virtual ~LabelManagerDriver() {}
 
    virtual void StartDoc();
    virtual void EndDoc();

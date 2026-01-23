@@ -5,29 +5,29 @@
 namespace DymoPrinterDriver
 {
 
-CHalftoneFilter::CHalftoneFilter(image_t InputImageType, image_t OutputImageType):
+HalftoneFilter::HalftoneFilter(image_t InputImageType, image_t OutputImageType):
   InputImageType_(InputImageType), OutputImageType_(OutputImageType)
 {
 }
 
-CHalftoneFilter::~CHalftoneFilter()
+HalftoneFilter::~HalftoneFilter()
 {
 }
 
-CHalftoneFilter::image_t
-CHalftoneFilter::GetInputImageType()
+HalftoneFilter::image_t
+HalftoneFilter::GetInputImageType()
 {
   return InputImageType_;
 }
 
-CHalftoneFilter::image_t
-CHalftoneFilter::GetOutputImageType()
+HalftoneFilter::image_t
+HalftoneFilter::GetOutputImageType()
 {
   return OutputImageType_;
 }
 
 byte
-CHalftoneFilter::RGBToGrayScale(byte R, byte G, byte B)
+HalftoneFilter::RGBToGrayScale(byte R, byte G, byte B)
 {
   // white should remain white
   if ((R == 255) && (G == 255) && (B == 255))
@@ -46,7 +46,7 @@ CHalftoneFilter::RGBToGrayScale(byte R, byte G, byte B)
 // set pixel pixelNo to
 // pixelValue (0 - white, 1 - black)
 void
-CHalftoneFilter::SetPixelBW(buffer_t& buf, int pixelNo, int pixelValue)
+HalftoneFilter::SetPixelBW(buffer_t& buf, int pixelNo, int pixelValue)
 {
   if (pixelValue)
     buf[pixelNo / 8] |= (1 << (7 - pixelNo % 8));
@@ -55,7 +55,7 @@ CHalftoneFilter::SetPixelBW(buffer_t& buf, int pixelNo, int pixelValue)
 }
 
 void
-CHalftoneFilter::ExtractRGB(const buffer_t& InputLine, int PixelNo, byte& R, byte& G, byte& B)
+HalftoneFilter::ExtractRGB(const buffer_t& InputLine, int PixelNo, byte& R, byte& G, byte& B)
 {
   switch (InputImageType_)
   {
@@ -75,7 +75,7 @@ CHalftoneFilter::ExtractRGB(const buffer_t& InputLine, int PixelNo, byte& R, byt
 }
 
 size_t
-CHalftoneFilter::CalcImageWidth(const buffer_t& InputLine)
+HalftoneFilter::CalcImageWidth(const buffer_t& InputLine)
 {
   switch (InputImageType_)
   {
@@ -92,7 +92,7 @@ CHalftoneFilter::CalcImageWidth(const buffer_t& InputLine)
 
 
 size_t
-CHalftoneFilter::CalcBufferSize(size_t ImageWidth)
+HalftoneFilter::CalcBufferSize(size_t ImageWidth)
 {
   switch (InputImageType_)
   {
@@ -108,7 +108,7 @@ CHalftoneFilter::CalcBufferSize(size_t ImageWidth)
 }
 
 size_t
-CHalftoneFilter::CalcOutputBufferSize(size_t ImageWidth)
+HalftoneFilter::CalcOutputBufferSize(size_t ImageWidth)
 {
   switch (OutputImageType_)
   {
@@ -125,7 +125,7 @@ CHalftoneFilter::CalcOutputBufferSize(size_t ImageWidth)
 }
 
 int
-CHalftoneFilter::ExtractRGB(const buffer_t& InputLine, int PixelNo)
+HalftoneFilter::ExtractRGB(const buffer_t& InputLine, int PixelNo)
 {
   switch (InputImageType_)
   {

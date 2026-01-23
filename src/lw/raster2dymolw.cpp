@@ -35,7 +35,7 @@ using namespace DymoPrinterDriver;
 
 // Global filter pointer for signal handling
 template<class D, class DI, class LM>
-CCupsFilter<D, DI, LM>* gFilterPtr = nullptr;
+CupsFilter<D, DI, LM>* gFilterPtr = nullptr;
 
 static bool IsBackchannelSupported()
 {
@@ -45,7 +45,7 @@ static bool IsBackchannelSupported()
 template<class D, class DI, class LM>
 int RunFilter(int argc, char* argv[])
 {
-    CCupsFilter<D, DI, LM> filter;
+    CupsFilter<D, DI, LM> filter;
     gFilterPtr<D, DI, LM> = &filter;
 
     // Filters and backends may also receive SIGPIPE when an upstream or downstream filter/backend exits
@@ -98,11 +98,11 @@ int main(int argc, char* argv[])
         if (IsBackchannelSupported())
         {
             // Note: LanguageMonitor support to be added later
-            return RunFilter<CLabelWriterDriver, CLabelWriterDriverInitializerWithLM, CDummyLanguageMonitor>(argc, argv);
+            return RunFilter<LabelWriterDriver, LabelWriterDriverInitializerWithLM, DummyLanguageMonitor>(argc, argv);
         }
         else
         {
-            return RunFilter<CLabelWriterDriver, CLabelWriterDriverInitializer, CDummyLanguageMonitor>(argc, argv);
+            return RunFilter<LabelWriterDriver, LabelWriterDriverInitializer, DummyLanguageMonitor>(argc, argv);
         }
     }
     else
@@ -112,11 +112,11 @@ int main(int argc, char* argv[])
             if (IsBackchannelSupported())
             {
                 // Note: LanguageMonitor support to be added later
-                return RunFilter<CLabelWriterDriverTwinTurbo, CLabelWriterDriverInitializerWithLM, CDummyLanguageMonitor>(argc, argv);
+                return RunFilter<LabelWriterDriverTwinTurbo, LabelWriterDriverInitializerWithLM, DummyLanguageMonitor>(argc, argv);
             }
             else
             {
-                return RunFilter<CLabelWriterDriverTwinTurbo, CLabelWriterDriverInitializer, CDummyLanguageMonitor>(argc, argv);
+                return RunFilter<LabelWriterDriverTwinTurbo, LabelWriterDriverInitializer, DummyLanguageMonitor>(argc, argv);
             }
         }
         else if (Is400SeriesPrinter(ppd->modelname))
@@ -124,11 +124,11 @@ int main(int argc, char* argv[])
             if (IsBackchannelSupported())
             {
                 // Note: LanguageMonitor support to be added later
-                return RunFilter<CLabelWriterDriver400, CLabelWriterDriverInitializerWithLM, CDummyLanguageMonitor>(argc, argv);
+                return RunFilter<LabelWriterDriver400, LabelWriterDriverInitializerWithLM, DummyLanguageMonitor>(argc, argv);
             }
             else
             {
-                return RunFilter<CLabelWriterDriver400, CLabelWriterDriverInitializer, CDummyLanguageMonitor>(argc, argv);
+                return RunFilter<LabelWriterDriver400, LabelWriterDriverInitializer, DummyLanguageMonitor>(argc, argv);
             }
         }
         else
@@ -136,11 +136,11 @@ int main(int argc, char* argv[])
             if (IsBackchannelSupported())
             {
                 // Note: LanguageMonitor support to be added later
-                return RunFilter<CLabelWriterDriver, CLabelWriterDriverInitializerWithLM, CDummyLanguageMonitor>(argc, argv);
+                return RunFilter<LabelWriterDriver, LabelWriterDriverInitializerWithLM, DummyLanguageMonitor>(argc, argv);
             }
             else
             {
-                return RunFilter<CLabelWriterDriver, CLabelWriterDriverInitializer, CDummyLanguageMonitor>(argc, argv);
+                return RunFilter<LabelWriterDriver, LabelWriterDriverInitializer, DummyLanguageMonitor>(argc, argv);
             }
         }
 

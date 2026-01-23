@@ -5,26 +5,26 @@ namespace DymoPrinterDriver
 {
 
 
-CErrorDiffusionHalftoning::CErrorDiffusionHalftoning(image_t InputImageType, image_t OutputImageType, bool UsePrinterColorSpace):
-  CHalftoneFilter(InputImageType, OutputImageType), ImageWidth_(0), Errors_(), GrayLine_(), UsePrinterColorSpace_(UsePrinterColorSpace)
+ErrorDiffusionHalftoning::ErrorDiffusionHalftoning(image_t InputImageType, image_t OutputImageType, bool UsePrinterColorSpace):
+  HalftoneFilter(InputImageType, OutputImageType), ImageWidth_(0), Errors_(), GrayLine_(), UsePrinterColorSpace_(UsePrinterColorSpace)
 {
   if (GetOutputImageType() != itBW)
     throw EHalftoneError(EHalftoneError::heUnsupportedImageType);
 }
 
-CErrorDiffusionHalftoning::~CErrorDiffusionHalftoning()
+ErrorDiffusionHalftoning::~CErrorDiffusionHalftoning()
 {
 }
 
 
 bool
-CErrorDiffusionHalftoning::IsProcessLineSupported()
+ErrorDiffusionHalftoning::IsProcessLineSupported()
 {
   return true;
 }
 
 void
-CErrorDiffusionHalftoning::ProcessLine(
+ErrorDiffusionHalftoning::ProcessLine(
   const buffer_t& InputLine, buffer_t& OutputLine)
 {
   int       pixelValue  = 0;
@@ -114,7 +114,7 @@ CErrorDiffusionHalftoning::ProcessLine(
 }
 
 void
-CErrorDiffusionHalftoning::ProcessImage(
+ErrorDiffusionHalftoning::ProcessImage(
   const void* ImageData, size_t ImageWidth, size_t ImageHeight, size_t LineDelta, std::vector<buffer_t>& OutputImage)
 {
   OutputImage.clear();
@@ -135,7 +135,7 @@ CErrorDiffusionHalftoning::ProcessImage(
 }
 
 void
-CErrorDiffusionHalftoning::ProcessImage(const std::vector<buffer_t>& InputImage, std::vector<buffer_t>& OutputImage)
+ErrorDiffusionHalftoning::ProcessImage(const std::vector<buffer_t>& InputImage, std::vector<buffer_t>& OutputImage)
 {
   OutputImage.clear();
 

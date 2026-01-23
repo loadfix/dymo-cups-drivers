@@ -19,7 +19,7 @@ using namespace DymoPrinterDriver;
 
 // Global filter pointer for signal handling
 template<class D, class DI, class LM>
-CCupsFilter<D, DI, LM>* gFilterPtr = nullptr;
+CupsFilter<D, DI, LM>* gFilterPtr = nullptr;
 
 static bool IsBackchannelSupported()
 {
@@ -29,7 +29,7 @@ static bool IsBackchannelSupported()
 template<class D, class DI, class LM>
 int RunFilter(int argc, char* argv[])
 {
-    CCupsFilter<D, DI, LM> filter;
+    CupsFilter<D, DI, LM> filter;
     gFilterPtr<D, DI, LM> = &filter;
 
     // Filters and backends may also receive SIGPIPE when an upstream or downstream filter/backend exits
@@ -78,10 +78,10 @@ int main(int argc, char* argv[])
     {
         // Note: LanguageMonitor support to be added later
         // For now using DummyLanguageMonitor until LabelManagerLanguageMonitor is copied
-        return RunFilter<CLabelManagerDriver, CLabelManagerDriverInitializerWithLM, CDummyLanguageMonitor>(argc, argv);
+        return RunFilter<LabelManagerDriver, LabelManagerDriverInitializerWithLM, DummyLanguageMonitor>(argc, argv);
     }
     else
     {
-        return RunFilter<CLabelManagerDriver, CLabelManagerDriverInitializer, CDummyLanguageMonitor>(argc, argv);
+        return RunFilter<LabelManagerDriver, LabelManagerDriverInitializer, DummyLanguageMonitor>(argc, argv);
     }
 }

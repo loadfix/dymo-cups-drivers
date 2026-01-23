@@ -6,7 +6,7 @@
 namespace DymoPrinterDriver
 {
 
-CLabelManagerDriver::CLabelManagerDriver(IPrintEnvironment& Environment) :
+LabelManagerDriver::LabelManagerDriver(IPrintEnvironment& Environment) :
    _printEnvironment(Environment),
    _dwVerticalResolution(0),
    _dwHorizontalResolution(0),
@@ -27,7 +27,7 @@ CLabelManagerDriver::CLabelManagerDriver(IPrintEnvironment& Environment) :
    _dwAlignedLeader(MIN_ALIGNED_LEADER)
 { }
 
-void CLabelManagerDriver::StartDoc()
+void LabelManagerDriver::StartDoc()
 {
    _dwPageNumber = 1;
 
@@ -36,7 +36,7 @@ void CLabelManagerDriver::StartDoc()
    _dwJobID = std::rand();
 }
 
-void CLabelManagerDriver::EndDoc()
+void LabelManagerDriver::EndDoc()
 {
    if(!_jobDidStart)
        return;
@@ -55,7 +55,7 @@ void CLabelManagerDriver::EndDoc()
    SetEndPrintJob();
 }
 
-void CLabelManagerDriver::StartPage()
+void LabelManagerDriver::StartPage()
 {
    // Set the header for first page
    if(_dwPageNumber <= 1)
@@ -103,12 +103,12 @@ void CLabelManagerDriver::StartPage()
    SetPrintDataHeader(_dwVerticalResolution, _dwHorizontalResolution);
 }
 
-void CLabelManagerDriver::EndPage()
+void LabelManagerDriver::EndPage()
 {
    _dwPageNumber++;
 }
 
-void CLabelManagerDriver::ProcessRasterLine(const buffer_t& lineBuffer)
+void LabelManagerDriver::ProcessRasterLine(const buffer_t& lineBuffer)
 {
    buffer_t b = lineBuffer;
 
@@ -127,7 +127,7 @@ void CLabelManagerDriver::ProcessRasterLine(const buffer_t& lineBuffer)
       //RasterLines_.push_back(b); // save for future reversing
 }
 
-void CLabelManagerDriver::SetStartPrintJob(const dword dwJobID)
+void LabelManagerDriver::SetStartPrintJob(const dword dwJobID)
 {
    byte cmdBuffer[] = {ESC, 's', 0x00, 0x00, 0x00, 0x00};
 
@@ -139,14 +139,14 @@ void CLabelManagerDriver::SetStartPrintJob(const dword dwJobID)
    SendCommand(buffer_t(cmdBuffer, cmdBuffer + sizeof(cmdBuffer)));
 }
 
-void CLabelManagerDriver::SetEndPrintJob()
+void LabelManagerDriver::SetEndPrintJob()
 {
    byte cmdBuffer[] = {ESC, 'Q'};
 
    SendCommand(buffer_t(cmdBuffer, cmdBuffer + sizeof(cmdBuffer)));
 }
 
-void CLabelManagerDriver::SetLabelIndex(const dword dwPageNumber)
+void LabelManagerDriver::SetLabelIndex(const dword dwPageNumber)
 {
    byte cmdBuffer[] = {ESC, 'n', 0x00, 0x00};
 
@@ -156,7 +156,7 @@ void CLabelManagerDriver::SetLabelIndex(const dword dwPageNumber)
    SendCommand(buffer_t(cmdBuffer, cmdBuffer + sizeof(cmdBuffer)));
 }
 
-void CLabelManagerDriver::SetLabelLeader(const dword dwLength)
+void LabelManagerDriver::SetLabelLeader(const dword dwLength)
 {
    byte cmdBuffer[] = {ESC, 'l', 0x00, 0x00, 0x00, 0x00};
 
@@ -168,7 +168,7 @@ void CLabelManagerDriver::SetLabelLeader(const dword dwLength)
    SendCommand(buffer_t(cmdBuffer, cmdBuffer + sizeof(cmdBuffer)));
 }
 
-void CLabelManagerDriver::SetLabelTrailer(const dword dwLength)
+void LabelManagerDriver::SetLabelTrailer(const dword dwLength)
 {
    byte cmdBuffer[] = {ESC, 't', 0x00, 0x00, 0x00, 0x00};
 
@@ -180,7 +180,7 @@ void CLabelManagerDriver::SetLabelTrailer(const dword dwLength)
    SendCommand(buffer_t(cmdBuffer, cmdBuffer + sizeof(cmdBuffer)));
 }
 
-void CLabelManagerDriver::SetPrintDataHeader(const dword dwVerticalResolution, const dword dwHorizontalResolution)
+void LabelManagerDriver::SetPrintDataHeader(const dword dwVerticalResolution, const dword dwHorizontalResolution)
 {
    // Monochrome data and bottom aligned
    byte dataBuffer[] = {ESC, 'D', 0x01, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
@@ -200,35 +200,35 @@ void CLabelManagerDriver::SetPrintDataHeader(const dword dwVerticalResolution, c
    SendCommand(buffer_t(dataBuffer, dataBuffer + sizeof(dataBuffer)));
 }
 
-void CLabelManagerDriver::SetFormFeed()
+void LabelManagerDriver::SetFormFeed()
 {
    byte cmdBuffer[] = {ESC, 'E'};
 
    SendCommand(buffer_t(cmdBuffer, cmdBuffer + sizeof(cmdBuffer)));
 }
 
-void CLabelManagerDriver::SetShortFormFeed()
+void LabelManagerDriver::SetShortFormFeed()
 {
    byte cmdBuffer[] = {ESC, 'G'};
 
    SendCommand(buffer_t(cmdBuffer, cmdBuffer + sizeof(cmdBuffer)));
 }
 
-void CLabelManagerDriver::SetCutCommand()
+void LabelManagerDriver::SetCutCommand()
 {
    byte cmdBuffer[] = {ESC, 'p', 0x30};
 
    SendCommand(buffer_t(cmdBuffer, cmdBuffer + sizeof(cmdBuffer)));
 }
 
-void CLabelManagerDriver::SetCutterMark()
+void LabelManagerDriver::SetCutterMark()
 {
    byte cmdBuffer[] = {ESC, 'p', 0x31};
 
    SendCommand(buffer_t(cmdBuffer, cmdBuffer + sizeof(cmdBuffer)));
 }
 
-void CLabelManagerDriver::ProcessRasterLineInternal(const buffer_t& LineBuffer)
+void LabelManagerDriver::ProcessRasterLineInternal(const buffer_t& LineBuffer)
 {
    buffer_t ShiftedRasterLine = LineBuffer;
 
@@ -237,7 +237,7 @@ void CLabelManagerDriver::ProcessRasterLineInternal(const buffer_t& LineBuffer)
    SendCommand(ShiftedRasterLine);
 }
 
-void CLabelManagerDriver::ShiftData(const buffer_t& Buf, buffer_t& ShiftedBuf, int ShiftValue)
+void LabelManagerDriver::ShiftData(const buffer_t& Buf, buffer_t& ShiftedBuf, int ShiftValue)
 {
    // Clear shift buffer first
    for(size_t i = 0; i < ShiftedBuf.size(); ++i)
@@ -249,7 +249,7 @@ void CLabelManagerDriver::ShiftData(const buffer_t& Buf, buffer_t& ShiftedBuf, i
       ShiftDataLeft(Buf, ShiftedBuf, -ShiftValue);
 }
 
-void CLabelManagerDriver::ShiftDataLeft(const buffer_t& Buf, buffer_t& ShiftedBuf, size_t ShiftValue)
+void LabelManagerDriver::ShiftDataLeft(const buffer_t& Buf, buffer_t& ShiftedBuf, size_t ShiftValue)
 {
    // Shift bytes first
    unsigned int ShiftedLen = ShiftedBuf.size() - ShiftValue / 8;
@@ -266,7 +266,7 @@ void CLabelManagerDriver::ShiftDataLeft(const buffer_t& Buf, buffer_t& ShiftedBu
       ShiftedBuf[Buf.size() - 1] = (Buf[Buf.size() - 1] << ShiftValue); // last
 }
 
-void CLabelManagerDriver::ShiftDataRight(const buffer_t& Buf, buffer_t& ShiftedBuf, size_t ShiftValue)
+void LabelManagerDriver::ShiftDataRight(const buffer_t& Buf, buffer_t& ShiftedBuf, size_t ShiftValue)
 {
    // Shift bytes first
    unsigned int ShiftedLen = ShiftedBuf.size() - ShiftValue / 8;
@@ -285,17 +285,17 @@ void CLabelManagerDriver::ShiftDataRight(const buffer_t& Buf, buffer_t& ShiftedB
       ShiftedBuf[ShiftedOffset + Buf.size()] = (Buf[Buf.size() - 1] << (8 - ShiftValue));
 }
 
-int CLabelManagerDriver::GetShiftValue(size_t RasterLineSize)
+int LabelManagerDriver::GetShiftValue(size_t RasterLineSize)
 {
    return _dwTapeAlignmentOffset;
 }
 
-void CLabelManagerDriver::SendCommand(const buffer_t& cmdBuffer)
+void LabelManagerDriver::SendCommand(const buffer_t& cmdBuffer)
 {
    _printEnvironment.WriteData(cmdBuffer);
 }
 
-buffer_t CLabelManagerDriver::GetRequestStatusCommand()
+buffer_t LabelManagerDriver::GetRequestStatusCommand()
 {
     byte buf[] = {ESC, 'A'};
     return buffer_t(buf, buf + sizeof(buf));

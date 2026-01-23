@@ -7,28 +7,28 @@
 
 namespace DymoPrinterDriver
 {
-    class CLabelManagerDriver;
-    class CLabelManagerLanguageMonitor;
-    class CDummyLanguageMonitor;
+    class LabelManagerDriver;
+    class LabelManagerLanguageMonitor;
+    class DummyLanguageMonitor;
 }
 
 namespace DymoPrinterDriver
 {
 
-class CLabelManagerDriverInitializer
+class LabelManagerDriverInitializer
 {
 public:
-    static void ProcessCupsOptions(CLabelManagerDriver& Driver, int num_options, cups_option_t* options);
-    static void ProcessPPDOptions(CLabelManagerDriver& Driver, CDummyLanguageMonitor& LM, ppd_file_t* ppd);
-    static void ProcessPageOptions(CLabelManagerDriver& Driver, CDummyLanguageMonitor& LM, cups_page_header2_t& PageHeader);
+    static void ProcessCupsOptions(LabelManagerDriver& Driver, int num_options, cups_option_t* options);
+    static void ProcessPPDOptions(LabelManagerDriver& Driver, DummyLanguageMonitor& LM, ppd_file_t* ppd);
+    static void ProcessPageOptions(LabelManagerDriver& Driver, DummyLanguageMonitor& LM, cups_page_header2_t& PageHeader);
 };
 
-class CLabelManagerDriverInitializerWithLM
+class LabelManagerDriverInitializerWithLM
 {
 public:
-    static void ProcessCupsOptions(CLabelManagerDriver& Driver, CLabelManagerLanguageMonitor& LM, int num_options, cups_option_t* options);
-    static void ProcessPPDOptions(CLabelManagerDriver& Driver, CDummyLanguageMonitor& LM, ppd_file_t* ppd);
-    static void ProcessPageOptions(CLabelManagerDriver& Driver, CDummyLanguageMonitor& LM, cups_page_header2_t& PageHeader);
+    static void ProcessCupsOptions(LabelManagerDriver& Driver, LabelManagerLanguageMonitor& LM, int num_options, cups_option_t* options);
+    static void ProcessPPDOptions(LabelManagerDriver& Driver, DummyLanguageMonitor& LM, ppd_file_t* ppd);
+    static void ProcessPageOptions(LabelManagerDriver& Driver, DummyLanguageMonitor& LM, cups_page_header2_t& PageHeader);
 };
 
 }

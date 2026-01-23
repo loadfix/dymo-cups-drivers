@@ -6,11 +6,11 @@
 namespace DymoPrinterDriver
 {
 
-class CDummyLanguageMonitor : public ILanguageMonitor
+class DummyLanguageMonitor : public ILanguageMonitor
 {
 public:
-   CDummyLanguageMonitor(IPrintEnvironment& Environment) : _environment(Environment) {}
-   virtual ~CDummyLanguageMonitor() {}
+   DummyLanguageMonitor(IPrintEnvironment& Environment) : _environment(Environment) {}
+   virtual ~DummyLanguageMonitor() {}
 
    virtual void StartDoc() {}
    virtual void EndDoc() {}

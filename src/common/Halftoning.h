@@ -7,7 +7,7 @@
 namespace DymoPrinterDriver
 {
 
-class CHalftoneFilter
+class HalftoneFilter
 {
 public:
    // image format
@@ -20,8 +20,8 @@ public:
 
    typedef std::vector<buffer_t> image_buffer_t;
 
-   CHalftoneFilter(image_t InputImageType, image_t OutputImageType) : _inputImageType(InputImageType), _outputImageType(OutputImageType) {}
-   virtual ~CHalftoneFilter() {}
+   HalftoneFilter(image_t InputImageType, image_t OutputImageType) : _inputImageType(InputImageType), _outputImageType(OutputImageType) {}
+   virtual ~HalftoneFilter() {}
 
    // Line-by-line interface
    virtual bool IsProcessLineSupported() = 0;

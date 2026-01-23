@@ -8,31 +8,31 @@
 
 namespace DymoPrinterDriver
 {
-    CLabelManagerLanguageMonitor::CLabelManagerLanguageMonitor(IPrintEnvironment& Environment, bool UseSleep, size_t ReadStatusTimeout):
+    LabelManagerLanguageMonitor::LabelManagerLanguageMonitor(IPrintEnvironment& Environment, bool UseSleep, size_t ReadStatusTimeout):
     Environment_(Environment), IsFirstPage_(true), PageData_(), UseSleep_(UseSleep), LastReadStatusResult_(true), ReadStatusTimeout_(ReadStatusTimeout)
     {
     }
 
-    CLabelManagerLanguageMonitor::~CLabelManagerLanguageMonitor()
+    LabelManagerLanguageMonitor::~LabelManagerLanguageMonitor()
     {
     }
 
     void
-    CLabelManagerLanguageMonitor::StartDoc()
+    LabelManagerLanguageMonitor::StartDoc()
     {
         IsFirstPage_ = true;
     }
 
     void
-    CLabelManagerLanguageMonitor::EndDoc()
+    LabelManagerLanguageMonitor::EndDoc()
     {
-        fprintf(stderr, "DEBUG: CLabelManagerLanguageMonitor::EndDoc()\n");
+        fprintf(stderr, "DEBUG: LabelManagerLanguageMonitor::EndDoc()\n");
     }
 
     void
-    CLabelManagerLanguageMonitor::StartPage()
+    LabelManagerLanguageMonitor::StartPage()
     {
-        fprintf(stderr, "DEBUG: CLabelManagerLanguageMonitor::StartPage()\n");
+        fprintf(stderr, "DEBUG: LabelManagerLanguageMonitor::StartPage()\n");
         if (IsFirstPage_)
         {
             CheckStatus();
@@ -42,13 +42,13 @@ namespace DymoPrinterDriver
     }
 
     void
-    CLabelManagerLanguageMonitor::EndPage()
+    LabelManagerLanguageMonitor::EndPage()
     {
-        fprintf(stderr, "DEBUG: CLabelManagerLanguageMonitor::EndPage()\n");
+        fprintf(stderr, "DEBUG: LabelManagerLanguageMonitor::EndPage()\n");
     }
 
     bool
-    CLabelManagerLanguageMonitor::IsLocal()
+    LabelManagerLanguageMonitor::IsLocal()
     {
         char* uri = getenv("DEVICE_URI");
 
@@ -56,9 +56,9 @@ namespace DymoPrinterDriver
     }
 
     void
-    CLabelManagerLanguageMonitor::CheckStatus()
+    LabelManagerLanguageMonitor::CheckStatus()
     {
-        fprintf(stderr, "DEBUG: CLabelManagerLanguageMonitor::CheckStatus()\n");
+        fprintf(stderr, "DEBUG: LabelManagerLanguageMonitor::CheckStatus()\n");
 
         // restore good status of the job
 
@@ -69,7 +69,7 @@ namespace DymoPrinterDriver
 
         while (true)
         {
-            fprintf(stderr, "DEBUG: CLabelManagerLanguageMonitor::CheckStatus() 1\n");
+            fprintf(stderr, "DEBUG: LabelManagerLanguageMonitor::CheckStatus() 1\n");
 
             buffer_t Status;
             time_t   BeginTime   = time(NULL);
@@ -79,7 +79,7 @@ namespace DymoPrinterDriver
             int i = 0;
             while ((!StatusOK || (Status[0] & BUSY_BIT)) && (difftime(time(NULL), BeginTime) < ReadStatusTimeout_))
             {
-                fprintf(stderr, "DEBUG: CLabelManagerLanguageMonitor::CheckStatus() 2 %i\n", i);
+                fprintf(stderr, "DEBUG: LabelManagerLanguageMonitor::CheckStatus() 2 %i\n", i);
 
                 StatusOK = ReadStatus(Status);
 
@@ -90,7 +90,7 @@ namespace DymoPrinterDriver
             {
                 SetJobStatus(BUSY_BIT);
 
-                fprintf(stderr, "DEBUG: CLabelManagerLanguageMonitor::CheckStatus() timeout\n");
+                fprintf(stderr, "DEBUG: LabelManagerLanguageMonitor::CheckStatus() timeout\n");
 
                 break;
             }
@@ -119,19 +119,19 @@ namespace DymoPrinterDriver
         // clear stored label data
         PageData_.clear();
 
-        fprintf(stderr, "DEBUG: CLabelManagerLanguageMonitor::CheckStatus() return\n");
+        fprintf(stderr, "DEBUG: LabelManagerLanguageMonitor::CheckStatus() return\n");
     }
 
     bool
-    CLabelManagerLanguageMonitor::ReadStatus(buffer_t& Status)
+    LabelManagerLanguageMonitor::ReadStatus(buffer_t& Status)
     {
         time_t t = time(NULL);
-        fprintf(stderr, "DEBUG: CLabelManagerLanguageMonitor::ReadStatus() %s\n", ctime(&t));
+        fprintf(stderr, "DEBUG: LabelManagerLanguageMonitor::ReadStatus() %s\n", ctime(&t));
 
         bool Result = false;
         Status.clear();
 
-        buffer_t RequestStatusCommand = CLabelManagerDriver::GetRequestStatusCommand();
+        buffer_t RequestStatusCommand = LabelManagerDriver::GetRequestStatusCommand();
         Environment_.WriteData(RequestStatusCommand);
 
         Environment_.ReadData(Status);
@@ -146,7 +146,7 @@ namespace DymoPrinterDriver
     }
 
     void
-    CLabelManagerLanguageMonitor::SetJobStatus(byte Status)
+    LabelManagerLanguageMonitor::SetJobStatus(byte Status)
     {
         IPrintEnvironment::job_status_t JobStatus = IPrintEnvironment::jsOK;
 
@@ -167,7 +167,7 @@ namespace DymoPrinterDriver
     }
 
     bool
-    CLabelManagerLanguageMonitor::CheckTapeSize(buffer_t Status)
+    LabelManagerLanguageMonitor::CheckTapeSize(buffer_t Status)
     {
         fprintf(stderr, "DEBUG: CheckTapeSize() device %s tape %d\n", DeviceName_.c_str(), TapeWidth_);
 
@@ -187,10 +187,10 @@ namespace DymoPrinterDriver
         {
             if((Status[0] & CASSETTE_PRESENT_BIT) == CASSETTE_PRESENT_BIT)
             {
-                if((((Status[0] & CASSETTE_SIZE_BITS) == 0x00) && TapeWidth_ == CLabelManagerDriver::tw6mm) ||
-                   (((Status[0] & CASSETTE_SIZE_BITS) == 0x01) && (TapeWidth_ == CLabelManagerDriver::tw9mm || TapeWidth_ == CLabelManagerDriver::tw12mm)) ||
-                   (((Status[0] & CASSETTE_SIZE_BITS) == 0x02) && TapeWidth_ == CLabelManagerDriver::tw19mm) ||
-                   (((Status[0] & CASSETTE_SIZE_BITS) == 0x03) && TapeWidth_ == CLabelManagerDriver::tw24mm))
+                if((((Status[0] & CASSETTE_SIZE_BITS) == 0x00) && TapeWidth_ == LabelManagerDriver::tw6mm) ||
+                   (((Status[0] & CASSETTE_SIZE_BITS) == 0x01) && (TapeWidth_ == LabelManagerDriver::tw9mm || TapeWidth_ == LabelManagerDriver::tw12mm)) ||
+                   (((Status[0] & CASSETTE_SIZE_BITS) == 0x02) && TapeWidth_ == LabelManagerDriver::tw19mm) ||
+                   (((Status[0] & CASSETTE_SIZE_BITS) == 0x03) && TapeWidth_ == LabelManagerDriver::tw24mm))
                     return true;
                 else
                     return false;
@@ -202,11 +202,11 @@ namespace DymoPrinterDriver
         if (!strcasecmp(DeviceName_.c_str(), "DYMO LabelMANAGER 450"))
         {
             if(((Status[1] & 0xFF) == 0x00) ||
-               (((Status[1] & 0xFF) == 0x01) && TapeWidth_ == CLabelManagerDriver::tw6mm) ||
-               (((Status[1] & 0xFF) == 0x02) && TapeWidth_ == CLabelManagerDriver::tw9mm) ||
-               (((Status[1] & 0xFF) == 0x03) && TapeWidth_ == CLabelManagerDriver::tw12mm) ||
-               (((Status[1] & 0xFF) == 0x04) && TapeWidth_ == CLabelManagerDriver::tw19mm) ||
-               (((Status[1] & 0xFF) == 0x05) && TapeWidth_ == CLabelManagerDriver::tw24mm))
+               (((Status[1] & 0xFF) == 0x01) && TapeWidth_ == LabelManagerDriver::tw6mm) ||
+               (((Status[1] & 0xFF) == 0x02) && TapeWidth_ == LabelManagerDriver::tw9mm) ||
+               (((Status[1] & 0xFF) == 0x03) && TapeWidth_ == LabelManagerDriver::tw12mm) ||
+               (((Status[1] & 0xFF) == 0x04) && TapeWidth_ == LabelManagerDriver::tw19mm) ||
+               (((Status[1] & 0xFF) == 0x05) && TapeWidth_ == LabelManagerDriver::tw24mm))
                 return true;
             else
                 return false;
@@ -214,9 +214,9 @@ namespace DymoPrinterDriver
 
         if (!strcasecmp(DeviceName_.c_str(), "DYMO LabelPOINT 350"))
         {
-            if((((Status[0] & CASSETTE_SIZE_BITS) == 0x01) && TapeWidth_ == CLabelManagerDriver::tw6mm) ||
-               (((Status[0] & CASSETTE_SIZE_BITS) == 0x02) && (TapeWidth_ == CLabelManagerDriver::tw19mm || TapeWidth_ == CLabelManagerDriver::tw24mm)) ||
-               (((Status[0] & CASSETTE_SIZE_BITS) == 0x03) && (TapeWidth_ == CLabelManagerDriver::tw9mm || TapeWidth_ == CLabelManagerDriver::tw12mm)))
+            if((((Status[0] & CASSETTE_SIZE_BITS) == 0x01) && TapeWidth_ == LabelManagerDriver::tw6mm) ||
+               (((Status[0] & CASSETTE_SIZE_BITS) == 0x02) && (TapeWidth_ == LabelManagerDriver::tw19mm || TapeWidth_ == LabelManagerDriver::tw24mm)) ||
+               (((Status[0] & CASSETTE_SIZE_BITS) == 0x03) && (TapeWidth_ == LabelManagerDriver::tw9mm || TapeWidth_ == LabelManagerDriver::tw12mm)))
                 return true;
             else
                 return false;
@@ -229,11 +229,11 @@ namespace DymoPrinterDriver
             if((Status[0] & CASSETTE_PRESENT_BIT) == CASSETTE_PRESENT_BIT)
             {
                 if(((Status[1] & 0xFF) == 0x00) ||
-                   (((Status[1] & 0xFF) == 0x01) && TapeWidth_ == CLabelManagerDriver::tw6mm) ||
-                   (((Status[1] & 0xFF) == 0x02) && TapeWidth_ == CLabelManagerDriver::tw9mm) ||
-                   (((Status[1] & 0xFF) == 0x03) && TapeWidth_ == CLabelManagerDriver::tw12mm) ||
-                   (((Status[1] & 0xFF) == 0x04) && TapeWidth_ == CLabelManagerDriver::tw19mm) ||
-                   (((Status[1] & 0xFF) == 0x05) && TapeWidth_ == CLabelManagerDriver::tw24mm))
+                   (((Status[1] & 0xFF) == 0x01) && TapeWidth_ == LabelManagerDriver::tw6mm) ||
+                   (((Status[1] & 0xFF) == 0x02) && TapeWidth_ == LabelManagerDriver::tw9mm) ||
+                   (((Status[1] & 0xFF) == 0x03) && TapeWidth_ == LabelManagerDriver::tw12mm) ||
+                   (((Status[1] & 0xFF) == 0x04) && TapeWidth_ == LabelManagerDriver::tw19mm) ||
+                   (((Status[1] & 0xFF) == 0x05) && TapeWidth_ == LabelManagerDriver::tw24mm))
                     return true;
                 else
                     return false;
@@ -246,19 +246,19 @@ namespace DymoPrinterDriver
     }
 
     void
-    CLabelManagerLanguageMonitor::ProcessData(const buffer_t& Data)
+    LabelManagerLanguageMonitor::ProcessData(const buffer_t& Data)
     {
         PageData_.insert(PageData_.end(), Data.begin(), Data.end());
     }
 
     void
-    CLabelManagerLanguageMonitor::SetDeviceName(const std::string& Value)
+    LabelManagerLanguageMonitor::SetDeviceName(const std::string& Value)
     {
         DeviceName_ = Value;
     }
 
     void
-    CLabelManagerLanguageMonitor::SetTapeWidth(CLabelManagerDriver::tape_width_t Value)
+    LabelManagerLanguageMonitor::SetTapeWidth(LabelManagerDriver::tape_width_t Value)
     {
         TapeWidth_ = Value;
     }

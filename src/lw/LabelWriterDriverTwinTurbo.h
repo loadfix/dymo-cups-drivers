@@ -6,7 +6,7 @@
 namespace DymoPrinterDriver
 {
 // Driver for the printers supported LabelWriter TwinTurbo command set
-class CLabelWriterDriverTwinTurbo : public CLabelWriterDriver400
+class LabelWriterDriverTwinTurbo : public LabelWriterDriver400
 {
 public:
     typedef enum
@@ -16,8 +16,8 @@ public:
         rtRight
     } roll_t;
 
-    CLabelWriterDriverTwinTurbo(IPrintEnvironment& Environment);
-    virtual ~CLabelWriterDriverTwinTurbo() {}
+    LabelWriterDriverTwinTurbo(IPrintEnvironment& Environment);
+    virtual ~LabelWriterDriverTwinTurbo() {}
 
     virtual void StartDoc();
 

@@ -5,10 +5,10 @@ namespace DymoPrinterDriver
 const byte ESC = 0x1B;
 const byte SYN = 0x16;
 
-CLabelManagerDriver::CLabelManagerDriver(IPrintEnvironment& Environment):
-  Environment_(Environment), 
-  CutOptions_(CLabelManagerDriver::coCut), Alignment_(alCenter), ContinuousPaper_(false), PrintChainMarksAtDocEnd_(false), AutoPaper_(false), TapeAlignmentOffset_(0), TapeColor_(tcBlackOnWhite),
-  DeviceName_(), SupportAutoCut_(true), TSDevice_(false), MaxPrintableWidth_(96), 
+LabelManagerDriver::LabelManagerDriver(IPrintEnvironment& Environment):
+  Environment_(Environment),
+  CutOptions_(LabelManagerDriver::coCut), Alignment_(alCenter), ContinuousPaper_(false), PrintChainMarksAtDocEnd_(false), AutoPaper_(false), TapeAlignmentOffset_(0), TapeColor_(tcBlackOnWhite),
+  DeviceName_(), SupportAutoCut_(true), TSDevice_(false), MaxPrintableWidth_(96),
   NormalLeader_(75), MinLeader_(55), AlignedLeader_(43), MinPageLines_(133),
   LastDotTab_(size_t(-1)), LastBytesPerLine_(size_t(-1)), EmptyLinesCount_(0), PageNo_(1),
   RasterLines_(), ShiftedRasterLine_(12), TSBuffer_(0),
@@ -16,22 +16,22 @@ CLabelManagerDriver::CLabelManagerDriver(IPrintEnvironment& Environment):
 {
 }
 
-CLabelManagerDriver::~CLabelManagerDriver()
+LabelManagerDriver::~LabelManagerDriver()
 {
 }
-    
-void 
-CLabelManagerDriver::StartDoc()
+
+void
+LabelManagerDriver::StartDoc()
 {
   PageNo_ = 1;
-  
+
   SendCommand(buffer_t(GetMaxBytesPerLine(), 0)); // clean
 
   SendTapeColor(TapeColor_);
 }
 
-void 
-CLabelManagerDriver::EndDoc()
+void
+LabelManagerDriver::EndDoc()
 {
   if (PrintChainMarksAtDocEnd_)
     SendChainMark();
@@ -48,16 +48,16 @@ CLabelManagerDriver::EndDoc()
   }
 }
 
-void 
-CLabelManagerDriver::StartPage()
+void
+LabelManagerDriver::StartPage()
 {
   LastDotTab_         = size_t(-1);
   LastBytesPerLine_   = size_t(-1);
   PageLineCount_      = 0;
   EmptyLinesCount_    = 0;
-    
+
   RasterLines_.clear();
-    
+
   size_t LeaderLength = NormalLeader_;
   if (PageNo_ > 1)
   {
@@ -66,25 +66,25 @@ CLabelManagerDriver::StartPage()
       SendSkipLines(MinLeader_); // advance to the cutter
       LeaderLength -= MinLeader_;
       SendCut();
-    }    
+    }
     else
-      SendChainMark();    
+      SendChainMark();
   }
   else // first page
     LeaderLength -= MinLeader_; // already at cutter position
-    
-  if (!ContinuousPaper_)    
+
+  if (!ContinuousPaper_)
     SendSkipLines(LeaderLength);
 }
 
-void 
-CLabelManagerDriver::EndPage()
+void
+LabelManagerDriver::EndPage()
 {
   // last empty lines will not be drawn in case of Auto paper
   // so, adjust the page length to properly calculate min page length
   if (AutoPaper_)
     PageLineCount_ -= EmptyLinesCount_;
-    
+
   // process cached data
   if (Alignment_ == alLeft)
   {
@@ -92,37 +92,37 @@ CLabelManagerDriver::EndPage()
     if (PageLineCount_ < MinLabelLength)
       SendSkipLines(MinLabelLength - PageLineCount_);
     SendCachedRasterLines();
-  }   
+  }
 
   if (!ContinuousPaper_)
   {
     size_t TrailerLength = NormalLeader_;
-    
+
     if (Alignment_ != alCenter)
       TrailerLength = AlignedLeader_;
-    
+
     // for left we already take short label length into account
     if (Alignment_ != alLeft)
     {
       size_t MinLabelLength = MinPageLines_ + (NormalLeader_ - TrailerLength);
       if (PageLineCount_ < MinLabelLength)
         TrailerLength += MinLabelLength - PageLineCount_;
-    }        
-        
+    }
+
     // draw empty lines at the and, so the label has a full length
     if (!AutoPaper_)
-      TrailerLength += EmptyLinesCount_; 
+      TrailerLength += EmptyLinesCount_;
     EmptyLinesCount_ = 0;
-    
+
     SendSkipLines(TrailerLength);
   }
-    
+
   ++PageNo_;
 }
 
 
-void 
-CLabelManagerDriver::GetBlanks(
+void
+LabelManagerDriver::GetBlanks(
   const buffer_t& Buf, size_t& LeaderBlanks, size_t& TrailerBlanks)
 {
   size_t i = 0;
@@ -132,31 +132,31 @@ CLabelManagerDriver::GetBlanks(
 
   size_t BufSize = Buf.size();
 
-  // count left spaces 
+  // count left spaces
   for (i = 0; i < BufSize; ++i)
     if (Buf[i] == 0)
       ++LeaderBlanks;
     else
-      break;  
+      break;
 
   if (i == BufSize) return;
 
-  // count right spaces 
+  // count right spaces
   for (i = BufSize - 1; i >= 0; --i)
     if (Buf[i] == 0)
       ++TrailerBlanks;
     else
-      break;  
+      break;
 } // GetBlanks()
 
 
-void 
-CLabelManagerDriver::ProcessRasterLine(const buffer_t& lineBuffer)
+void
+LabelManagerDriver::ProcessRasterLine(const buffer_t& lineBuffer)
 {
   ++PageLineCount_;
-    
+
   buffer_t b = lineBuffer;
-    
+
   if (b.size() > GetMaxBytesPerLine())
     b = buffer_t(b.begin(), b.begin() + GetMaxBytesPerLine());
 
@@ -166,14 +166,14 @@ CLabelManagerDriver::ProcessRasterLine(const buffer_t& lineBuffer)
     ProcessRasterLineInternal(b);
 }
 
-void 
-CLabelManagerDriver::ProcessRasterLineInternal(const buffer_t& LineBuffer)
+void
+LabelManagerDriver::ProcessRasterLineInternal(const buffer_t& LineBuffer)
 {
   ShiftData(LineBuffer, ShiftedRasterLine_, GetShiftValue(LineBuffer.size()));
-    
+
   size_t LeaderBlanks = 0;
   size_t TrailerBlanks = 0;
-    
+
   // get blanks count
   GetBlanks(ShiftedRasterLine_, LeaderBlanks, TrailerBlanks);
 
@@ -187,7 +187,7 @@ CLabelManagerDriver::ProcessRasterLineInternal(const buffer_t& LineBuffer)
     // skip empty lines
     if (EmptyLinesCount_)
       SendSkipLines(EmptyLinesCount_);
-            
+
     EmptyLinesCount_ = 0;
 
     // set dot tab
@@ -195,8 +195,8 @@ CLabelManagerDriver::ProcessRasterLineInternal(const buffer_t& LineBuffer)
     {
       SendDotTab(LeaderBlanks);
       LastDotTab_ = LeaderBlanks;
-    }  
-        
+    }
+
     size_t BytesPerLine = ShiftedRasterLine_.size() - LeaderBlanks - TrailerBlanks;
     if (LastBytesPerLine_ != BytesPerLine)
     {
@@ -210,7 +210,7 @@ CLabelManagerDriver::ProcessRasterLineInternal(const buffer_t& LineBuffer)
   }
 }
 
-static byte 
+static byte
 ReverseByte(byte Value)
 {
   byte   ReversedByte   = 0;
@@ -219,228 +219,228 @@ ReverseByte(byte Value)
   while (Value)
   {
     ReversedByte <<= 1;
-    if (Value & 0x1) 
+    if (Value & 0x1)
       ReversedByte |= 0x1;
-    
+
     Value >>= 1;
     ++BitsCopied;
   }
 
   ReversedByte <<= 8 - BitsCopied;
-  
+
   return ReversedByte;
 }
 
 void
-CLabelManagerDriver::SendCachedRasterLines()
+LabelManagerDriver::SendCachedRasterLines()
 {
   for (std::vector<buffer_t>::reverse_iterator it = RasterLines_.rbegin(); it < RasterLines_.rend(); ++it)
   {
     buffer_t& b = *it;
     for (size_t i = 0; i < b.size(); ++i)
       b[i] = ReverseByte(b[i]);
-            
-    std::reverse(b.begin(), b.end());    
-            
+
+    std::reverse(b.begin(), b.end());
+
     ProcessRasterLineInternal(b);
   }
 }
 
-void        
-CLabelManagerDriver::SetMaxPrintableWidth(size_t Value)
+void
+LabelManagerDriver::SetMaxPrintableWidth(size_t Value)
 {
   MaxPrintableWidth_ = Value;
   ShiftedRasterLine_.resize(GetMaxBytesPerLine());
 }
 
-void        
-CLabelManagerDriver::SetNormalLeader(size_t Value)
+void
+LabelManagerDriver::SetNormalLeader(size_t Value)
 {
   NormalLeader_ = Value;
 }
 
-void        
-CLabelManagerDriver::SetMinLeader(size_t Value)
+void
+LabelManagerDriver::SetMinLeader(size_t Value)
 {
   MinLeader_ = Value;
 }
 
-void        
-CLabelManagerDriver::SetAlignedLeader(size_t Value)
+void
+LabelManagerDriver::SetAlignedLeader(size_t Value)
 {
   AlignedLeader_ = Value;
 }
 
-void        
-CLabelManagerDriver::SetMinPageLines(size_t Value)
+void
+LabelManagerDriver::SetMinPageLines(size_t Value)
 {
   MinPageLines_ = Value;
 }
-    
-void        
-CLabelManagerDriver::SetCutOptions(CLabelManagerDriver::cut_t Value)
+
+void
+LabelManagerDriver::SetCutOptions(LabelManagerDriver::cut_t Value)
 {
   CutOptions_ = Value;
 }
 
-void        
-CLabelManagerDriver::SetAlignment(CLabelManagerDriver::alignment_t Value)
+void
+LabelManagerDriver::SetAlignment(LabelManagerDriver::alignment_t Value)
 {
   Alignment_ = Value;
 }
 
-void        
-CLabelManagerDriver::SetContinuousPaper(bool Value)
+void
+LabelManagerDriver::SetContinuousPaper(bool Value)
 {
   ContinuousPaper_ = Value;
 }
 
-void        
-CLabelManagerDriver::SetPrintChainMarksAtDocEnd(bool Value)
+void
+LabelManagerDriver::SetPrintChainMarksAtDocEnd(bool Value)
 {
   PrintChainMarksAtDocEnd_ = Value;
 }
 
-void        
-CLabelManagerDriver::SetAutoPaper(bool Value)
+void
+LabelManagerDriver::SetAutoPaper(bool Value)
 {
   AutoPaper_ = Value;
 }
 
-void        
-CLabelManagerDriver::SetTapeAlignmentOffset(int Value)
+void
+LabelManagerDriver::SetTapeAlignmentOffset(int Value)
 {
   TapeAlignmentOffset_ = Value;
 }
 
-void        
-CLabelManagerDriver::SetTapeColor(tape_color_t Value)
+void
+LabelManagerDriver::SetTapeColor(tape_color_t Value)
 {
   TapeColor_ = Value;
 }
 
-void        
-CLabelManagerDriver::SetDeviceName(const std::string& Value)
+void
+LabelManagerDriver::SetDeviceName(const std::string& Value)
 {
   DeviceName_ = Value;
 }
 
-void        
-CLabelManagerDriver::SetSupportAutoCut(bool Value)
+void
+LabelManagerDriver::SetSupportAutoCut(bool Value)
 {
   SupportAutoCut_ = Value;
 }
 
-void        
-CLabelManagerDriver::SetTSDevice(bool Value)
+void
+LabelManagerDriver::SetTSDevice(bool Value)
 {
   TSDevice_ = Value;
 }
-    
-size_t 
-CLabelManagerDriver::GetMaxBytesPerLine()
+
+size_t
+LabelManagerDriver::GetMaxBytesPerLine()
 {
   return MaxPrintableWidth_ / 8;
 }
 
 const std::string&
-CLabelManagerDriver::GetDeviceName()
+LabelManagerDriver::GetDeviceName()
 {
   return DeviceName_;
 }
 
-bool                
-CLabelManagerDriver::IsSupportAutoCut()
+bool
+LabelManagerDriver::IsSupportAutoCut()
 {
   return SupportAutoCut_;
 }
 
-bool                
-CLabelManagerDriver::IsTSDevice()
+bool
+LabelManagerDriver::IsTSDevice()
 {
   return TSDevice_;
 }
-    
-CLabelManagerDriver::cut_t               
-CLabelManagerDriver::GetCutOptions()
+
+LabelManagerDriver::cut_t
+LabelManagerDriver::GetCutOptions()
 {
   return CutOptions_;
 }
 
-CLabelManagerDriver::alignment_t         
-CLabelManagerDriver::GetAlignment()
+LabelManagerDriver::alignment_t
+LabelManagerDriver::GetAlignment()
 {
   return Alignment_;
 }
-    
-bool                
-CLabelManagerDriver::IsContinuousPaper()
+
+bool
+LabelManagerDriver::IsContinuousPaper()
 {
   return ContinuousPaper_;
 }
 
-bool                
-CLabelManagerDriver::IsPrintChainMarksAtDocEnd()
+bool
+LabelManagerDriver::IsPrintChainMarksAtDocEnd()
 {
   return PrintChainMarksAtDocEnd_;
 }
 
-bool                
-CLabelManagerDriver::IsAutoPaper()
+bool
+LabelManagerDriver::IsAutoPaper()
 {
   return AutoPaper_;
 }
 
-CLabelManagerDriver::tape_color_t        
-CLabelManagerDriver::GetTapeColor()
+LabelManagerDriver::tape_color_t
+LabelManagerDriver::GetTapeColor()
 {
   return TapeColor_;
 }
 
-int                 
-CLabelManagerDriver::GetTapeAlignmentOffset()
+int
+LabelManagerDriver::GetTapeAlignmentOffset()
 {
   return TapeAlignmentOffset_;
 }
-    
-size_t              
-CLabelManagerDriver::GetMaxPrintableWidth()
+
+size_t
+LabelManagerDriver::GetMaxPrintableWidth()
 {
   return MaxPrintableWidth_;
 }
 
-size_t              
-CLabelManagerDriver::GetNormalLeader()
+size_t
+LabelManagerDriver::GetNormalLeader()
 {
   return NormalLeader_;
 }
 
-size_t              
-CLabelManagerDriver::GetMinLeader()
+size_t
+LabelManagerDriver::GetMinLeader()
 {
   return MinLeader_;
 }
-    
-size_t              
-CLabelManagerDriver::GetAlignedLeader()
+
+size_t
+LabelManagerDriver::GetAlignedLeader()
 {
   return AlignedLeader_;
 }
-    
-size_t              
-CLabelManagerDriver::GetMinPageLines()
+
+size_t
+LabelManagerDriver::GetMinPageLines()
 {
   return MinPageLines_;
 }
 
 void
-CLabelManagerDriver::SendCommand(const byte* Buf, size_t BufSize)
+LabelManagerDriver::SendCommand(const byte* Buf, size_t BufSize)
 {
   SendCommand(buffer_t(Buf, Buf + BufSize));
 }
 
 void
-CLabelManagerDriver::SendCommand(const buffer_t& Buf)
+LabelManagerDriver::SendCommand(const buffer_t& Buf)
 {
   if(IsTSDevice())
     SendCommandTS(Buf);
@@ -449,7 +449,7 @@ CLabelManagerDriver::SendCommand(const buffer_t& Buf)
 }
 
 void
-CLabelManagerDriver::SendCommandTS(const buffer_t& Buf)
+LabelManagerDriver::SendCommandTS(const buffer_t& Buf)
 {
     TSBuffer_.insert(TSBuffer_.end(), Buf.begin(), Buf.end());
 
@@ -460,7 +460,7 @@ CLabelManagerDriver::SendCommandTS(const buffer_t& Buf)
 }
 
 void
-CLabelManagerDriver::FlushCommandTS()
+LabelManagerDriver::FlushCommandTS()
 {
   if(TSBuffer_.size() > 0)
   {
@@ -477,9 +477,9 @@ CLabelManagerDriver::FlushCommandTS()
     fprintf(stderr, "DEBUG: FlushCommandTS() size 0x%02X 0x%02X 0x%02X 0x%02X\n", buf[3], buf[4], buf[5], buf[6]);
 
     buffer_t prefix = buffer_t(buf, buf + 7);
-      
+
     TSBuffer_.insert(TSBuffer_.begin(), prefix.begin(), prefix.end());
-      
+
     Environment_.WriteData(TSBuffer_);
 
     TSBuffer_.clear();
@@ -487,24 +487,24 @@ CLabelManagerDriver::FlushCommandTS()
 }
 
 void
-CLabelManagerDriver::EndCommandTS()
+LabelManagerDriver::EndCommandTS()
 {
     byte buf[] = {ESC, 'Y', 0, 0, 0, 0, 0};
 
     Environment_.WriteData(buffer_t(buf, buf + sizeof(buf)));
 }
-    
+
 void
-CLabelManagerDriver::SendDotTab(size_t Value)
+LabelManagerDriver::SendDotTab(size_t Value)
 {
   byte buf[] = {ESC, 'B', 0};
   buf[2] = Value;
 
   SendCommand(buf, sizeof(buf));
-}  
+}
 
 void
-CLabelManagerDriver::SendCut()
+LabelManagerDriver::SendCut()
 {
   byte buf[] = {ESC, 'E'};
 
@@ -512,53 +512,53 @@ CLabelManagerDriver::SendCut()
 }
 
 void
-CLabelManagerDriver::SendChainMark()
+LabelManagerDriver::SendChainMark()
 {
   byte buf[] = {ESC, 'B', 0, ESC, 'D', 0, SYN};
   buf[5] = GetMaxBytesPerLine();
   SendCommand(buf, sizeof(buf));
-    
+
   buffer_t buf2(GetMaxBytesPerLine(), 0x99);
   SendCommand(&buf2[0], buf2.size());
-    
+
   LastDotTab_         = size_t(-1);
   LastBytesPerLine_   = size_t(-1);
 }
 
 void
-CLabelManagerDriver::SendBytesPerLine(size_t Value)
+LabelManagerDriver::SendBytesPerLine(size_t Value)
 {
   byte buf[] = {ESC, 'D', 0};
   buf[2] = Value;
 
   SendCommand(buf, sizeof(buf));
-}  
+}
 
 void
-CLabelManagerDriver::SendSkipLines(size_t Value)
+LabelManagerDriver::SendSkipLines(size_t Value)
 {
   if (Value > 0)
   {
     SendBytesPerLine(0);
 
-    buffer_t buf(Value, SYN);    
+    buffer_t buf(Value, SYN);
     SendCommand(&buf[0], Value);
-    
+
     LastBytesPerLine_ = size_t(-1);
-  }    
-} 
+  }
+}
 
 void
-CLabelManagerDriver::SendTapeColor(tape_color_t Value)
+LabelManagerDriver::SendTapeColor(tape_color_t Value)
 {
   byte buf[] = {ESC, 'C', 0};
   buf[2] = int(Value);
 
   SendCommand(buf, sizeof(buf));
-}  
+}
 
-void 
-CLabelManagerDriver::ShiftDataRight(const buffer_t& Buf, buffer_t& ShiftedBuf, size_t ShiftValue)
+void
+LabelManagerDriver::ShiftDataRight(const buffer_t& Buf, buffer_t& ShiftedBuf, size_t ShiftValue)
 {
   // shift bytes first
   int ShiftedLen = ShiftedBuf.size() - ShiftValue / 8;
@@ -566,7 +566,7 @@ CLabelManagerDriver::ShiftDataRight(const buffer_t& Buf, buffer_t& ShiftedBuf, s
   ShiftValue   = ShiftValue % 8;
 
   if ((ShiftedLen <= 0) || (Buf.size() == 0)) return;
-  
+
   // shift bits
   ShiftedBuf[ShiftedOffset] = Buf[0] >> ShiftValue; // first
   size_t i = 0;
@@ -576,15 +576,15 @@ CLabelManagerDriver::ShiftDataRight(const buffer_t& Buf, buffer_t& ShiftedBuf, s
     ShiftedBuf[ShiftedOffset + Buf.size()] = (Buf[Buf.size() - 1] << (8 - ShiftValue));
 }
 
-void 
-CLabelManagerDriver::ShiftDataLeft(const buffer_t& Buf, buffer_t& ShiftedBuf, size_t ShiftValue)
+void
+LabelManagerDriver::ShiftDataLeft(const buffer_t& Buf, buffer_t& ShiftedBuf, size_t ShiftValue)
 {
   // shift bytes first
   int ShiftedLen = ShiftedBuf.size() - ShiftValue / 8;
   ShiftValue   = ShiftValue % 8;
 
   if ((ShiftedLen <= 0) || (Buf.size() == 0)) return;
-  
+
   // shift bits
   size_t i = 0;
   for (i = 0; ((i < Buf.size() - 1) && (i < size_t(ShiftedLen))); ++i)
@@ -594,8 +594,8 @@ CLabelManagerDriver::ShiftDataLeft(const buffer_t& Buf, buffer_t& ShiftedBuf, si
 }
 
 
-void 
-CLabelManagerDriver::ShiftData(const buffer_t& Buf, buffer_t& ShiftedBuf, int ShiftValue)
+void
+LabelManagerDriver::ShiftData(const buffer_t& Buf, buffer_t& ShiftedBuf, int ShiftValue)
 {
   // clear shift buffer first
   for (size_t i = 0; i < ShiftedBuf.size(); ++i)
@@ -607,18 +607,18 @@ CLabelManagerDriver::ShiftData(const buffer_t& Buf, buffer_t& ShiftedBuf, int Sh
     ShiftDataLeft(Buf, ShiftedBuf, -ShiftValue);
 }
 
-int  
-CLabelManagerDriver::GetShiftValue(size_t RasterLineSize)
+int
+LabelManagerDriver::GetShiftValue(size_t RasterLineSize)
 {
   return (MaxPrintableWidth_ - RasterLineSize * 8) / 2 + TapeAlignmentOffset_;
 }
 
 buffer_t
-CLabelManagerDriver::GetRequestStatusCommand()
+LabelManagerDriver::GetRequestStatusCommand()
 {
     byte buf[] = {ESC, 'A'};
-    
+
     return buffer_t(buf, buf + sizeof(buf));
 }
-    
+
 }; // namespace

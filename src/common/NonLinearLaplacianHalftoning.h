@@ -6,11 +6,11 @@
 namespace DymoPrinterDriver
 {
 
-class CNLLHalftoning: public CHalftoneFilter
+class NLLHalftoning: public HalftoneFilter
 {
 public:
-  CNLLHalftoning(int Threshold, image_t InputImageType, image_t OutputImageType);
-  virtual ~CNLLHalftoning();
+  NLLHalftoning(int Threshold, image_t InputImageType, image_t OutputImageType);
+  virtual ~NLLHalftoning();
 
   virtual bool IsProcessLineSupported();
   virtual void ProcessLine(const buffer_t& InputLine, buffer_t& OutputLine);

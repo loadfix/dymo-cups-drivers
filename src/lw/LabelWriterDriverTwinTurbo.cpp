@@ -4,28 +4,28 @@
 namespace DymoPrinterDriver
 {
 
-CLabelWriterDriverTwinTurbo::CLabelWriterDriverTwinTurbo(IPrintEnvironment& Environment) :
-   CLabelWriterDriver400(Environment), _roll(rtAuto)
+LabelWriterDriverTwinTurbo::LabelWriterDriverTwinTurbo(IPrintEnvironment& Environment) :
+   LabelWriterDriver400(Environment), _roll(rtAuto)
 {
 }
 
-void CLabelWriterDriverTwinTurbo::StartDoc()
+void LabelWriterDriverTwinTurbo::StartDoc()
 {
-   CLabelWriterDriver400::StartDoc();
+   LabelWriterDriver400::StartDoc();
    SendRollSelect(_roll);
 }
 
-CLabelWriterDriverTwinTurbo::roll_t CLabelWriterDriverTwinTurbo::GetRoll()
+LabelWriterDriverTwinTurbo::roll_t LabelWriterDriverTwinTurbo::GetRoll()
 {
    return _roll;
 }
 
-void CLabelWriterDriverTwinTurbo::SetRoll(CLabelWriterDriverTwinTurbo::roll_t Value)
+void LabelWriterDriverTwinTurbo::SetRoll(LabelWriterDriverTwinTurbo::roll_t Value)
 {
    _roll = Value;
 }
 
-buffer_t CLabelWriterDriverTwinTurbo::GetRollSelectCommand(roll_t Value)
+buffer_t LabelWriterDriverTwinTurbo::GetRollSelectCommand(roll_t Value)
 {
    byte buf[] = {ESC, 'q', '0'};
 
@@ -39,7 +39,7 @@ buffer_t CLabelWriterDriverTwinTurbo::GetRollSelectCommand(roll_t Value)
    return buffer_t(buf, buf + sizeof(buf));
 }
 
-void CLabelWriterDriverTwinTurbo::SendRollSelect(CLabelWriterDriverTwinTurbo::roll_t Value)
+void LabelWriterDriverTwinTurbo::SendRollSelect(LabelWriterDriverTwinTurbo::roll_t Value)
 {
    buffer_t buf = GetRollSelectCommand(Value);
    SendCommand(buf);

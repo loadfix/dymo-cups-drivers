@@ -6,7 +6,7 @@ namespace DymoPrinterDriver
 
 
 
-class CLabelManagerDriver: public IPrinterDriver
+class LabelManagerDriver: public IPrinterDriver
 {
 public:
   typedef enum
@@ -49,8 +49,8 @@ public:
     tcRedOnWhite
   } tape_color_t;
 
-  CLabelManagerDriver(IPrintEnvironment& Environment);
-  virtual ~CLabelManagerDriver();
+  LabelManagerDriver(IPrintEnvironment& Environment);
+  virtual ~LabelManagerDriver();
 
   virtual void StartDoc();
   virtual void EndDoc();
