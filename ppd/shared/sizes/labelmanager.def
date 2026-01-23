@@ -1,5 +1,6 @@
 // Page size definitions for LabelManager models (lm400, lm450, lmpc, etc.)
 Option "PageSize/Media Size" PickOne AnySetup 10
+Attribute DefaultPageSize "" "w68h252.2"
 CustomMedia "w68h252.2/Address label" 68.0 252.0 0 0 68.0 252.0 "<</PageSize[68 252]/ImagingBBox null/cupsInteger0 0>>setpagedevice" "<</PageSize[68 252]/ImagingBBox null/cupsInteger0 0>>setpagedevice"
 CustomMedia "w18h252/6mm label" 18.0 252.0 2.4 30.0 15.2 222.0 "<</PageSize[18 252]/ImagingBBox null/cupsInteger0 0>>setpagedevice" "<</PageSize[18 252]/ImagingBBox null/cupsInteger0 0>>setpagedevice"
 CustomMedia "w18h4000/6mm continuous" 18.0 4000.0 2.4 30.0 15.2 3970.0 "<</PageSize[18 4000]/ImagingBBox null/cupsInteger0 0>>setpagedevice" "<</PageSize[18 4000]/ImagingBBox null/cupsInteger0 0>>setpagedevice"

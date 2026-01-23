@@ -1,6 +1,6 @@
 // Common font definitions for all DYMO printers
 
-*DefaultFont: Courier
+Attribute DefaultFont "" Courier
 *Font AvantGarde-Book: Standard "(001.006S)" Standard ROM
 *Font AvantGarde-BookOblique: Standard "(001.006S)" Standard ROM
 *Font AvantGarde-Demi: Standard "(001.007S)" Standard ROM

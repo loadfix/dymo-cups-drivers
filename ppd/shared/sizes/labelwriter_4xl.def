@@ -1,5 +1,6 @@
 // Page size definitions for LabelWriter 4XL/5XL models (lw4xl, lw5xl, lw5xlp)
 Option "PageSize/Media Size" PickOne AnySetup 10
+Attribute DefaultPageSize "" "w296h452"
 CustomMedia "w296h452/1744907 4 in x 6 in" 296.0 452.0 4.08 4.08 292.08 436.08 "<</PageSize[296 452]/ImagingBBox null/cupsInteger0 0>>setpagedevice" "<</PageSize[296 452]/ImagingBBox null/cupsInteger0 0>>setpagedevice"
 CustomMedia "1744907_4_in_x_6_in/1744907 4 in x 6 in" 296.0 452.0 4.08 4.08 292.08 436.08 "<</PageSize[296 452]/ImagingBBox null/cupsInteger0 0>>setpagedevice" "<</PageSize[296 452]/ImagingBBox null/cupsInteger0 0>>setpagedevice"
 CustomMedia "w252h77/Address label (Horizontal)" 252.0 77.0 16.56 4.32 249.84 72.0 "<</PageSize[252 77]/ImagingBBox null/cupsInteger0 0>>setpagedevice" "<</PageSize[252 77]/ImagingBBox null/cupsInteger0 0>>setpagedevice"

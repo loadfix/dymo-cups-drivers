@@ -50,11 +50,23 @@ PPD_FILES = \
 
 dist_cupsmodel_DATA = $(PPD_FILES)
 
+# Tell automake these are generated files that should be built
+BUILT_SOURCES = $(PPD_FILES)
+
+# Ensure all PPD files are built when running 'make all'
+all-local: $(PPD_FILES)
+
+# Remove all PPD files when running 'make clean'
+clean-local:
+	rm -f $(PPD_FILES)
+
 # Pattern rule: compile .drv to .ppd
 # Use automake's SUFFIXES to register .ppd as a valid suffix
 # The suffix rule syntax is POSIX-compliant
 SUFFIXES = .drv .ppd
-.drv.ppd: $(SHARED_DEF_FILES) $(SIZE_DEF_FILES)
+
+# Use pattern rule syntax which properly supports prerequisites
+%.ppd: %.drv $(SHARED_DEF_FILES) $(SIZE_DEF_FILES)
 	$(PPDC) -d . $(PPDC_FLAGS) $<
 
 # Extra distribution files (source files)

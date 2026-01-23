@@ -87,6 +87,7 @@ CUPS_LIBS=""
 AC_SUBST(CUPS_LIBS)
 
 # Checks for programs.
+AC_PROG_MAKE_SET
 AC_PROG_CXX
 AC_PROG_CC
 

@@ -94,8 +94,6 @@ To compile the sources run the following commands:
  aclocal
  autoconf
  autoheader
- # This is a temporary workaround:
- touch NEWS AUTHORS README ChangeLog
  automake --add-missing
  automake
  ./configure
