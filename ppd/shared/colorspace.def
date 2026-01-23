@@ -1,4 +1,3 @@
 // Common color device settings for all DYMO printers
 
 ColorDevice False
-Attribute DefaultColorSpace "" Gray

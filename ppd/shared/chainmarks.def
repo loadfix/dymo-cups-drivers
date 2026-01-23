@@ -1,44 +1,6 @@
-// Print chain marks options for LabelManager models
-*OpenUI *DymoPrintChainMarksAtDocEnd/Print Chain Marks at Doc End: PickOne
-*OrderDependency: 20 AnySetup *DymoPrintChainMarksAtDocEnd
-*DefaultDymoPrintChainMarksAtDocEnd: 0
-*DymoPrintChainMarksAtDocEnd 0/Disabled: ""
-*DymoPrintChainMarksAtDocEnd 1/Enabled: ""
+// Common dymoprintchainmarksatdocend options and translations for all DYMO printers
 
-*de.Translation DymoPrintChainMarksAtDocEnd/Schnittmarken zwischen Etiketten drucken: ""
-*de.DymoPrintChainMarksAtDocEnd 0/Deaktiviert: ""
-*de.DymoPrintChainMarksAtDocEnd 1/Aktiviert: ""
+Option "DymoPrintChainMarksAtDocEnd/Print Chain Marks at Doc End" PickOne AnySetup 20
+Choice "0/Disabled" ""
+Choice "1/Enabled" ""
 
-*es.Translation DymoPrintChainMarksAtDocEnd/Imprimir marcas de corte entre etiquetas: ""
-*es.DymoPrintChainMarksAtDocEnd 0/Inhabilitado: ""
-*es.DymoPrintChainMarksAtDocEnd 1/Habilitado: ""
-
-*es_CO.Translation DymoPrintChainMarksAtDocEnd/Imprimir marcas de corte entre etiquetas: ""
-*es_CO.DymoPrintChainMarksAtDocEnd 0/Inhabilitado: ""
-*es_CO.DymoPrintChainMarksAtDocEnd 1/Habilitado: ""
-
-*fr.Translation DymoPrintChainMarksAtDocEnd/Imprimer des lignes pointillées entre les étiquettes: ""
-*fr.DymoPrintChainMarksAtDocEnd 0/Désactivé: ""
-*fr.DymoPrintChainMarksAtDocEnd 1/Activé: ""
-
-*fr_CA.Translation DymoPrintChainMarksAtDocEnd/Imprimer des lignes pointillées entre les étiquettes: ""
-*fr_CA.DymoPrintChainMarksAtDocEnd 0/Désactivé: ""
-*fr_CA.DymoPrintChainMarksAtDocEnd 1/Activé: ""
-
-*it.Translation DymoPrintChainMarksAtDocEnd/Stampa crocini continui a fine doc: ""
-*it.DymoPrintChainMarksAtDocEnd 0/Disabilitato: ""
-*it.DymoPrintChainMarksAtDocEnd 1/Abilitato: ""
-
-*nl.Translation DymoPrintChainMarksAtDocEnd/Scheidingslijnen afdrukken tussen labels: ""
-*nl.DymoPrintChainMarksAtDocEnd 0/Uitgeschakeld: ""
-*nl.DymoPrintChainMarksAtDocEnd 1/Ingeschakeld: ""
-
-*pt.Translation DymoPrintChainMarksAtDocEnd/Imprimir marcas de corte entre as etiquetas: ""
-*pt.DymoPrintChainMarksAtDocEnd 0/Desativado: ""
-*pt.DymoPrintChainMarksAtDocEnd 1/Ativado: ""
-
-*pt_BR.Translation DymoPrintChainMarksAtDocEnd/Imprimir marcas de corte entre as etiquetas: ""
-*pt_BR.DymoPrintChainMarksAtDocEnd 0/Desativado: ""
-*pt_BR.DymoPrintChainMarksAtDocEnd 1/Ativado: ""
-
-*CloseUI: *DymoPrintChainMarksAtDocEnd

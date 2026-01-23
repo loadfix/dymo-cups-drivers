@@ -1,25 +1,7 @@
-# $Id: Makefile.am 15958 2011-09-02 14:37:33Z pineichen $
-
-# DYMO LabelWriter Drivers
-# Copyright (C) 2008 Sanford L.P.
-
-# This program is free software; you can redistribute it and/or
-# modify it under the terms of the GNU General Public License
-# as published by the Free Software Foundation; either version 2
-# of the License, or (at your option) any later version.
-
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 # PPDC compiler
 PPDC = ppdc
-PPDC_FLAGS = -I. -I./shared -I./shared/sizes
+PPDC_FLAGS = -I . -I ./shared -I ./shared/sizes
 
 # Source files for PPD generation
 DRV_FILES = $(wildcard *.drv)
@@ -67,7 +49,7 @@ dist_cupsmodel_DATA = $(PPD_FILES)
 
 # Pattern rule: compile .drv to .ppd
 %.ppd: %.drv $(SHARED_DEF_FILES) $(SIZE_DEF_FILES)
-	$(PPDC) $(PPDC_FLAGS) $<
+	$(PPDC) -d . $(PPDC_FLAGS) $<
 
 # Extra distribution files (source files)
 EXTRA_DIST = $(DRV_FILES) $(SHARED_DEF_FILES) $(SIZE_DEF_FILES) Makefile

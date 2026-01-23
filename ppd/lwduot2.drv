@@ -1,42 +1,32 @@
-// DYMO LabelWriter DUO Tape 128 driver file
-// This file includes common definitions and specifies device-specific parameters
-
 #include "shared/printer.def"
 #include "shared/colorspace.def"
 #include "shared/fonts.def"
 #include "shared/errors.def"
 #include "shared/halftoning.def"
-#include "shared/mediatype.def"
-#include "shared/labelalignment.def"
-#include "shared/continuous.def"
-#include "shared/chainmarks.def"
-#include "shared/tapecolor.def"
-#include "shared/cutoptions.def"
-#include "shared/sizes/labelmanager.def"
+#include "shared/options.def"
+#include "shared/sizes/labelwriter_standard.def"
 
 // Device-specific definitions
-*FileVersion:   "3.0"
-*PCFileName:    "LWDUOT2.PPD"
-*Product:   "(DYMO LabelWriter DUO Tape 128)"
-*cupsFilter:    "application/vnd.cups-raster 0 raster2dymolm"
+Version 3.0
+PCFileName "LWDUOT2.PPD"
+Attribute Product "" "(DYMO LabelWriter DUO Tape 128)"
+Attribute cupsFilter "" "application/vnd.cups-raster 0 raster2dymolm"
 
-*ModelName: "DYMO LabelWriter DUO Tape 128"
-*NickName: "DYMO LabelWriter DUO Tape 128"
-*ShortNickName: "DYMO LabelWriter DUO Tape 128"
+ModelName "DYMO LabelWriter DUO Tape 128"
+// NickName "DYMO LabelWriter DUO Tape 128" (not needed in PPDC)
+// ShortNickName "DYMO LabelWriter DUO Tape 128" (not needed in PPDC)
 
 // Resolution options
-*OpenUI *Resolution/Output Resolution: PickOne
-*OrderDependency: 20 AnySetup *Resolution
-*DefaultResolution: 180dpi
-*Resolution 180dpi/180 DPI: "<</HWResolution[180 180]>>setpagedevice"
-*CloseUI: *Resolution
+// Resolution options
+Option "Resolution/Output Resolution" PickOne AnySetup 20
+// TODO: *OrderDependency: 20 AnySetup *Resolution
 
 // Custom page size support
-*HWMargins:      0 0 0 0
-*NonUIOrderDependency: 100 AnySetup *CustomPageSize True
-*CustomPageSize True/Custom Page Size: "pop pop pop <</PageSize[5 -2 roll]/ImagingBBox null/cupsInteger0 0>>setpagedevice"
-*ParamCustomPageSize Width:        1 points 14.4 51.2
-*ParamCustomPageSize Height:       2 points 10 7680
-*ParamCustomPageSize WidthOffset/Width Offset:  3 points 0 0
-*ParamCustomPageSize HeightOffset/Height Offset: 4 points 0 0
-*ParamCustomPageSize Orientation:  5 int 0 0
+// TODO: Convert custom page size support: *HWMargins:      0 0 0 0
+// TODO: Convert custom page size support: *NonUIOrderDependency: 100 AnySetup *CustomPageSize True
+// TODO: Convert custom page size support: *CustomPageSize True/Custom Page Size: "pop pop pop <</PageSize[5 -2 roll]/ImagingBBox null/cupsInteger0 0>>setpagedevice"
+// TODO: Convert custom page size support: *ParamCustomPageSize Width:        1 points 14.4 51.2
+// TODO: Convert custom page size support: *ParamCustomPageSize Height:       2 points 10 7680
+// TODO: Convert custom page size support: *ParamCustomPageSize WidthOffset/Width Offset:  3 points 0 0
+// TODO: Convert custom page size support: *ParamCustomPageSize HeightOffset/Height Offset: 4 points 0 0
+// TODO: Convert custom page size support: *ParamCustomPageSize Orientation:  5 int 0 0
