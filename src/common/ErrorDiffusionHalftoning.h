@@ -9,7 +9,7 @@ namespace DymoPrinterDriver
 class ErrorDiffusionHalftoning: public HalftoneFilter
 {
 public:
-   ErrorDiffusionHalftoning(image_t InputImageType, image_t OutputImageType, bool UsePrinterColorSpace = true) : HalftoneFilter(InputImageType, OutputImageType), _imageWidth(0), _error(), _grayLine(), _usePrinterColorSpace(UsePrinterColorSpace)
+   ErrorDiffusionHalftoning(image_t input_image_type, image_t output_image_type, bool use_printer_color_space = true) : HalftoneFilter(input_image_type, output_image_type), _imageWidth(0), _error(), _grayLine(), _usePrinterColorSpace(use_printer_color_space)
    {
       if(GetOutputImageType() != itBW)
          throw EHalftoneError(EHalftoneError::heUnsupportedImageType);

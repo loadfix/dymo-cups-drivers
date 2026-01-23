@@ -4,7 +4,7 @@
 namespace DymoPrinterDriver
 {
 
-void DriverInitializerLabelWriter::ProcessPPDOptions(LabelWriterDriver& Driver, DummyLanguageMonitor& LM, ppd_file_t* ppd)
+void DriverInitializerLabelWriter::ProcessPPDOptions(LabelWriterDriver& Driver, DummyLanguageMonitor& LanguageMonitor, ppd_file_t* ppd)
 {
   // Note: Resolution is now set via ProcessPageOptions from the page header
   // The legacy SetResolution method is not available in the new driver implementation
@@ -50,7 +50,7 @@ void DriverInitializerLabelWriter::ProcessPPDOptions(LabelWriterDriver& Driver, 
 }
 
 void
-DriverInitializerLabelWriter::ProcessPageOptions(LabelWriterDriver& Driver, DummyLanguageMonitor& LM, cups_page_header2_t& PageHeader)
+DriverInitializerLabelWriter::ProcessPageOptions(LabelWriterDriver& Driver, DummyLanguageMonitor& LanguageMonitor, cups_page_header2_t& PageHeader)
 {
 
   if ((PageHeader.cupsMediaType == int(LabelWriterDriver::ptRegular)) || (PageHeader.cupsMediaType == int(LabelWriterDriver::ptContinuous)))
@@ -68,9 +68,9 @@ DriverInitializerLabelWriter::ProcessPageOptions(LabelWriterDriver& Driver, Dumm
 
 
 void
-DriverInitializerLabelWriterTwinTurbo::ProcessPPDOptions(LabelWriterDriverTwinTurbo& Driver, DummyLanguageMonitor& LM, ppd_file_t* ppd)
+DriverInitializerLabelWriterTwinTurbo::ProcessPPDOptions(LabelWriterDriverTwinTurbo& Driver, DummyLanguageMonitor& LanguageMonitor, ppd_file_t* ppd)
 {
-  DriverInitializerLabelWriter::ProcessPPDOptions(Driver, LM, ppd);
+  DriverInitializerLabelWriter::ProcessPPDOptions(Driver, LanguageMonitor, ppd);
 
   ppd_choice_t* choice = CupsUtils::FindMarkedChoice(ppd, "InputSlot");
   if (choice)
@@ -87,37 +87,37 @@ DriverInitializerLabelWriterTwinTurbo::ProcessPPDOptions(LabelWriterDriverTwinTu
 }
 
 void
-DriverInitializerLabelWriterTwinTurbo::ProcessPageOptions(LabelWriterDriverTwinTurbo& Driver, DummyLanguageMonitor& LM, cups_page_header2_t& PageHeader)
+DriverInitializerLabelWriterTwinTurbo::ProcessPageOptions(LabelWriterDriverTwinTurbo& Driver, DummyLanguageMonitor& LanguageMonitor, cups_page_header2_t& PageHeader)
 {
-  DriverInitializerLabelWriter::ProcessPageOptions(Driver, LM, PageHeader);
+  DriverInitializerLabelWriter::ProcessPageOptions(Driver, LanguageMonitor, PageHeader);
 }
 
 
 
-void DriverInitializerLabelWriterWithLM::ProcessPPDOptions(LabelWriterDriver& Driver, LabelWriterLanguageMonitor& LM, ppd_file_t* ppd)
+void DriverInitializerLabelWriterWithLM::ProcessPPDOptions(LabelWriterDriver& Driver, LabelWriterLanguageMonitor& LanguageMonitor, ppd_file_t* ppd)
 {
-  DriverInitializerLabelWriter::ProcessPPDOptions(Driver, (DummyLanguageMonitor&)LM, ppd);
-}
-
-void
-DriverInitializerLabelWriterWithLM::ProcessPageOptions(LabelWriterDriver& Driver, LabelWriterLanguageMonitor& LM, cups_page_header2_t& PageHeader)
-{
-  DriverInitializerLabelWriter::ProcessPageOptions(Driver, (DummyLanguageMonitor&)LM, PageHeader);
-  LM.SetPaperType(Driver.GetPaperType());
-}
-
-
-void
-DriverInitializerLabelWriterTwinTurboWithLM::ProcessPPDOptions(LabelWriterDriverTwinTurbo& Driver, LabelWriterLanguageMonitor& LM, ppd_file_t* ppd)
-{
-  DriverInitializerLabelWriterTwinTurbo::ProcessPPDOptions(Driver, (DummyLanguageMonitor&)LM, ppd);
-  LM.SetRoll(Driver.GetRoll());
+  DriverInitializerLabelWriter::ProcessPPDOptions(Driver, (DummyLanguageMonitor&)LanguageMonitor, ppd);
 }
 
 void
-DriverInitializerLabelWriterTwinTurboWithLM::ProcessPageOptions(LabelWriterDriverTwinTurbo& Driver, LabelWriterLanguageMonitor& LM, cups_page_header2_t& PageHeader)
+DriverInitializerLabelWriterWithLM::ProcessPageOptions(LabelWriterDriver& Driver, LabelWriterLanguageMonitor& LanguageMonitor, cups_page_header2_t& PageHeader)
 {
-  DriverInitializerLabelWriterTwinTurbo::ProcessPageOptions(Driver, (DummyLanguageMonitor&)LM, PageHeader);
+  DriverInitializerLabelWriter::ProcessPageOptions(Driver, (DummyLanguageMonitor&)LanguageMonitor, PageHeader);
+  LanguageMonitor.SetPaperType(Driver.GetPaperType());
+}
+
+
+void
+DriverInitializerLabelWriterTwinTurboWithLM::ProcessPPDOptions(LabelWriterDriverTwinTurbo& Driver, LabelWriterLanguageMonitor& LanguageMonitor, ppd_file_t* ppd)
+{
+  DriverInitializerLabelWriterTwinTurbo::ProcessPPDOptions(Driver, (DummyLanguageMonitor&)LanguageMonitor, ppd);
+  LanguageMonitor.SetRoll(Driver.GetRoll());
+}
+
+void
+DriverInitializerLabelWriterTwinTurboWithLM::ProcessPageOptions(LabelWriterDriverTwinTurbo& Driver, LabelWriterLanguageMonitor& LanguageMonitor, cups_page_header2_t& PageHeader)
+{
+  DriverInitializerLabelWriterTwinTurbo::ProcessPageOptions(Driver, (DummyLanguageMonitor&)LanguageMonitor, PageHeader);
 }
 
 

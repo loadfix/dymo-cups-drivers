@@ -8,8 +8,8 @@
 namespace DymoPrinterDriver
 {
 
-CupsPrintEnvironmentForDriver::CupsPrintEnvironmentForDriver(ILanguageMonitor& LanguageMonitor):
-  PRNFile_(NULL), LanguageMonitor_(LanguageMonitor)
+CupsPrintEnvironmentForDriver::CupsPrintEnvironmentForDriver(ILanguageMonitor& language_monitor):
+  PRNFile_(NULL), LanguageMonitor_(language_monitor)
 {
   const char* PrnDir = getenv("DYMO_PRN_DIR");
   if (PrnDir)
@@ -32,14 +32,14 @@ CupsPrintEnvironmentForDriver::~CupsPrintEnvironmentForDriver()
 
 
 bool
-CupsPrintEnvironmentForDriver::WriteData(const buffer_t& DataBuffer)
+CupsPrintEnvironmentForDriver::WriteData(const buffer_t& data_buffer)
 {
-  fprintf(stderr, "DEBUG: CupsPrintEnvironmentForDriver::WriteData() buffer size is %i\n", (int)DataBuffer.size());
+  fprintf(stderr, "DEBUG: CupsPrintEnvironmentForDriver::WriteData() buffer size is %i\n", (int)data_buffer.size());
 
-  if (DataBuffer.size())
+  if (data_buffer.size())
   {
-    //fwrite(&DataBuffer[0], 1, DataBuffer.size(), stdout);
-    if (write(1, &DataBuffer[0], DataBuffer.size()) == -1)
+    //fwrite(&data_buffer[0], 1, data_buffer.size(), stdout);
+    if (write(1, &data_buffer[0], data_buffer.size()) == -1)
     {
       fprintf(stderr, "ERROR: CupsPrintEnvironmentForDriver::WriteData() write() failed, errno=%d\n", errno);
       return false;
@@ -47,21 +47,21 @@ CupsPrintEnvironmentForDriver::WriteData(const buffer_t& DataBuffer)
 
     if (PRNFile_)
     {
-      size_t res = fwrite(&DataBuffer[0], 1, DataBuffer.size(), PRNFile_);
+      size_t res = fwrite(&data_buffer[0], 1, data_buffer.size(), PRNFile_);
       fprintf(stderr, "DEBUG: CupsPrintEnvironmentForDriver::WriteData() PRN fwrite result is %i\n", (int)res);
     }
 
-    LanguageMonitor_.ProcessData(DataBuffer);
+    LanguageMonitor_.ProcessData(data_buffer);
   }
   return true;
 }
 
 bool
-CupsPrintEnvironmentForDriver::ReadData(buffer_t& DataBuffer)
+CupsPrintEnvironmentForDriver::ReadData(buffer_t& data_buffer)
 {
-  // do nothing - driver is not able to read data, only LM is
+  // do nothing - driver is not able to read data, only LanguageMonitor is
 
-  DataBuffer.clear();
+  data_buffer.clear();
   return true;
 }
 
@@ -72,7 +72,7 @@ CupsPrintEnvironmentForDriver::GetJobStatus()
 }
 
 void
-CupsPrintEnvironmentForDriver::SetJobStatus(job_status_t JobStatus)
+CupsPrintEnvironmentForDriver::SetJobStatus(job_status_t job_status)
 {
 }
 
@@ -91,14 +91,14 @@ CupsPrintEnvironmentForLM::~CupsPrintEnvironmentForLM()
 
 
 bool
-CupsPrintEnvironmentForLM::WriteData(const buffer_t& DataBuffer)
+CupsPrintEnvironmentForLM::WriteData(const buffer_t& data_buffer)
 {
-  fprintf(stderr, "DEBUG: CupsPrintEnvironmentForLM::WriteData() buffer size is %i\n", (int)DataBuffer.size());
-  if (DataBuffer.size())
+  fprintf(stderr, "DEBUG: CupsPrintEnvironmentForLM::WriteData() buffer size is %i\n", (int)data_buffer.size());
+  if (data_buffer.size())
   {
-    //fwrite(&DataBuffer[0], 1, DataBuffer.size(), stdout);
+    //fwrite(&data_buffer[0], 1, data_buffer.size(), stdout);
     //fflush(stdout);
-    if (write(1, &DataBuffer[0], DataBuffer.size()) == -1)
+    if (write(1, &data_buffer[0], data_buffer.size()) == -1)
     {
       fprintf(stderr, "ERROR: CupsPrintEnvironmentForLM::WriteData() write() failed, errno=%d\n", errno);
       return false;
@@ -108,7 +108,7 @@ CupsPrintEnvironmentForLM::WriteData(const buffer_t& DataBuffer)
 }
 
 bool
-CupsPrintEnvironmentForLM::ReadData(buffer_t& DataBuffer)
+CupsPrintEnvironmentForLM::ReadData(buffer_t& data_buffer)
 {
   //TODO: add the implementation here
   // note that CUPS 1.1 does not support reading data from the printer
@@ -116,7 +116,7 @@ CupsPrintEnvironmentForLM::ReadData(buffer_t& DataBuffer)
   // there should be API to read the 'back-channel' safely
   // also the data is avalable using read file with fd == 3
 
-  DataBuffer.clear();
+  data_buffer.clear();
 
   byte buf[16];
   ssize_t bytesRead = cupsBackChannelRead((char*)buf, sizeof(buf), 2.5);
@@ -132,10 +132,10 @@ CupsPrintEnvironmentForLM::ReadData(buffer_t& DataBuffer)
   }
   else
   {
-    //DataBuffer.push_back(buf[bytesRead - 1]);
-    DataBuffer.insert(DataBuffer.begin(), buf, buf + bytesRead);
+    //data_buffer.push_back(buf[bytesRead - 1]);
+    data_buffer.insert(data_buffer.begin(), buf, buf + bytesRead);
 
-    fprintf(stderr, "DEBUG: CupsPrintEnvironmentForLM::ReadData() has read %i bytes %x\n", (int)bytesRead, int(DataBuffer[0]));
+    fprintf(stderr, "DEBUG: CupsPrintEnvironmentForLM::ReadData() has read %i bytes %x\n", (int)bytesRead, int(data_buffer[0]));
     return true;
   }
 }
@@ -147,11 +147,11 @@ CupsPrintEnvironmentForLM::GetJobStatus()
 }
 
 void
-CupsPrintEnvironmentForLM::SetJobStatus(job_status_t JobStatus)
+CupsPrintEnvironmentForLM::SetJobStatus(job_status_t job_status)
 {
-    JobStatus_ = JobStatus;
+    JobStatus_ = job_status;
 
-    switch (JobStatus)
+    switch (job_status)
     {
         case jsOK:
             fputs("STATE: none\n", stderr);

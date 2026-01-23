@@ -15,9 +15,9 @@ namespace DymoPrinterDriver
 {
 
 // Generic Cups filter
-// D - Driver
-// DI - DriverInitializer - setup driver properties on different job steps
-template<class D, class DI, class LM>
+// Driver - Driver class
+// DriverInitializer - setup driver properties on different job steps
+template<class Driver, class DriverInitializer, class LanguageMonitor>
 class CupsFilter
 {
 public:
@@ -29,25 +29,25 @@ private:
   void InitDocument(const char* opts);
 
   CupsPrintEnvironmentForLM          PrintEnvironmentForLM_;
-  LM                                  LanguageMonitor_;
+  LanguageMonitor                     LanguageMonitor_;
   CupsPrintEnvironmentForDriver      PrintEnvironmentForDriver_;
-  D                                   Driver_;
+  Driver                              Driver_;
 
   std::string                         HalftoningMethod_;
 };
 
 
-template <class D, class DI, class LM>
-CupsFilter<D, DI, LM>::CupsFilter():
+template <class Driver, class DriverInitializer, class LanguageMonitor>
+CupsFilter<Driver, DriverInitializer, LanguageMonitor>::CupsFilter():
   PrintEnvironmentForLM_(), LanguageMonitor_(PrintEnvironmentForLM_),
   PrintEnvironmentForDriver_(LanguageMonitor_), Driver_(PrintEnvironmentForDriver_),
   HalftoningMethod_()
 {
 }
 
-template <class D, class DI, class LM>
+template <class Driver, class DriverInitializer, class LanguageMonitor>
 int
-CupsFilter<D, DI, LM>::Run(int argc, char* argv[])
+CupsFilter<Driver, DriverInitializer, LanguageMonitor>::Run(int argc, char* argv[])
 {
   setbuf(stderr, NULL);
 
@@ -98,7 +98,7 @@ CupsFilter<D, DI, LM>::Run(int argc, char* argv[])
     buffer_t Buffer;
     Buffer.resize(PageHeader.cupsBytesPerLine, 0);
 
-    DI::ProcessPageOptions(Driver_, LanguageMonitor_, PageHeader);
+    DriverInitializer::ProcessPageOptions(Driver_, LanguageMonitor_, PageHeader);
     LanguageMonitor_.StartPage();
 
     if(PrintEnvironmentForLM_.GetJobStatus() != IPrintEnvironment::jsOK)
@@ -190,9 +190,9 @@ CupsFilter<D, DI, LM>::Run(int argc, char* argv[])
   return (Page == 0);
 }
 
-template<class D, class DI, class LM>
+template<class Driver, class DriverInitializer, class LanguageMonitor>
 void
-CupsFilter<D, DI, LM>::InitDocument(const char* opts)
+CupsFilter<Driver, DriverInitializer, LanguageMonitor>::InitDocument(const char* opts)
 {
   fprintf(stderr, "DEBUG: -----------------------------options are: %s\n", opts);
 
@@ -218,7 +218,7 @@ CupsFilter<D, DI, LM>::InitDocument(const char* opts)
   // do CUPS specific
   cupsMarkOptions(ppd, OptionCount, Options);
 
-  DI::ProcessPPDOptions(Driver_, LanguageMonitor_, ppd);
+  DriverInitializer::ProcessPPDOptions(Driver_, LanguageMonitor_, ppd);
 
   // extract halftoning method used
   ppd_choice_t* choice = CupsUtils::FindMarkedChoice(ppd, "DymoHalftoning");

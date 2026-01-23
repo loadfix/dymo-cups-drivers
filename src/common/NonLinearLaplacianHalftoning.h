@@ -9,13 +9,13 @@ namespace DymoPrinterDriver
 class NLLHalftoning: public HalftoneFilter
 {
 public:
-  NLLHalftoning(int Threshold, image_t InputImageType, image_t OutputImageType);
+  NLLHalftoning(int threshold, image_t input_image_type, image_t output_image_type);
   virtual ~NLLHalftoning();
 
   virtual bool IsProcessLineSupported();
-  virtual void ProcessLine(const buffer_t& InputLine, buffer_t& OutputLine);
-  virtual void ProcessImage(const void* ImageData, size_t ImageWidth, size_t ImageHeight, size_t LineDelta, std::vector<buffer_t>& OutputImage);
-  virtual void ProcessImage(const image_buffer_t& InputImage, image_buffer_t& OutputImage);
+  virtual void ProcessLine(const buffer_t& input_line, buffer_t& output_line);
+  virtual void ProcessImage(const void* image_data, size_t image_width, size_t image_height, size_t line_delta, std::vector<buffer_t>& output_image);
+  virtual void ProcessImage(const image_buffer_t& input_image, image_buffer_t& output_image);
 
   int GetThreshold();
 protected:
@@ -29,7 +29,7 @@ private:
   // return true if diagonal contains at least one Block inside image, so next diagonal should be processes
   // on output (x1, y1) is coodrs of pixel #1 of topmost block in the diagonal
   bool ProcessDiagonal(
-    const std::vector<buffer_t>& InputImage, std::vector<buffer_t>& OutputImage, size_t& x1, size_t& y1);
+    const std::vector<buffer_t>& input_image, std::vector<buffer_t>& output_image, size_t& x1, size_t& y1);
 
 };
 

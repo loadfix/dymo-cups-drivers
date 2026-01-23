@@ -5,8 +5,8 @@
 namespace DymoPrinterDriver
 {
 
-HalftoneFilter::HalftoneFilter(image_t InputImageType, image_t OutputImageType):
-  InputImageType_(InputImageType), OutputImageType_(OutputImageType)
+HalftoneFilter::HalftoneFilter(image_t input_image_type, image_t output_image_type):
+  InputImageType_(input_image_type), OutputImageType_(output_image_type)
 {
 }
 
@@ -27,47 +27,47 @@ HalftoneFilter::GetOutputImageType()
 }
 
 byte
-HalftoneFilter::RGBToGrayScale(byte R, byte G, byte B)
+HalftoneFilter::RGBToGrayScale(byte r, byte g, byte b)
 {
   // white should remain white
-  if ((R == 255) && (G == 255) && (B == 255))
+  if ((r == 255) && (g == 255) && (b == 255))
     return 255;
-  else if ((R == 0) && (G == 0) && (B == 0))
+  else if ((r == 0) && (g == 0) && (b == 0))
     return 0;
   else
   {
-    int r = 0 + ((int(R) * 299) / 1000) + ((int(G) * 587) / 1000) + ((int(B) * 114) / 1000);
-    if (r > 255)
+    int r_val = 0 + ((int(r) * 299) / 1000) + ((int(g) * 587) / 1000) + ((int(b) * 114) / 1000);
+    if (r_val > 255)
       return 255;
-    return byte(r);
+    return byte(r_val);
   }
 }
 
 // set pixel pixelNo to
 // pixelValue (0 - white, 1 - black)
 void
-HalftoneFilter::SetPixelBW(buffer_t& buf, int pixelNo, int pixelValue)
+HalftoneFilter::SetPixelBW(buffer_t& buf, int pixel_no, int pixel_value)
 {
-  if (pixelValue)
-    buf[pixelNo / 8] |= (1 << (7 - pixelNo % 8));
+  if (pixel_value)
+    buf[pixel_no / 8] |= (1 << (7 - pixel_no % 8));
   else
-    buf[pixelNo / 8] &= ~(1 << (7 - pixelNo % 8));
+    buf[pixel_no / 8] &= ~(1 << (7 - pixel_no % 8));
 }
 
 void
-HalftoneFilter::ExtractRGB(const buffer_t& InputLine, int PixelNo, byte& R, byte& G, byte& B)
+HalftoneFilter::ExtractRGB(const buffer_t& input_line, int pixel_no, byte& r, byte& g, byte& b)
 {
   switch (InputImageType_)
   {
     case itXRGB:
-      R = InputLine[4*PixelNo + 1];
-      G = InputLine[4*PixelNo + 2];
-      B = InputLine[4*PixelNo + 3];
+      r = input_line[4*pixel_no + 1];
+      g = input_line[4*pixel_no + 2];
+      b = input_line[4*pixel_no + 3];
       break;
     case itRGB:
-      R = InputLine[3*PixelNo + 0];
-      G = InputLine[3*PixelNo + 1];
-      B = InputLine[3*PixelNo + 2];
+      r = input_line[3*pixel_no + 0];
+      g = input_line[3*pixel_no + 1];
+      b = input_line[3*pixel_no + 2];
       break;
     default:
       assert(0);
@@ -75,14 +75,14 @@ HalftoneFilter::ExtractRGB(const buffer_t& InputLine, int PixelNo, byte& R, byte
 }
 
 size_t
-HalftoneFilter::CalcImageWidth(const buffer_t& InputLine)
+HalftoneFilter::CalcImageWidth(const buffer_t& input_line)
 {
   switch (InputImageType_)
   {
     case itXRGB:
-      return InputLine.size() / 4;
+      return input_line.size() / 4;
     case itRGB:
-      return InputLine.size() / 3;
+      return input_line.size() / 3;
     default:
       assert(0);
   }
@@ -92,14 +92,14 @@ HalftoneFilter::CalcImageWidth(const buffer_t& InputLine)
 
 
 size_t
-HalftoneFilter::CalcBufferSize(size_t ImageWidth)
+HalftoneFilter::CalcBufferSize(size_t image_width)
 {
   switch (InputImageType_)
   {
     case itXRGB:
-      return ImageWidth * 4;
+      return image_width * 4;
     case itRGB:
-      return ImageWidth * 3;
+      return image_width * 3;
     default:
       assert(0);
   }
@@ -108,15 +108,15 @@ HalftoneFilter::CalcBufferSize(size_t ImageWidth)
 }
 
 size_t
-HalftoneFilter::CalcOutputBufferSize(size_t ImageWidth)
+HalftoneFilter::CalcOutputBufferSize(size_t image_width)
 {
   switch (OutputImageType_)
   {
     case itBW:
-      if (ImageWidth % 8 == 0)
-        return ImageWidth / 8;
+      if (image_width % 8 == 0)
+        return image_width / 8;
       else
-        return ImageWidth / 8 + 1;
+        return image_width / 8 + 1;
     default:
       assert(0);
   }
@@ -125,20 +125,20 @@ HalftoneFilter::CalcOutputBufferSize(size_t ImageWidth)
 }
 
 int
-HalftoneFilter::ExtractRGB(const buffer_t& InputLine, int PixelNo)
+HalftoneFilter::ExtractRGB(const buffer_t& input_line, int pixel_no)
 {
   switch (InputImageType_)
   {
     case itXRGB:
       return
-        (int(InputLine[4*PixelNo + 1]) << 16)
-        | (int(InputLine[4*PixelNo + 2]) << 8)
-        | (InputLine[4*PixelNo + 3] );
+        (int(input_line[4*pixel_no + 1]) << 16)
+        | (int(input_line[4*pixel_no + 2]) << 8)
+        | (input_line[4*pixel_no + 3] );
     case itRGB:
       return
-        (int(InputLine[3*PixelNo + 0]) << 16)
-        | (int(InputLine[3*PixelNo + 1]) << 8)
-        | (InputLine[3*PixelNo + 2] );
+        (int(input_line[3*pixel_no + 0]) << 16)
+        | (int(input_line[3*pixel_no + 1]) << 8)
+        | (input_line[3*pixel_no + 2] );
     default:
       assert(0);
   }
@@ -150,7 +150,7 @@ HalftoneFilter::ExtractRGB(const buffer_t& InputLine, int PixelNo)
 // EHalftoneError
 /////////////////////////////////////////////////////////////////////////
 
-EHalftoneError::EHalftoneError(error_t ErrorCode): ErrorCode_(ErrorCode)
+EHalftoneError::EHalftoneError(error_t error_code): ErrorCode_(error_code)
 {
 }
 

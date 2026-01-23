@@ -4,8 +4,8 @@ namespace DymoPrinterDriver
 {
 
 
-DummyLanguageMonitor::DummyLanguageMonitor(IPrintEnvironment& Environment):
-  Environment_(Environment)
+DummyLanguageMonitor::DummyLanguageMonitor(IPrintEnvironment& environment):
+  Environment_(environment)
 {
 }
 
@@ -36,7 +36,7 @@ DummyLanguageMonitor::EndPage()
 
 
 void
-DummyLanguageMonitor::ProcessData(const buffer_t& Data)
+DummyLanguageMonitor::ProcessData(const buffer_t& data)
 {
 }
 

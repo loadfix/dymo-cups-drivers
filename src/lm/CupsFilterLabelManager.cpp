@@ -6,7 +6,7 @@ namespace DymoPrinterDriver
 {
 
 void
-DriverInitializerLabelManager::ProcessPPDOptions(LabelManagerDriver& Driver, DummyLanguageMonitor& LM, ppd_file_t* ppd)
+DriverInitializerLabelManager::ProcessPPDOptions(LabelManagerDriver& Driver, DummyLanguageMonitor& LanguageMonitor, ppd_file_t* ppd)
 {
   ppd_choice_t* choice = CupsUtils::FindMarkedChoice(ppd, "DymoCutOptions");
   if (choice)
@@ -183,7 +183,7 @@ DriverInitializerLabelManager::ProcessPPDOptions(LabelManagerDriver& Driver, Dum
 }
 
 void
-DriverInitializerLabelManager::ProcessPageOptions(LabelManagerDriver& Driver, DummyLanguageMonitor& LM, cups_page_header2_t& PageHeader)
+DriverInitializerLabelManager::ProcessPageOptions(LabelManagerDriver& Driver, DummyLanguageMonitor& LanguageMonitor, cups_page_header2_t& PageHeader)
 {
   //fprintf(stderr, "DEBUG: ------ PageHeader.cupsMediaType: %d\n", PageHeader.cupsMediaType);
 
@@ -250,19 +250,19 @@ DriverInitializerLabelManager::ProcessPageOptions(LabelManagerDriver& Driver, Du
 }
 
 void
-DriverInitializerLabelManagerWithLM::ProcessPPDOptions(LabelManagerDriver& Driver, LabelManagerLanguageMonitor& LM, ppd_file_t* ppd)
+DriverInitializerLabelManagerWithLM::ProcessPPDOptions(LabelManagerDriver& Driver, LabelManagerLanguageMonitor& LanguageMonitor, ppd_file_t* ppd)
 {
-    DriverInitializerLabelManager::ProcessPPDOptions(Driver, (DummyLanguageMonitor&)LM, ppd);
+    DriverInitializerLabelManager::ProcessPPDOptions(Driver, (DummyLanguageMonitor&)LanguageMonitor, ppd);
 
-    LM.SetDeviceName(ppd->modelname);
+    LanguageMonitor.SetDeviceName(ppd->modelname);
 }
 
 void
-DriverInitializerLabelManagerWithLM::ProcessPageOptions(LabelManagerDriver& Driver, LabelManagerLanguageMonitor& LM, cups_page_header2_t& PageHeader)
+DriverInitializerLabelManagerWithLM::ProcessPageOptions(LabelManagerDriver& Driver, LabelManagerLanguageMonitor& LanguageMonitor, cups_page_header2_t& PageHeader)
 {
-    DriverInitializerLabelManager::ProcessPageOptions(Driver, (DummyLanguageMonitor&)LM, PageHeader);
+    DriverInitializerLabelManager::ProcessPageOptions(Driver, (DummyLanguageMonitor&)LanguageMonitor, PageHeader);
 
-    LM.SetTapeWidth(LabelManagerDriver::tape_width_t(PageHeader.cupsMediaType & 0xff));
+    LanguageMonitor.SetTapeWidth(LabelManagerDriver::tape_width_t(PageHeader.cupsMediaType & 0xff));
 }
 
 

@@ -112,7 +112,7 @@ void LabelWriterDriverInitializer::ProcessCupsOptions(LabelWriterDriver& Driver,
         fprintf(stderr, "WARNING: Unknown DymoMediaType option value = %s\n", option);
 }
 
-void LabelWriterDriverInitializer::ProcessPPDOptions(LabelWriterDriver& Driver, DummyLanguageMonitor& LM, ppd_file_t* ppd)
+void LabelWriterDriverInitializer::ProcessPPDOptions(LabelWriterDriver& Driver, DummyLanguageMonitor& LanguageMonitor, ppd_file_t* ppd)
 {
     if (!ppd)
         return;
@@ -173,7 +173,7 @@ void LabelWriterDriverInitializer::ProcessPPDOptions(LabelWriterDriver& Driver, 
     }
 }
 
-void LabelWriterDriverInitializer::ProcessPageOptions(LabelWriterDriver& Driver, DummyLanguageMonitor& LM, cups_page_header2_t& PageHeader)
+void LabelWriterDriverInitializer::ProcessPageOptions(LabelWriterDriver& Driver, DummyLanguageMonitor& LanguageMonitor, cups_page_header2_t& PageHeader)
 {
     Driver.SetVerticalResolution(PageHeader.cupsHeight);
     Driver.SetHorizontalResolution(PageHeader.cupsWidth);
@@ -197,7 +197,7 @@ LabelWriterDriver* LabelWriterDriverInitializer::CreateDriver(IPrintEnvironment&
         return new LabelWriterDriver(Environment);
 }
 
-void LabelWriterDriverInitializerWithLM::ProcessCupsOptions(LabelWriterDriver& Driver, LabelWriterLanguageMonitor& LM, int num_options, cups_option_t* options)
+void LabelWriterDriverInitializerWithLM::ProcessCupsOptions(LabelWriterDriver& Driver, LabelWriterLanguageMonitor& LanguageMonitor, int num_options, cups_option_t* options)
 {
     LabelWriterDriverInitializer::ProcessCupsOptions(Driver, num_options, options);
 
@@ -210,20 +210,20 @@ void LabelWriterDriverInitializerWithLM::ProcessCupsOptions(LabelWriterDriver& D
     }
 }
 
-void LabelWriterDriverInitializerWithLM::ProcessPPDOptions(LabelWriterDriver& Driver, DummyLanguageMonitor& LM, ppd_file_t* ppd)
+void LabelWriterDriverInitializerWithLM::ProcessPPDOptions(LabelWriterDriver& Driver, DummyLanguageMonitor& LanguageMonitor, ppd_file_t* ppd)
 {
-    LabelWriterDriverInitializer::ProcessPPDOptions(Driver, LM, ppd);
+    LabelWriterDriverInitializer::ProcessPPDOptions(Driver, LanguageMonitor, ppd);
 
     // Note: LabelWriterLanguageMonitor doesn't have SetDeviceName method
     // Device name is handled through the driver
 }
 
-void LabelWriterDriverInitializerWithLM::ProcessPageOptions(LabelWriterDriver& Driver, DummyLanguageMonitor& LM, cups_page_header2_t& PageHeader)
+void LabelWriterDriverInitializerWithLM::ProcessPageOptions(LabelWriterDriver& Driver, DummyLanguageMonitor& LanguageMonitor, cups_page_header2_t& PageHeader)
 {
-    LabelWriterDriverInitializer::ProcessPageOptions(Driver, LM, PageHeader);
+    LabelWriterDriverInitializer::ProcessPageOptions(Driver, LanguageMonitor, PageHeader);
 }
 
-LabelWriterDriver* LabelWriterDriverInitializerWithLM::CreateDriver(IPrintEnvironment& Environment, LabelWriterLanguageMonitor& LM, ppd_file_t* ppd)
+LabelWriterDriver* LabelWriterDriverInitializerWithLM::CreateDriver(IPrintEnvironment& Environment, LabelWriterLanguageMonitor& LanguageMonitor, ppd_file_t* ppd)
 {
     LabelWriterDriver* driver = LabelWriterDriverInitializer::CreateDriver(Environment, ppd);
     // Language Monitor initialization would go here if needed

@@ -9,7 +9,7 @@ namespace DymoPrinterDriver
 class DummyLanguageMonitor : public ILanguageMonitor
 {
 public:
-   DummyLanguageMonitor(IPrintEnvironment& Environment) : _environment(Environment) {}
+   DummyLanguageMonitor(IPrintEnvironment& environment) : _environment(environment) {}
    virtual ~DummyLanguageMonitor() {}
 
    virtual void StartDoc() {}
@@ -18,7 +18,7 @@ public:
    virtual void StartPage() {}
    virtual void EndPage() {}
 
-   virtual void ProcessData(const buffer_t& Data) {}
+   virtual void ProcessData(const buffer_t& data) {}
 
 private:
    IPrintEnvironment& _environment;

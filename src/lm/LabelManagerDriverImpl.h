@@ -11,7 +11,7 @@ namespace DymoPrinterDriver
 class LabelManagerDriver : public ILabelManagerDriver
 {
 public:
-   LabelManagerDriver(IPrintEnvironment& Environment);
+   LabelManagerDriver(IPrintEnvironment& environment);
    virtual ~LabelManagerDriver() {}
 
    virtual void StartDoc();
@@ -20,7 +20,7 @@ public:
    virtual void StartPage();
    virtual void EndPage();
 
-   virtual void ProcessRasterLine(const buffer_t& LineBuffer);
+   virtual void ProcessRasterLine(const buffer_t& line_buffer);
 
    // Device Name
    void SetDeviceName(const std::string& value) { _deviceName = value; }
@@ -82,26 +82,26 @@ public:
 
 protected:
    // helper function
-   virtual void SetStartPrintJob(const dword dwJobID);
+   virtual void SetStartPrintJob(const dword dw_job_id);
    virtual void SetEndPrintJob();
-   virtual void SetLabelIndex(const dword dwPageNumber);
-   virtual void SetLabelLeader(const dword dwLength);
-   virtual void SetLabelTrailer(const dword dwLength);
-   virtual void SetPrintDataHeader(const dword dwVerticalResolution, const dword dwHorizontalResolution);
+   virtual void SetLabelIndex(const dword dw_page_number);
+   virtual void SetLabelLeader(const dword dw_length);
+   virtual void SetLabelTrailer(const dword dw_length);
+   virtual void SetPrintDataHeader(const dword dw_vertical_resolution, const dword dw_horizontal_resolution);
    virtual void SetFormFeed();
    virtual void SetShortFormFeed();
 
    virtual void SetCutCommand();
    virtual void SetCutterMark();
 
-   virtual void ProcessRasterLineInternal(const buffer_t& LineBuffer);
+   virtual void ProcessRasterLineInternal(const buffer_t& line_buffer);
 
-   virtual void ShiftData(const buffer_t& Buf, buffer_t& ShiftedBuf, int ShiftValue);
-   virtual void ShiftDataLeft(const buffer_t& Buf, buffer_t& ShiftedBuf, size_t ShiftValue);
-   virtual void ShiftDataRight(const buffer_t& Buf, buffer_t& ShiftedBuf, size_t ShiftValue);
-   virtual int GetShiftValue(size_t RasterLineSize);
+   virtual void ShiftData(const buffer_t& buf, buffer_t& shifted_buf, int shift_value);
+   virtual void ShiftDataLeft(const buffer_t& buf, buffer_t& shifted_buf, size_t shift_value);
+   virtual void ShiftDataRight(const buffer_t& buf, buffer_t& shifted_buf, size_t shift_value);
+   virtual int GetShiftValue(size_t raster_line_size);
 
-   virtual void SendCommand(const buffer_t& cmdBuffer);
+   virtual void SendCommand(const buffer_t& cmd_buffer);
 
 private:
    IPrintEnvironment& _printEnvironment;

@@ -13,15 +13,15 @@ namespace DymoPrinterDriver
 class DriverInitializerLabelManager
 {
 public:
-  static void ProcessPPDOptions (LabelManagerDriver& Driver, DummyLanguageMonitor& LM, ppd_file_t* ppd);
-  static void ProcessPageOptions(LabelManagerDriver& Driver, DummyLanguageMonitor& LM, cups_page_header2_t& PageHeader);
+  static void ProcessPPDOptions (LabelManagerDriver& driver, DummyLanguageMonitor& language_monitor, ppd_file_t* ppd);
+  static void ProcessPageOptions(LabelManagerDriver& driver, DummyLanguageMonitor& language_monitor, cups_page_header2_t& page_header);
 };
 
 class DriverInitializerLabelManagerWithLM
 {
 public:
-  static void ProcessPPDOptions (LabelManagerDriver& Driver, LabelManagerLanguageMonitor& LM, ppd_file_t* ppd);
-  static void ProcessPageOptions(LabelManagerDriver& Driver, LabelManagerLanguageMonitor& LM, cups_page_header2_t& PageHeader);
+  static void ProcessPPDOptions (LabelManagerDriver& driver, LabelManagerLanguageMonitor& language_monitor, ppd_file_t* ppd);
+  static void ProcessPageOptions(LabelManagerDriver& driver, LabelManagerLanguageMonitor& language_monitor, cups_page_header2_t& page_header);
 };
 
 }

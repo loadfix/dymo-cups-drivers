@@ -9,16 +9,16 @@ namespace DymoPrinterDriver
 {
 
 // this is environment for a driver
-// this env will be forward output to LM also
+// this env will be forward output to LanguageMonitor also
 class CupsPrintEnvironmentForDriver: public IPrintEnvironment
 {
 public:
-  CupsPrintEnvironmentForDriver(ILanguageMonitor& LanguageMonitor);
+  CupsPrintEnvironmentForDriver(ILanguageMonitor& language_monitor);
   virtual ~CupsPrintEnvironmentForDriver();
-  virtual bool WriteData(const buffer_t& DataBuffer);
-  virtual bool ReadData(buffer_t& DataBuffer);
+  virtual bool WriteData(const buffer_t& data_buffer);
+  virtual bool ReadData(buffer_t& data_buffer);
   virtual job_status_t GetJobStatus();
-  virtual void SetJobStatus(job_status_t JobStatus);
+  virtual void SetJobStatus(job_status_t job_status);
 
 private:
   FILE* PRNFile_;
@@ -32,10 +32,10 @@ class CupsPrintEnvironmentForLM: public IPrintEnvironment
 public:
   CupsPrintEnvironmentForLM();
   virtual ~CupsPrintEnvironmentForLM();
-  virtual bool WriteData(const buffer_t& DataBuffer);
-  virtual bool ReadData(buffer_t& DataBuffer);
+  virtual bool WriteData(const buffer_t& data_buffer);
+  virtual bool ReadData(buffer_t& data_buffer);
   virtual job_status_t GetJobStatus();
-  virtual void SetJobStatus(job_status_t JobStatus);
+  virtual void SetJobStatus(job_status_t job_status);
 
 private:
   FILE* PRNFile_;

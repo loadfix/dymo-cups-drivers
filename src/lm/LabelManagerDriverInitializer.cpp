@@ -55,7 +55,7 @@ void LabelManagerDriverInitializer::ProcessCupsOptions(LabelManagerDriver& Drive
         fprintf(stderr, "WARNING: Unknown DymoPrintChainMarksAtDocEnd option value = %s\n", option);
 }
 
-void LabelManagerDriverInitializer::ProcessPPDOptions(LabelManagerDriver& Driver, DummyLanguageMonitor& LM, ppd_file_t* ppd)
+void LabelManagerDriverInitializer::ProcessPPDOptions(LabelManagerDriver& Driver, DummyLanguageMonitor& LanguageMonitor, ppd_file_t* ppd)
 {
     if (!ppd)
         return;
@@ -151,7 +151,7 @@ void LabelManagerDriverInitializer::ProcessPPDOptions(LabelManagerDriver& Driver
     // Add more device-specific configurations as needed
 }
 
-void LabelManagerDriverInitializer::ProcessPageOptions(LabelManagerDriver& Driver, DummyLanguageMonitor& LM, cups_page_header2_t& PageHeader)
+void LabelManagerDriverInitializer::ProcessPageOptions(LabelManagerDriver& Driver, DummyLanguageMonitor& LanguageMonitor, cups_page_header2_t& PageHeader)
 {
     ILabelManagerDriver::tape_width_t TapeWidth = ILabelManagerDriver::tape_width_t(PageHeader.cupsMediaType & 0xff);
 
@@ -172,31 +172,31 @@ void LabelManagerDriverInitializer::ProcessPageOptions(LabelManagerDriver& Drive
     }
 }
 
-void LabelManagerDriverInitializerWithLM::ProcessCupsOptions(LabelManagerDriver& Driver, LabelManagerLanguageMonitor& LM, int num_options, cups_option_t* options)
+void LabelManagerDriverInitializerWithLM::ProcessCupsOptions(LabelManagerDriver& Driver, LabelManagerLanguageMonitor& LanguageMonitor, int num_options, cups_option_t* options)
 {
     LabelManagerDriverInitializer::ProcessCupsOptions(Driver, num_options, options);
 
-    LM.SetDeviceName(CupsUtils::GetCupsOption("printer-make-and-model", num_options, options));
+    LanguageMonitor.SetDeviceName(CupsUtils::GetCupsOption("printer-make-and-model", num_options, options));
 }
 
-void LabelManagerDriverInitializerWithLM::ProcessPPDOptions(LabelManagerDriver& Driver, DummyLanguageMonitor& LM, ppd_file_t* ppd)
+void LabelManagerDriverInitializerWithLM::ProcessPPDOptions(LabelManagerDriver& Driver, DummyLanguageMonitor& LanguageMonitor, ppd_file_t* ppd)
 {
-    LabelManagerDriverInitializer::ProcessPPDOptions(Driver, LM, ppd);
+    LabelManagerDriverInitializer::ProcessPPDOptions(Driver, LanguageMonitor, ppd);
 
-    // Only set device name if LM is actually a LabelManagerLanguageMonitor
-    LabelManagerLanguageMonitor* labelManagerLM = dynamic_cast<LabelManagerLanguageMonitor*>(&LM);
-    if (labelManagerLM && ppd)
-        labelManagerLM->SetDeviceName(ppd->modelname);
+    // Only set device name if LanguageMonitor is actually a LabelManagerLanguageMonitor
+    LabelManagerLanguageMonitor* labelManagerLanguageMonitor = dynamic_cast<LabelManagerLanguageMonitor*>(&LanguageMonitor);
+    if (labelManagerLanguageMonitor && ppd)
+        labelManagerLanguageMonitor->SetDeviceName(ppd->modelname);
 }
 
-void LabelManagerDriverInitializerWithLM::ProcessPageOptions(LabelManagerDriver& Driver, DummyLanguageMonitor& LM, cups_page_header2_t& PageHeader)
+void LabelManagerDriverInitializerWithLM::ProcessPageOptions(LabelManagerDriver& Driver, DummyLanguageMonitor& LanguageMonitor, cups_page_header2_t& PageHeader)
 {
-    LabelManagerDriverInitializer::ProcessPageOptions(Driver, LM, PageHeader);
+    LabelManagerDriverInitializer::ProcessPageOptions(Driver, LanguageMonitor, PageHeader);
 
-    // Only set tape width if LM is actually a LabelManagerLanguageMonitor
-    LabelManagerLanguageMonitor* labelManagerLM = dynamic_cast<LabelManagerLanguageMonitor*>(&LM);
-    if (labelManagerLM)
-        labelManagerLM->SetTapeWidth(ILabelManagerDriver::tape_width_t(PageHeader.cupsMediaType & 0xff));
+    // Only set tape width if LanguageMonitor is actually a LabelManagerLanguageMonitor
+    LabelManagerLanguageMonitor* labelManagerLanguageMonitor = dynamic_cast<LabelManagerLanguageMonitor*>(&LanguageMonitor);
+    if (labelManagerLanguageMonitor)
+        labelManagerLanguageMonitor->SetTapeWidth(ILabelManagerDriver::tape_width_t(PageHeader.cupsMediaType & 0xff));
 }
 
 }

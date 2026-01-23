@@ -23,7 +23,7 @@ public:
     ERROR_BIT           = 0x80,
   };
 
-  LabelWriterLanguageMonitor(IPrintEnvironment& Environment, bool UseSleep = true, size_t ReadStatusTimeout = 10);
+  LabelWriterLanguageMonitor(IPrintEnvironment& environment, bool use_sleep = true, size_t read_status_timeout = 10);
   virtual ~LabelWriterLanguageMonitor();
 
   virtual void StartDoc();
@@ -32,11 +32,11 @@ public:
   virtual void StartPage();
   virtual void EndPage();
 
-  virtual void ProcessData(const buffer_t& Data);
+  virtual void ProcessData(const buffer_t& data);
 
   // some values used by driver is also interesting for the language monitor
-  void SetPaperType(LabelWriterDriver::paper_type_t  Value);
-  void SetRoll(LabelWriterDriverTwinTurbo::roll_t    Value);
+  void SetPaperType(LabelWriterDriver::paper_type_t  value);
+  void SetRoll(LabelWriterDriverTwinTurbo::roll_t    value);
 
 
 protected:
@@ -56,14 +56,14 @@ private:
 
   // Read status byte from the printer
   // return true if status has been read, false otherwise
-  bool ReadStatus(byte& Status);
+  bool ReadStatus(byte& status);
 
   // request status while the status become OK
   // return true on success, false - otherwise
   bool PollUntilPaperIn();
 
   // update job status based on status read from the printer
-  void SetJobStatus(byte Status);
+  void SetJobStatus(byte status);
 
   // reprint cached label
   void ReprintLabel();

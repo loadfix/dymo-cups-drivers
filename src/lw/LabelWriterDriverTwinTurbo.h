@@ -16,18 +16,18 @@ public:
         rtRight
     } roll_t;
 
-    LabelWriterDriverTwinTurbo(IPrintEnvironment& Environment);
+    LabelWriterDriverTwinTurbo(IPrintEnvironment& environment);
     virtual ~LabelWriterDriverTwinTurbo() {}
 
     virtual void StartDoc();
 
     roll_t GetRoll();
-    void   SetRoll(roll_t Value);
+    void   SetRoll(roll_t value);
 
-    static buffer_t GetRollSelectCommand(roll_t Value);
+    static buffer_t GetRollSelectCommand(roll_t value);
 
 protected:
-    void SendRollSelect(roll_t Value);
+    void SendRollSelect(roll_t value);
 
 private:
     roll_t _roll;

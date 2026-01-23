@@ -18,19 +18,19 @@
 using namespace DymoPrinterDriver;
 
 // Global filter pointer for signal handling
-template<class D, class DI, class LM>
-CupsFilter<D, DI, LM>* gFilterPtr = nullptr;
+template<class Driver, class DriverInitializer, class LanguageMonitor>
+CupsFilter<Driver, DriverInitializer, LanguageMonitor>* gFilterPtr = nullptr;
 
 static bool IsBackchannelSupported()
 {
     return true;
 }
 
-template<class D, class DI, class LM>
+template<class Driver, class DriverInitializer, class LanguageMonitor>
 int RunFilter(int argc, char* argv[])
 {
-    CupsFilter<D, DI, LM> filter;
-    gFilterPtr<D, DI, LM> = &filter;
+    CupsFilter<Driver, DriverInitializer, LanguageMonitor> filter;
+    gFilterPtr<Driver, DriverInitializer, LanguageMonitor> = &filter;
 
     // Filters and backends may also receive SIGPIPE when an upstream or downstream filter/backend exits
     // with a non-zero status. Developers should generally ignore SIGPIPE
@@ -66,7 +66,7 @@ int RunFilter(int argc, char* argv[])
     sigaction(SIGTSTP, &sa, NULL);
 
     int result = filter.Run(argc, argv);
-    gFilterPtr<D, DI, LM> = nullptr;
+    gFilterPtr<Driver, DriverInitializer, LanguageMonitor> = nullptr;
     return result;
 }
 

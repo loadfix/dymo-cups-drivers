@@ -26,7 +26,7 @@ namespace DymoPrinterDriver
             INCORRECT_SIZE_BIT  = 0xFF
         };
 
-        LabelManagerLanguageMonitor(IPrintEnvironment& Environment, bool UseSleep = true, size_t ReadStatusTimeout = 10);
+        LabelManagerLanguageMonitor(IPrintEnvironment& environment, bool use_sleep = true, size_t read_status_timeout = 10);
         virtual ~LabelManagerLanguageMonitor();
 
         virtual void StartDoc();
@@ -35,10 +35,10 @@ namespace DymoPrinterDriver
         virtual void StartPage();
         virtual void EndPage();
 
-        virtual void ProcessData(const buffer_t& Data);
+        virtual void ProcessData(const buffer_t& data);
 
-        void SetDeviceName(const std::string& Value);
-        void SetTapeWidth(LabelManagerDriver::tape_width_t Value);
+        void SetDeviceName(const std::string& value);
+        void SetTapeWidth(LabelManagerDriver::tape_width_t value);
 
     protected:
     private:
@@ -50,11 +50,11 @@ namespace DymoPrinterDriver
 
         // Read status byte from the printer
         // return true if status has been read, false otherwise
-        bool ReadStatus(buffer_t& Status);
+        bool ReadStatus(buffer_t& status);
 
         // update job status based on status read from the printer
-        void SetJobStatus(byte Status);
-        bool CheckTapeSize(buffer_t Status);
+        void SetJobStatus(byte status);
+        bool CheckTapeSize(buffer_t status);
 
         IPrintEnvironment&                      Environment_;
         bool                                    IsFirstPage_;

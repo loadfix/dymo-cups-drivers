@@ -11,7 +11,7 @@ namespace DymoPrinterDriver
 class LabelWriterDriver : public ILabelWriterDriver
 {
 public:
-    LabelWriterDriver(IPrintEnvironment& Environment);
+    LabelWriterDriver(IPrintEnvironment& environment);
     virtual ~LabelWriterDriver() {}
 
     virtual void StartDoc();
@@ -20,7 +20,7 @@ public:
     virtual void StartPage();
     virtual void EndPage();
 
-    virtual void ProcessRasterLine(const buffer_t& LineBuffer);
+    virtual void ProcessRasterLine(const buffer_t& line_buffer);
 
     // Device Name
     void SetDeviceName(const std::string& value) { _deviceName = value; }
@@ -68,10 +68,10 @@ public:
 
 protected:
     // helper function
-    virtual void SetStartPrintJob(const dword dwJobID);
+    virtual void SetStartPrintJob(const dword dw_job_id);
     virtual void SetEndPrintJob();
-    virtual void SetLabelIndex(const dword dwPageNumber);
-    virtual void SetPrintDataHeader(const dword dwVerticalResolution, const dword dwHorizontalResolution);
+    virtual void SetLabelIndex(const dword dw_page_number);
+    virtual void SetPrintDataHeader(const dword dw_vertical_resolution, const dword dw_horizontal_resolution);
     virtual void SetFormFeed();
     virtual void SetShortFormFeed();
 
@@ -79,11 +79,11 @@ protected:
     virtual void SetPrintQuality();
     virtual void SetPrintSpeed();
     virtual void SetPrintMedia();
-    virtual void SetLabelLength(const dword dwLength);
+    virtual void SetLabelLength(const dword dw_length);
 
-    virtual void ProcessRasterLineInternal(const buffer_t& lineBuffer);
+    virtual void ProcessRasterLineInternal(const buffer_t& line_buffer);
 
-    virtual void SendCommand(const buffer_t& cmdBuffer);
+    virtual void SendCommand(const buffer_t& cmd_buffer);
 
 private:
     IPrintEnvironment& _printEnvironment;

@@ -9,7 +9,7 @@ namespace DymoPrinterDriver
 class LabelWriterDriver400 : public LabelWriterDriver
 {
 public:
-    LabelWriterDriver400(IPrintEnvironment& Environment);
+    LabelWriterDriver400(IPrintEnvironment& environment);
     virtual ~LabelWriterDriver400() {}
 
     virtual void StartDoc();
