@@ -1,25 +1,5 @@
-// -*- C++ -*-
-// $Id: MOCK_LWLMPrintEnvironment.h 15961 2011-09-02 14:44:07Z pineichen $
-
-// DYMO LabelWriter Drivers
-// Copyright (C) 2008 Sanford L.P.
-
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
-// of the License, or (at your option) any later version.
-
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-
-#ifndef hc8e31bb3_01a5_4422_84b8_64c017e18521
-#define hc8e31bb3_01a5_4422_84b8_64c017e18521
+#ifndef MOCK_LWLM_PRINT_ENVIRONMENT_H
+#define MOCK_LWLM_PRINT_ENVIRONMENT_H
 
 #include <stdlib.h>
 #include "../PrinterDriver.h"
@@ -28,12 +8,9 @@
 using namespace DymoPrinterDriver;
 
 
-/**
-   Special environment to enulate responces from the LabelWriter
-   Used to test language monitor
-*/
+
 class MockLWLMPrintEnvironment: public MockPrintEnvironment
-{ 
+{
 public:
   typedef enum
   {
@@ -42,7 +19,7 @@ public:
     mtNotTOF,        // not TOF but ether not ERROR
     mtFailed,        // unable to read status
     mtRollChanged
-        
+
   }mode_t;
 
   MockLWLMPrintEnvironment();
@@ -60,18 +37,9 @@ public:
 
   // push mode that will be returned next call to ReadData()
   void PushMode(mode_t Mode, size_t Count = 1);
-    
+
 private:
   std::vector<mode_t> Mode_;
 };
 
-#endif
-
-/*
- * End of "$Id: MOCK_LWLMPrintEnvironment.h 15961 2011-09-02 14:44:07Z pineichen $".
- */
-
-
-
-
-
+#endif // MOCK_LWLM_PRINT_ENVIRONMENT_H

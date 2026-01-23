@@ -38,7 +38,7 @@ GetPrinterResolution(ppd_group_t* group, int num_groups)
 
         return atoi(c.choice);
       }
-    }  
+    }
   }
 
   return 0;
@@ -48,7 +48,7 @@ void
 CreateBoundsImage(int Width, int Height, const string& Text, string& FileName)
 {
   FileName = "test.png";
-  
+
   CairoSurfacePtr Surface(cairo_image_surface_create(CAIRO_FORMAT_RGB24, Width, Height));
   if (!*Surface)
     throw Error("Unable to create cairo surface");
@@ -60,8 +60,8 @@ CreateBoundsImage(int Width, int Height, const string& Text, string& FileName)
 
   //setup Cairo
   cairo_set_antialias(c, CAIRO_ANTIALIAS_NONE);
-  
-  
+
+
   // clear image
   cairo_set_source_rgb(c, 1, 1, 1);
   cairo_paint(c);
@@ -92,12 +92,12 @@ CreateBoundsImage(int Width, int Height, const string& Text, string& FileName)
     if (Width > te.width)
       break;
   }
-  
+
   //cairo_move_to(c, 10, 10);
   //cairo_show_text(c, "Hello");
   cairo_move_to(c, (Width - te.width) / 2, (Height + te.height) / 2);
   cairo_text_path(c, Text.c_str());
-  
+
   cairo_stroke(c);
 
   // save to file
@@ -121,18 +121,18 @@ int main(int argc, char** argv)
     if (!ppd)
       throw Error(string("Unable to open ppd file '") + ppdFileName + "'");
 
-    
+
     int Resolution = GetPrinterResolution(ppd->groups, ppd->num_groups);
 
     // custom paper definition
     // use Address paper size in points
     float CustomPaperPrintableWidth = 71.76;
     float CustomPaperPrintableHeight = 231.12;
-  
+
     int Width = int(CustomPaperPrintableWidth * Resolution / 72);
     int Height = int(CustomPaperPrintableHeight * Resolution / 72);
     bool Landscape = false;
-    
+
     string FileName;
     if (Height > Width)
     {
@@ -150,19 +150,19 @@ int main(int argc, char** argv)
     char PageSizeValue[250];
     sprintf(PageSizeValue, "Custom.%fx%f", CustomPaperPrintableWidth, CustomPaperPrintableHeight);
 
-  
+
     num_options = cupsAddOption("PageSize", PageSizeValue, num_options, &options);
     num_options = cupsAddOption("scaling", "100", num_options, &options);
     if (Landscape)
       num_options = cupsAddOption("landscape", "yes", num_options, &options);
-      
+
 
     cupsPrintFile(argv[1], FileName.c_str(), "Test print with Cairo", num_options, options);
     cupsFreeOptions(num_options, options);
-  
+
 
     ppdClose(ppd);
-  
+
     return 0;
   }
   catch(std::exception& e)
@@ -172,8 +172,3 @@ int main(int argc, char** argv)
     return 1;
   }
 }
-
-
-
-
-

@@ -1,25 +1,5 @@
-// -*- C++ -*-
-// $Id: TestLabelManagerFilter.h 4759 2008-06-19 19:02:27Z vbuzuev $
-
-// DYMO LabelWriter Drivers
-// Copyright (C) 2008 Sanford L.P.
-
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
-// of the License, or (at your option) any later version.
-
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-
-#ifndef h51475713_0568_480f_b711_ddf8f09a3e15
-#define h51475713_0568_480f_b711_ddf8f09a3e15
+#ifndef TEST_LABELMANAGER_FILTER_H
+#define TEST_LABELMANAGER_FILTER_H
 
 #include <cppunit/extensions/HelperMacros.h>
 #include "MOCK_PrintEnvironment.h"
@@ -36,13 +16,13 @@ class LabelManagerFilterTest: public CPPUNIT_NS::TestFixture
   CPPUNIT_TEST(testContinuousPaper);
   CPPUNIT_TEST(testTapeColor);
   CPPUNIT_TEST(testDeviceSettings);
-    
+
 
   CPPUNIT_TEST_SUITE_END();
 
 public:
   LabelManagerFilterTest();
-    
+
   void setUp();
   void tearDown();
 
@@ -58,28 +38,13 @@ private:
 
   typedef std::map<string, ppd_file_t*> ppds_t;
   typedef std::map<string, ppd_file_t*>::iterator ppds_it;
-    
+
   std::vector<std::string> PPDNames_;
   ppds_t ppds_;
   MockPrintEnvironment Env_;
   CLabelManagerDriver* Driver_;
   CDummyLanguageMonitor* LM_;
-    
+
 };
 
-#endif
-
-
-/*
- * End of "$Id: TestLabelManagerFilter.h 4759 2008-06-19 19:02:27Z vbuzuev $".
- */
-
-
-
-
-
-
-
-
-
-
+#endif // TEST_LABELMANAGER_FILTER_H

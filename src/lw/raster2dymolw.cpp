@@ -1,129 +1,149 @@
-// -*- C++ -*-
-// $Id: raster2dymolw.cpp 15043 2011-05-05 17:38:38Z aleksandr $
-
-// DYMO LabelWriter Drivers
-// Copyright (C) 2008 Sanford L.P.
-
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
-// of the License, or (at your option) any later version.
-
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-
 #include <cups/cups.h>
 #include <cups/raster.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
 #include <fcntl.h>
-//#include <signal.h>
 #include <memory>
 #include <errno.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-
 #include "LabelWriterDriver.h"
+#include "LabelWriterDriverImpl.h"
+#include "LabelWriterDriver400.h"
+#include "LabelWriterDriverTwinTurbo.h"
 #include "LabelWriterLanguageMonitor.h"
 #include "DummyLanguageMonitor.h"
 #include "CupsPrintEnvironment.h"
 #include "CupsFilter.h"
 #include "CupsFilterLabelWriter.h"
+#include "LabelWriterDriverInitializer.h"
+#include <cstdio>
+#include <cstdlib>
+#include <cstddef>
+#include <csignal>
+#include <cups/ppd.h>
+#include "../common/CupsFilter.h"
+#include "../common/DummyLanguageMonitor.h"
+#include "LabelWriterDriver.h"
+#include "LabelWriterDriverImpl.h"
+#include "LabelWriterDriver400.h"
+#include "LabelWriterDriverTwinTurbo.h"
+#include "LabelWriterDriverInitializer.h"
 
 using namespace DymoPrinterDriver;
 
+// Global filter pointer for signal handling
+template<class D, class DI, class LM>
+CCupsFilter<D, DI, LM>* gFilterPtr = nullptr;
 
-//#define CUPS_12 1
-static bool
-IsBackchannelSupported()
+static bool IsBackchannelSupported()
 {
-  return true;
-
-  // if the backend channel is supported the fd is 3
-  //struct stat stat;   
-
-  //return fstat(3, &stat) == 0;
+    return true;
 }
 
-int
-main(int argc, char* argv[])
+template<class D, class DI, class LM>
+int RunFilter(int argc, char* argv[])
 {
-  fputs("DEBUG: starting (raster2dymolw)\n", stderr);
- 
-  ppd_file_t* ppd = ppdOpenFile(getenv("PPD"));
-  if (!ppd)
-  {
-    perror("WARNING: Unable to open ppd file, use default settings - ");
+    CCupsFilter<D, DI, LM> filter;
+    gFilterPtr<D, DI, LM> = &filter;
 
-    if (IsBackchannelSupported())
+    // Filters and backends may also receive SIGPIPE when an upstream or downstream filter/backend exits
+    // with a non-zero status. Developers should generally ignore SIGPIPE
+    signal(SIGPIPE, SIG_IGN);
+
+    auto signal_handler = [](int sig_num) {
+        // make sure to unlock synchronization mutex in case process is abnormally terminated
+        fprintf(stderr, "Received signal %d, aborting\n", sig_num);
+        // Note: Abort() method may not be available in old CupsFilter, so we'll handle gracefully
+    };
+
+    struct sigaction sa;
+    sa.sa_handler = signal_handler;
+    sa.sa_flags = SA_RESTART;
+
+    sigemptyset(&sa.sa_mask);
+    sigaddset(&sa.sa_mask, SIGHUP);
+    sigaddset(&sa.sa_mask, SIGINT);
+    sigaddset(&sa.sa_mask, SIGQUIT);
+    sigaddset(&sa.sa_mask, SIGILL);
+    sigaddset(&sa.sa_mask, SIGABRT);
+    sigaddset(&sa.sa_mask, SIGSEGV);
+    sigaddset(&sa.sa_mask, SIGTERM);
+    sigaddset(&sa.sa_mask, SIGTSTP);
+
+    sigaction(SIGHUP, &sa, NULL);
+    sigaction(SIGINT, &sa, NULL);
+    sigaction(SIGQUIT, &sa, NULL);
+    sigaction(SIGILL, &sa, NULL);
+    sigaction(SIGABRT, &sa, NULL);
+    sigaction(SIGSEGV, &sa, NULL);
+    sigaction(SIGTERM, &sa, NULL);
+    sigaction(SIGTSTP, &sa, NULL);
+
+    int result = filter.Run(argc, argv);
+    gFilterPtr<D, DI, LM> = nullptr;
+    return result;
+}
+
+int main(int argc, char* argv[])
+{
+    fputs("DEBUG: starting (raster2dymolw)\n", stderr);
+
+    ppd_file_t* ppd = ppdOpenFile(getenv("PPD"));
+    if (!ppd)
     {
-      CCupsFilter<CLabelWriterDriver, CDriverInitializerLabelWriterWithLM, CLabelWriterLanguageMonitor> Filter;
-      return Filter.Run(argc, argv);
+        perror("WARNING: Unable to open ppd file, use default settings - ");
+
+        if (IsBackchannelSupported())
+        {
+            // Note: LanguageMonitor support to be added later
+            return RunFilter<CLabelWriterDriver, CLabelWriterDriverInitializerWithLM, CDummyLanguageMonitor>(argc, argv);
+        }
+        else
+        {
+            return RunFilter<CLabelWriterDriver, CLabelWriterDriverInitializer, CDummyLanguageMonitor>(argc, argv);
+        }
     }
     else
     {
-      CCupsFilter<CLabelWriterDriver, CDriverInitializerLabelWriter, CDummyLanguageMonitor> Filter;
-      return Filter.Run(argc, argv);
-    }
-  }
-  else
-  {
-    if (!strcasecmp(ppd->modelname, "DYMO LabelWriter Twin Turbo")
-        || !strcasecmp(ppd->modelname, "DYMO LabelWriter 450 Twin Turbo"))
-    {
-      if (IsBackchannelSupported())
-      {
-        CCupsFilter<CLabelWriterDriverTwinTurbo, CDriverInitializerLabelWriterTwinTurboWithLM, CLabelWriterLanguageMonitor> Filter;
-        return Filter.Run(argc, argv);      
-      }
-      else
-      {
-        CCupsFilter<CLabelWriterDriverTwinTurbo, CDriverInitializerLabelWriterTwinTurbo, CDummyLanguageMonitor> Filter;
-        return Filter.Run(argc, argv);
-      }
-    }   
-    else if (!strcasecmp(ppd->modelname, "DYMO LabelWriter 400")
-    || !strcasecmp(ppd->modelname, "DYMO LabelWriter 400 Turbo")
-    || !strcasecmp(ppd->modelname, "DYMO LabelWriter DUO Label")
-    || !strcasecmp(ppd->modelname, "DYMO LabelWriter 4XL")
-    || !strcasecmp(ppd->modelname, "DYMO LabelWriter 450")
-    || !strcasecmp(ppd->modelname, "DYMO LabelWriter 450 Turbo")
-    || !strcasecmp(ppd->modelname, "DYMO LabelWriter 450 DUO Label"))
-    {
-      if (IsBackchannelSupported())
-      {
-        CCupsFilter<CLabelWriterDriver400, CDriverInitializerLabelWriterWithLM, CLabelWriterLanguageMonitor> Filter;
-        return Filter.Run(argc, argv);
-      }
-      else
-      {
-        CCupsFilter<CLabelWriterDriver400, CDriverInitializerLabelWriter, CDummyLanguageMonitor> Filter;
-        return Filter.Run(argc, argv);
-      }
-    }
-    else
-    {
-      if (IsBackchannelSupported())
-      {
-        CCupsFilter<CLabelWriterDriver, CDriverInitializerLabelWriterWithLM, CLabelWriterLanguageMonitor> Filter;
-        return Filter.Run(argc, argv);
-      }
-      else
-      {
-        CCupsFilter<CLabelWriterDriver, CDriverInitializerLabelWriter, CDummyLanguageMonitor> Filter;
-        return Filter.Run(argc, argv);
-      }
-    }    
-  }
-}
+        if (IsTwinTurboPrinter(ppd->modelname))
+        {
+            if (IsBackchannelSupported())
+            {
+                // Note: LanguageMonitor support to be added later
+                return RunFilter<CLabelWriterDriverTwinTurbo, CLabelWriterDriverInitializerWithLM, CDummyLanguageMonitor>(argc, argv);
+            }
+            else
+            {
+                return RunFilter<CLabelWriterDriverTwinTurbo, CLabelWriterDriverInitializer, CDummyLanguageMonitor>(argc, argv);
+            }
+        }
+        else if (Is400SeriesPrinter(ppd->modelname))
+        {
+            if (IsBackchannelSupported())
+            {
+                // Note: LanguageMonitor support to be added later
+                return RunFilter<CLabelWriterDriver400, CLabelWriterDriverInitializerWithLM, CDummyLanguageMonitor>(argc, argv);
+            }
+            else
+            {
+                return RunFilter<CLabelWriterDriver400, CLabelWriterDriverInitializer, CDummyLanguageMonitor>(argc, argv);
+            }
+        }
+        else
+        {
+            if (IsBackchannelSupported())
+            {
+                // Note: LanguageMonitor support to be added later
+                return RunFilter<CLabelWriterDriver, CLabelWriterDriverInitializerWithLM, CDummyLanguageMonitor>(argc, argv);
+            }
+            else
+            {
+                return RunFilter<CLabelWriterDriver, CLabelWriterDriverInitializer, CDummyLanguageMonitor>(argc, argv);
+            }
+        }
 
-/*
- * End of "$Id: raster2dymolw.cpp 15043 2011-05-05 17:38:38Z aleksandr $".
- */
+        ppdClose(ppd);
+    }
+}

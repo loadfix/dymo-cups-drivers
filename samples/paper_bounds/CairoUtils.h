@@ -1,8 +1,7 @@
-#ifndef __CAIRO_UTILS__
-#define __CAIRO_UTILS__
+#ifndef CAIRO_UTILS_H
+#define CAIRO_UTILS_H
 
 #include <cairo/cairo.h>
-
 
 class CairoSurfacePtr
 {
@@ -14,7 +13,7 @@ public:
   operator cairo_surface_t* () { return ptr_; }
 private:
   cairo_surface_t* ptr_;
-  
+
 };
 
 class CairoPtr
@@ -28,7 +27,7 @@ public:
 
 private:
   cairo_t* ptr_;
-  
+
 };
 
-#endif
+#endif // CAIRO_UTILS_H

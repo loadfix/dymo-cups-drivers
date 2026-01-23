@@ -1,25 +1,5 @@
-// -*- C++ -*-
-// $Id: CupsPrintEnvironment.h 14901 2011-04-06 10:46:22Z aleksandr $
-
-// DYMO LabelWriter Drivers
-// Copyright (C) 2008 Sanford L.P.
-
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
-// of the License, or (at your option) any later version.
-
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-
-#ifndef h952b1c81_8931_433a_8479_7ae6d8e85a86
-#define h952b1c81_8931_433a_8479_7ae6d8e85a86
+#ifndef CUPS_PRINT_ENVIRONMENT_H
+#define CUPS_PRINT_ENVIRONMENT_H
 
 #include <cups/backend.h>
 #include <cups/sidechannel.h>
@@ -35,12 +15,12 @@ class CCupsPrintEnvironmentForDriver: public IPrintEnvironment
 public:
   CCupsPrintEnvironmentForDriver(ILanguageMonitor& LanguageMonitor);
   virtual ~CCupsPrintEnvironmentForDriver();
-  virtual void WriteData(const buffer_t& DataBuffer);
-  virtual void ReadData(buffer_t& DataBuffer);
+  virtual bool WriteData(const buffer_t& DataBuffer);
+  virtual bool ReadData(buffer_t& DataBuffer);
   virtual job_status_t GetJobStatus();
   virtual void SetJobStatus(job_status_t JobStatus);
-    
-private:    
+
+private:
   FILE* PRNFile_;
   ILanguageMonitor& LanguageMonitor_;
 };
@@ -52,20 +32,16 @@ class CCupsPrintEnvironmentForLM: public IPrintEnvironment
 public:
   CCupsPrintEnvironmentForLM();
   virtual ~CCupsPrintEnvironmentForLM();
-  virtual void WriteData(const buffer_t& DataBuffer);
-  virtual void ReadData(buffer_t& DataBuffer);
+  virtual bool WriteData(const buffer_t& DataBuffer);
+  virtual bool ReadData(buffer_t& DataBuffer);
   virtual job_status_t GetJobStatus();
   virtual void SetJobStatus(job_status_t JobStatus);
-    
-private:    
+
+private:
   FILE* PRNFile_;
   IPrintEnvironment::job_status_t JobStatus_;
 };
 
 };
 
-#endif
-
-/*
- * End of "$Id: CupsPrintEnvironment.h 14901 2011-04-06 10:46:22Z aleksandr $".
- */
+#endif // CUPS_PRINT_ENVIRONMENT_H

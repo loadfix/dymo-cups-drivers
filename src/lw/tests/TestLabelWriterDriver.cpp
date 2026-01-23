@@ -1,23 +1,3 @@
-// -*- C++ -*-
-// $Id: TestLabelWriterDriver.cpp 15963 2011-09-02 14:46:10Z pineichen $
-
-// DYMO LabelWriter Drivers
-// Copyright (C) 2008 Sanford L.P.
-
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
-// of the License, or (at your option) any later version.
-
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-
 #include "TestLabelWriterDriver.h"
 #include "MOCK_PrintEnvironment.h"
 #include "../LabelWriterDriver.h"
@@ -34,19 +14,19 @@ const byte ESC = 0x1B;
 const byte SYN = 0x16;
 const byte ETB = 0x17;
 
-void 
+void
 LabelWriterDriverTest::setUp()
 {
 }
 
 
-void 
+void
 LabelWriterDriverTest::tearDown()
 {
 }
 
 
-void 
+void
 LabelWriterDriverTest::testPrologEpilogCommand()
 {
   MockPrintEnvironment Env;
@@ -59,7 +39,7 @@ LabelWriterDriverTest::testPrologEpilogCommand()
 
   byte PrinterCommands[] =
     {
-      ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC,  
+      ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC,
       ESC, 'Q', 0x00, 0x00, ESC, 'B', 0, ESC, 'h', ESC, 'e',
       ESC, 'L', 0x08, 0x00,
       ESC, 'E'
@@ -67,12 +47,12 @@ LabelWriterDriverTest::testPrologEpilogCommand()
 
   //CPPUNIT_ASSERT_EQUAL(sizeof(buffer), Env.GetData().size());
   CPPUNIT_ASSERT_EQUAL(
-    buffer_t(PrinterCommands, PrinterCommands + sizeof(PrinterCommands)), 
+    buffer_t(PrinterCommands, PrinterCommands + sizeof(PrinterCommands)),
     Env.GetData());
 }
 
 
-void 
+void
 LabelWriterDriverTest::testCompression()
 {
   MockPrintEnvironment Env;
@@ -80,29 +60,29 @@ LabelWriterDriverTest::testCompression()
 
   byte RasterLine1[] = { 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff };
   byte RasterLine2[] = { 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa };
-  byte RasterLine3[] = { 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 
-                         0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 
+  byte RasterLine3[] = { 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+                         0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
                          0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff };
-    
+
   Driver.ProcessRasterLine(buffer_t(RasterLine1, RasterLine1 + sizeof(RasterLine1)));
   Driver.ProcessRasterLine(buffer_t(RasterLine2, RasterLine2 + sizeof(RasterLine2)));
   Driver.ProcessRasterLine(buffer_t(RasterLine3, RasterLine3 + sizeof(RasterLine3)));
 
   byte PrinterCommands[] =
     {
-      ESC, 'B', 0, ESC, 'D', 0x08, ETB, 0xbf, ESC, 'B', 0,  
+      ESC, 'B', 0, ESC, 'D', 0x08, ETB, 0xbf, ESC, 'B', 0,
       SYN, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa,
       ESC, 'B', 0, ESC, 'D', 0x18, ETB, 0xff, 0xbf,
     };
 
   //CPPUNIT_ASSERT_EQUAL(sizeof(PrinterCommands), Env.GetData().size());
   CPPUNIT_ASSERT_EQUAL(
-    buffer_t(PrinterCommands, PrinterCommands + sizeof(PrinterCommands)), 
+    buffer_t(PrinterCommands, PrinterCommands + sizeof(PrinterCommands)),
     Env.GetData());
 
 }
 
-void 
+void
 LabelWriterDriverTest::testEmptyLines()
 {
   MockPrintEnvironment Env;
@@ -110,14 +90,14 @@ LabelWriterDriverTest::testEmptyLines()
 
   byte RasterLine1[] = { 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff };
   byte RasterLine2[] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
-    
+
   for (int i = 0; i < 255; ++i)
     Driver.ProcessRasterLine(buffer_t(RasterLine2, RasterLine2 + sizeof(RasterLine2)));
   for (int i = 0; i < 2; ++i)
     Driver.ProcessRasterLine(buffer_t());
 
   Driver.ProcessRasterLine(buffer_t(RasterLine1, RasterLine1 + sizeof(RasterLine1)));
-    
+
   byte PrinterCommands[] =
     {
       ESC, 'f', 1, 0xff, ESC, 'f', 1, 2,
@@ -126,11 +106,11 @@ LabelWriterDriverTest::testEmptyLines()
 
   //CPPUNIT_ASSERT_EQUAL(sizeof(PrinterCommands), Env.GetData().size());
   CPPUNIT_ASSERT_EQUAL(
-    buffer_t(PrinterCommands, PrinterCommands + sizeof(PrinterCommands)), 
+    buffer_t(PrinterCommands, PrinterCommands + sizeof(PrinterCommands)),
     Env.GetData());
 }
 
-void 
+void
 LabelWriterDriverTest::testDotTab()
 {
   MockPrintEnvironment Env;
@@ -139,8 +119,8 @@ LabelWriterDriverTest::testDotTab()
   byte RasterLine1[] = { 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff };
   byte RasterLine2[] = { 0x00, 0x00, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff };
   byte RasterLine3[] = { 0x00, 0x00, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff };
-  byte RasterLine4[] = { 0x00, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff }; 
-    
+  byte RasterLine4[] = { 0x00, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff };
+
   Driver.ProcessRasterLine(buffer_t(RasterLine1, RasterLine1 + sizeof(RasterLine1)));
   Driver.ProcessRasterLine(buffer_t(RasterLine2, RasterLine2 + sizeof(RasterLine2)));
   Driver.ProcessRasterLine(buffer_t(RasterLine3, RasterLine3 + sizeof(RasterLine3)));
@@ -156,11 +136,11 @@ LabelWriterDriverTest::testDotTab()
 
   //CPPUNIT_ASSERT_EQUAL(sizeof(PrinterCommands), Env.GetData().size());
   CPPUNIT_ASSERT_EQUAL(
-    buffer_t(PrinterCommands, PrinterCommands + sizeof(PrinterCommands)), 
+    buffer_t(PrinterCommands, PrinterCommands + sizeof(PrinterCommands)),
     Env.GetData());
 }
 
-void 
+void
 LabelWriterDriverTest::testContinuousPaper()
 {
   MockPrintEnvironment Env1;
@@ -172,26 +152,26 @@ LabelWriterDriverTest::testContinuousPaper()
   Driver1.SetPageHeight(0x1234);
   Driver1.SetPaperType(CLabelWriterDriver::ptRegular);
   Driver1.StartPage();
-    
+
   Driver2.SetPageHeight(0x1234);
   Driver2.SetPaperType(CLabelWriterDriver::ptContinuous);
   Driver2.StartPage();
-    
+
   byte PrinterCommands1[] = {ESC, 'L', 0x12, 0x34 };
   byte PrinterCommands2[] = {ESC, 'L', 0xff, 0xff };
 
   //CPPUNIT_ASSERT_EQUAL(sizeof(PrinterCommands1), Env1.GetData().size());
   CPPUNIT_ASSERT_EQUAL(
-    buffer_t(PrinterCommands1, PrinterCommands1 + sizeof(PrinterCommands1)), 
-    Env1.GetData());    
+    buffer_t(PrinterCommands1, PrinterCommands1 + sizeof(PrinterCommands1)),
+    Env1.GetData());
   //CPPUNIT_ASSERT_EQUAL(sizeof(PrinterCommands2), Env2.GetData().size());
   CPPUNIT_ASSERT_EQUAL(
-    buffer_t(PrinterCommands2, PrinterCommands2 + sizeof(PrinterCommands2)), 
+    buffer_t(PrinterCommands2, PrinterCommands2 + sizeof(PrinterCommands2)),
     Env2.GetData());
 }
 
 
-void 
+void
 LabelWriterDriverTest::test400EndPageEndDoc()
 {
   MockPrintEnvironment    Env;
@@ -208,19 +188,19 @@ LabelWriterDriverTest::test400EndPageEndDoc()
     {
       ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC,
       ESC, 'Q', 0x00, 0x00, ESC, 'B', 0, ESC, 'h', ESC, 'e',
-      ESC, 'L', 0x08, 0x00, ESC, 'G', 
-      ESC, 'L', 0x08, 0x00, ESC, 'G', 
+      ESC, 'L', 0x08, 0x00, ESC, 'G',
+      ESC, 'L', 0x08, 0x00, ESC, 'G',
       ESC, 'E'
     };
 
   //CPPUNIT_ASSERT_EQUAL(sizeof(PrinterCommands), Env.GetData().size());
   CPPUNIT_ASSERT_EQUAL(
-    buffer_t(PrinterCommands, PrinterCommands + sizeof(PrinterCommands)), 
+    buffer_t(PrinterCommands, PrinterCommands + sizeof(PrinterCommands)),
     Env.GetData());
 }
 
 
-void 
+void
 LabelWriterDriverTest::testTwinTurboRoll()
 {
   MockPrintEnvironment            Env;
@@ -234,17 +214,13 @@ LabelWriterDriverTest::testTwinTurboRoll()
   byte PrinterCommands[] =
     {
       ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC,
-      ESC, 'Q', 0x00, 0x00, ESC, 'B', 0, ESC, 'h', ESC, 'e', ESC, 'q', '0', 
-      ESC, 'L', 0x08, 0x00, ESC, 'G', 
+      ESC, 'Q', 0x00, 0x00, ESC, 'B', 0, ESC, 'h', ESC, 'e', ESC, 'q', '0',
+      ESC, 'L', 0x08, 0x00, ESC, 'G',
       ESC, 'E'
     };
 
   //CPPUNIT_ASSERT_EQUAL(sizeof(PrinterCommands), Env.GetData().size());
   CPPUNIT_ASSERT_EQUAL(
-    buffer_t(PrinterCommands, PrinterCommands + sizeof(PrinterCommands)), 
+    buffer_t(PrinterCommands, PrinterCommands + sizeof(PrinterCommands)),
     Env.GetData());
 }
-
-/*
- * End of "$Id: TestLabelWriterDriver.cpp 15963 2011-09-02 14:46:10Z pineichen $".
- */

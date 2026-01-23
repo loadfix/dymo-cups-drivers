@@ -1,23 +1,3 @@
-// -*- C++ -*-
-// $Id: MOCK_LWLMPrintEnvironment.cpp 15962 2011-09-02 14:45:00Z pineichen $
-
-// DYMO LabelWriter Drivers
-// Copyright (C) 2008 Sanford L.P.
-
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
-// of the License, or (at your option) any later version.
-
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-
 #include "MOCK_LWLMPrintEnvironment.h"
 #include "../LabelWriterDriver.h"
 #include <assert.h>
@@ -38,7 +18,7 @@ void
 MockLWLMPrintEnvironment::WriteData(const buffer_t& Data)
 {
   //    printf("MockLWLMPrintEnvironment::WriteData()");
-    
+
   // don't store request status requests
   if (Data != CLabelWriterDriver::GetRequestStatusCommand())
     MockPrintEnvironment::WriteData(Data);
@@ -50,7 +30,7 @@ MockLWLMPrintEnvironment::ReadData(buffer_t& Data)
   //printf("MockLWLMPrintEnvironment::ReadData()");
 
   Data.clear();
-    
+
   mode_t Mode = mtTOF;
 
   if (Mode_.size() > 1)
@@ -60,7 +40,7 @@ MockLWLMPrintEnvironment::ReadData(buffer_t& Data)
   }
   else
     Mode = Mode_.back();
-    
+
   switch (Mode)
   {
     case mtTOF:
@@ -122,24 +102,3 @@ MockLWLMPrintEnvironment::PushMode(mode_t Mode, size_t Count)
   for (size_t i = 0; i < Count; ++i)
     Mode_.push_back(Mode);
 }
-
-
-/*
- * End of "$Id: MOCK_LWLMPrintEnvironment.cpp 15962 2011-09-02 14:45:00Z pineichen $".
- */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

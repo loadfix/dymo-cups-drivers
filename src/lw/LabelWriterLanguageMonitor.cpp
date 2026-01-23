@@ -1,24 +1,3 @@
-// -*- C++ -*-
-// $Id: LabelWriterLanguageMonitor.cpp 15965 2011-09-02 14:48:46Z pineichen $
-
-// DYMO LabelWriter Drivers
-// Copyright (C) 2008 Sanford L.P.
-
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
-// of the License, or (at your option) any later version.
-
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-
-
 #include "LabelWriterLanguageMonitor.h"
 #include <assert.h>
 #include <unistd.h>
@@ -39,8 +18,8 @@ CLabelWriterLanguageMonitor::CLabelWriterLanguageMonitor(IPrintEnvironment& Envi
 CLabelWriterLanguageMonitor::~CLabelWriterLanguageMonitor()
 {
 }
-    
-void 
+
+void
 CLabelWriterLanguageMonitor::StartDoc()
 {
   IsFirstPage_ = true;
@@ -50,14 +29,14 @@ CLabelWriterLanguageMonitor::StartDoc()
     SynchronizeRoll();
 }
 
-void 
+void
 CLabelWriterLanguageMonitor::EndDoc()
 {
   fprintf(stderr, "DEBUG: CLabelWriterLanguageMonitor::EndDoc()\n");
   //CheckStatusAndReprint();
 }
 
-void 
+void
 CLabelWriterLanguageMonitor::StartPage()
 {
   fprintf(stderr, "DEBUG: CLabelWriterLanguageMonitor::StartPage()\n");
@@ -65,11 +44,11 @@ CLabelWriterLanguageMonitor::StartPage()
   {
     CheckStatusAndReprint();
   }
-    
+
   IsFirstPage_ = false;
 }
 
-void 
+void
 CLabelWriterLanguageMonitor::EndPage()
 {
   fprintf(stderr, "DEBUG: CLabelWriterLanguageMonitor::EndPage()\n");
@@ -83,7 +62,7 @@ CLabelWriterLanguageMonitor::IsLocal()
 
   char* uri = getenv("DEVICE_URI");
 
-  if(uri != NULL)  
+  if(uri != NULL)
     bIsLocal = (strncmp(uri, "usb://", 6) == 0);
 
   return bIsLocal;
@@ -118,7 +97,7 @@ CLabelWriterLanguageMonitor::CheckStatusAndReprint()
   while (true) // reprint also can fail, so don't forget to recheck status after reprint
   {
     fprintf(stderr, "DEBUG: CLabelWriterLanguageMonitor::CheckStatusAndReprint() 1\n");
-    
+
     byte    Status      = 0;
     time_t  BeginTime   = time(NULL);
 //    bool    StatusOK    = ReadStatus(Status);
@@ -135,20 +114,20 @@ CLabelWriterLanguageMonitor::CheckStatusAndReprint()
       ReadStatus(Status);
       //usleep(100000);
       i++;
-    }     
+    }
 
     if (difftime(time(NULL), BeginTime) >= ReadStatusTimeout_)
     {
       fprintf(stderr, "DEBUG: CLabelWriterLanguageMonitor::CheckStatusAndReprint() timeout\n");
       break;
     }
-    
+
     //if (!StatusOK)
     //{
     //  fprintf(stderr, "DEBUG: CLabelWriterLanguageMonitor::CheckStatusAndReprint() 3\n");
     //  break;
     //}
-    
+
     // error - needs reprint
     if ((Status & ERROR_BIT) || (Status & ROLL_CHANGED_BIT) || !(Status & TOF_BIT))
     {
@@ -158,7 +137,7 @@ CLabelWriterLanguageMonitor::CheckStatusAndReprint()
 
       SetJobStatus(Status);
       if (PollUntilPaperIn())
-      {   
+      {
         // restore good status of the job
         SetJobStatus(TOF_BIT);
 
@@ -192,13 +171,13 @@ CLabelWriterLanguageMonitor::ReadStatus(byte& Status)
   }
   //Environment_.WriteData(buffer_t(128, 0));
   //Environment_.WriteData(RequestStatusCommand);
-    
+
   //byte b[] = {
   //    0x1b, 'A', 0x1b, 'A', 0x1b, 'A', 0x1b, 'A', 0x1b, 'A', 0x1b, 'A', 0x1b, 'A', 0x1b, 'A',
   //    0x1b, 'A', 0x1b, 'A', 0x1b, 'A', 0x1b, 'A', 0x1b, 'A', 0x1b, 'A', 0x1b, 'A', 0x1b, 'A'};
   //byte b[] = { 0x1b, 'A', 0x1b, 'A'};
-  //Environment_.WriteData(buffer_t(b, b + sizeof(b))); 
-    
+  //Environment_.WriteData(buffer_t(b, b + sizeof(b)));
+
   buffer_t buf;
   Environment_.ReadData(buf);
 
@@ -220,7 +199,7 @@ CLabelWriterLanguageMonitor::ReadStatus(byte& Status)
   // }
   //else
   //  LastReadStatusResult_ = Result;
-  
+
   LastStatus_ = Status;
 
   fprintf(stderr, "DEBUG: ReadStatus() returned %x %i\n", Status, (int)Result);
@@ -232,7 +211,7 @@ CLabelWriterLanguageMonitor::PollUntilPaperIn()
 {
   fprintf(stderr, "DEBUG: CLabelWriterLanguageMonitor::PollUntilPaperIn()\n");
 
-  byte Status = 0;  
+  byte Status = 0;
   for(;;)
   {
     // TODO: use platform-undependend call
@@ -244,7 +223,7 @@ CLabelWriterLanguageMonitor::PollUntilPaperIn()
       interval.tv_nsec = 200000000; // 0.2 second
       nanosleep(&interval, NULL);
     }
-    
+
     if (Environment_.GetJobStatus() == IPrintEnvironment::jsDeleted)
       return false;
 
@@ -262,12 +241,12 @@ void
 CLabelWriterLanguageMonitor::SetJobStatus(byte Status)
 {
   IPrintEnvironment::job_status_t JobStatus = IPrintEnvironment::jsOK;
-        
+
   if ((Status & PAPER_OUT_BIT) || (Status & PAPER_FEED_BIT))
     JobStatus = IPrintEnvironment::jsPaperOut;
   else if (Status & ERROR_BIT)
     JobStatus = IPrintEnvironment::jsError;
-    
+
   Environment_.SetJobStatus(JobStatus);
 }
 
@@ -282,23 +261,23 @@ CLabelWriterLanguageMonitor::ReprintLabel()
     buffer_t ShortFormFeedCommand = CLabelWriterDriver400::GetShortFormFeedCommand();
     Environment_.WriteData(ShortFormFeedCommand);
   }
-    
+
   Environment_.WriteData(PageData_);
 }
-    
-void 
+
+void
 CLabelWriterLanguageMonitor::ProcessData(const buffer_t& Data)
 {
   PageData_.insert(PageData_.end(), Data.begin(), Data.end());
 }
 
-void        
+void
 CLabelWriterLanguageMonitor::SetPaperType(CLabelWriterDriver::paper_type_t Value)
 {
   PaperType_ = Value;
 }
 
-void        
+void
 CLabelWriterLanguageMonitor::SetRoll(CLabelWriterDriverTwinTurbo::roll_t Value)
 {
   Roll_       = Value;
@@ -307,11 +286,3 @@ CLabelWriterLanguageMonitor::SetRoll(CLabelWriterDriverTwinTurbo::roll_t Value)
 
 
 }; // namespace
-
-
-/*
- * End of "$Id: LabelWriterLanguageMonitor.cpp 15965 2011-09-02 14:48:46Z pineichen $".
- */
-
-
-

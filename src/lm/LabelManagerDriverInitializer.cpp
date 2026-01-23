@@ -1,0 +1,202 @@
+#include "LabelManagerDriverInitializer.h"
+#include <cups/ppd.h>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include "LabelManagerDriver.h"
+#include "LabelManagerDriverImpl.h"
+#include "LabelManagerLanguageMonitor.h"
+#include "CupsUtils.h"
+#include "DummyLanguageMonitor.h"
+
+namespace DymoPrinterDriver
+{
+
+void CLabelManagerDriverInitializer::ProcessCupsOptions(CLabelManagerDriver& Driver, int num_options, cups_option_t* options)
+{
+    const char* option = CCupsUtils::GetCupsOption("DymoCutOptions", num_options, options, "Cut");
+
+    Driver.SetDeviceName(CCupsUtils::GetCupsOption("printer-make-and-model", num_options, options));
+
+    if(strcasecmp(option, "Cut") == 0)
+        Driver.SetCutOption(ILabelManagerDriver::coCut);
+    else if(strcasecmp(option, "ChainMarks") == 0)
+        Driver.SetCutOption(ILabelManagerDriver::coChainMarks);
+    else
+        fprintf(stderr, "WARNING: Unknown DymoCutOptions option value = %s\n", option);
+
+    option = CCupsUtils::GetCupsOption("DymoLabelAlignment", num_options, options, "Center");
+
+    if(strcasecmp(option, "Center") == 0)
+        Driver.SetAlignment(ILabelManagerDriver::alCenter);
+    else if(strcasecmp(option, "Left") == 0)
+        Driver.SetAlignment(ILabelManagerDriver::alLeft);
+    else if(strcasecmp(option, "Right") == 0)
+        Driver.SetAlignment(ILabelManagerDriver::alRight);
+    else
+        fprintf(stderr, "WARNING: Unknown DymoLabelAlignment option value = %s\n", option);
+
+    option = CCupsUtils::GetCupsOption("DymoContinuousPaper", num_options, options, "0");
+
+    if(strcasecmp(option, "0") == 0)
+        Driver.SetPaperType(IPrinterDriver::ptRegular);
+    else if(strcasecmp(option, "1") == 0)
+        Driver.SetPaperType(IPrinterDriver::ptContinuous);
+    else
+        fprintf(stderr, "WARNING: Unknown DymoContinuousPaper option value = %s\n", option);
+
+    option = CCupsUtils::GetCupsOption("DymoPrintChainMarksAtDocEnd", num_options, options, "0");
+
+    if(strcasecmp(option, "0") == 0)
+        Driver.SetPrintChainMarksAtDocEnd(false);
+    else if(strcasecmp(option, "1") == 0)
+        Driver.SetPrintChainMarksAtDocEnd(true);
+    else
+        fprintf(stderr, "WARNING: Unknown DymoPrintChainMarksAtDocEnd option value = %s\n", option);
+}
+
+void CLabelManagerDriverInitializer::ProcessPPDOptions(CLabelManagerDriver& Driver, CDummyLanguageMonitor& LM, ppd_file_t* ppd)
+{
+    if (!ppd)
+        return;
+
+    // Set device name from PPD
+    Driver.SetDeviceName(ppd->modelname);
+
+    // Process cut options from PPD
+    ppd_choice_t* choice = ppdFindMarkedChoice(ppd, "DymoCutOptions");
+    if (choice)
+    {
+        if (!strcasecmp(choice->choice, "Cut"))
+            Driver.SetCutOption(ILabelManagerDriver::coCut);
+        else if (!strcasecmp(choice->choice, "ChainMarks"))
+            Driver.SetCutOption(ILabelManagerDriver::coChainMarks);
+    }
+
+    // Process label alignment from PPD
+    choice = ppdFindMarkedChoice(ppd, "DymoLabelAlignment");
+    if (choice)
+    {
+        if (!strcasecmp(choice->choice, "Center"))
+            Driver.SetAlignment(ILabelManagerDriver::alCenter);
+        else if (!strcasecmp(choice->choice, "Left"))
+            Driver.SetAlignment(ILabelManagerDriver::alLeft);
+        else if (!strcasecmp(choice->choice, "Right"))
+            Driver.SetAlignment(ILabelManagerDriver::alRight);
+    }
+
+    // Process chain marks at doc end from PPD
+    choice = ppdFindMarkedChoice(ppd, "DymoPrintChainMarksAtDocEnd");
+    if (choice)
+    {
+        Driver.SetPrintChainMarksAtDocEnd(atoi(choice->choice) != 0);
+    }
+
+    // Process continuous paper from PPD
+    choice = ppdFindMarkedChoice(ppd, "DymoContinuousPaper");
+    if (choice)
+    {
+        if (atoi(choice->choice) != 0)
+            Driver.SetPaperType(IPrinterDriver::ptContinuous);
+        else
+            Driver.SetPaperType(IPrinterDriver::ptRegular);
+    }
+
+    // Device-specific configuration based on model name
+    if (!strcasecmp(ppd->modelname, "DYMO LabelWriter DUO Tape"))
+    {
+        Driver.SetMaxPrintableWidth(96);
+        Driver.SetNormalLeader(75);
+        Driver.SetMinLeader(61);
+        Driver.SetAlignedLeader(43);
+        Driver.SetMinLabelLength(133);
+        Driver.SetSupportAutoCut(true);
+    }
+    else if (!strcasecmp(ppd->modelname, "DYMO LabelWriter DUO Tape 128"))
+    {
+        Driver.SetMaxPrintableWidth(128);
+        Driver.SetNormalLeader(75);
+        Driver.SetMinLeader(61);
+        Driver.SetAlignedLeader(43);
+        Driver.SetMinLabelLength(133);
+        Driver.SetSupportAutoCut(true);
+    }
+    else if (!strcasecmp(ppd->modelname, "DYMO LabelMANAGER 450"))
+    {
+        Driver.SetMaxPrintableWidth(128);
+        Driver.SetNormalLeader(75);
+        Driver.SetMinLeader(55);
+        Driver.SetAlignedLeader(43);
+        Driver.SetMinLabelLength(133);
+        Driver.SetSupportAutoCut(true);
+    }
+    else if (!strcasecmp(ppd->modelname, "DYMO LabelMANAGER 400"))
+    {
+        Driver.SetMaxPrintableWidth(96);
+        Driver.SetNormalLeader(75);
+        Driver.SetMinLeader(55);
+        Driver.SetAlignedLeader(43);
+        Driver.SetMinLabelLength(133);
+        Driver.SetSupportAutoCut(true);
+    }
+    else if (!strcasecmp(ppd->modelname, "DYMO LabelPOINT 350"))
+    {
+        Driver.SetMaxPrintableWidth(96);
+        Driver.SetNormalLeader(75);
+        Driver.SetMinLeader(55);
+        Driver.SetAlignedLeader(43);
+        Driver.SetMinLabelLength(133);
+        Driver.SetSupportAutoCut(true);
+    }
+    // Add more device-specific configurations as needed
+}
+
+void CLabelManagerDriverInitializer::ProcessPageOptions(CLabelManagerDriver& Driver, CDummyLanguageMonitor& LM, cups_page_header2_t& PageHeader)
+{
+    ILabelManagerDriver::tape_width_t TapeWidth = ILabelManagerDriver::tape_width_t(PageHeader.cupsMediaType & 0xff);
+
+    fprintf(stderr, "TEST: ProcessPageOptions device name = %s\n", Driver.GetDeviceName().c_str());
+
+    if(strcasecmp(Driver.GetDeviceName().c_str(), "DYMO MobileLabeler") == 0)
+    {
+        if(TapeWidth == ILabelManagerDriver::tw6mm)
+            Driver.SetTapeAlignmentOffset(1);
+        else if (TapeWidth == ILabelManagerDriver::tw9mm)
+            Driver.SetTapeAlignmentOffset(0);
+        else if (TapeWidth == ILabelManagerDriver::tw12mm)
+            Driver.SetTapeAlignmentOffset(2); //5
+        else if (TapeWidth == ILabelManagerDriver::tw19mm)
+            Driver.SetTapeAlignmentOffset(-1);
+        else if (TapeWidth == ILabelManagerDriver::tw24mm)
+            Driver.SetTapeAlignmentOffset(-1);
+    }
+}
+
+void CLabelManagerDriverInitializerWithLM::ProcessCupsOptions(CLabelManagerDriver& Driver, CLabelManagerLanguageMonitor& LM, int num_options, cups_option_t* options)
+{
+    CLabelManagerDriverInitializer::ProcessCupsOptions(Driver, num_options, options);
+
+    LM.SetDeviceName(CCupsUtils::GetCupsOption("printer-make-and-model", num_options, options));
+}
+
+void CLabelManagerDriverInitializerWithLM::ProcessPPDOptions(CLabelManagerDriver& Driver, CDummyLanguageMonitor& LM, ppd_file_t* ppd)
+{
+    CLabelManagerDriverInitializer::ProcessPPDOptions(Driver, LM, ppd);
+
+    // Only set device name if LM is actually a CLabelManagerLanguageMonitor
+    CLabelManagerLanguageMonitor* labelManagerLM = dynamic_cast<CLabelManagerLanguageMonitor*>(&LM);
+    if (labelManagerLM && ppd)
+        labelManagerLM->SetDeviceName(ppd->modelname);
+}
+
+void CLabelManagerDriverInitializerWithLM::ProcessPageOptions(CLabelManagerDriver& Driver, CDummyLanguageMonitor& LM, cups_page_header2_t& PageHeader)
+{
+    CLabelManagerDriverInitializer::ProcessPageOptions(Driver, LM, PageHeader);
+
+    // Only set tape width if LM is actually a CLabelManagerLanguageMonitor
+    CLabelManagerLanguageMonitor* labelManagerLM = dynamic_cast<CLabelManagerLanguageMonitor*>(&LM);
+    if (labelManagerLM)
+        labelManagerLM->SetTapeWidth(ILabelManagerDriver::tape_width_t(PageHeader.cupsMediaType & 0xff));
+}
+
+}

@@ -1,35 +1,13 @@
-// -*- C++ -*-
-// $Id$
-
-// DYMO LabelWriter Drivers
-// Copyright (C) 2008 Sanford L.P.
-
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
-// of the License, or (at your option) any later version.
-
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-
-#ifndef __LabelManagerLanguageMonitorH__
-#define __LabelManagerLanguageMonitorH__
+#ifndef LABELMANAGER_LANGUAGE_MONITOR_H
+#define LABELMANAGER_LANGUAGE_MONITOR_H
 
 #include "PrinterDriver.h"
 #include "LabelManagerDriver.h"
+#include "LabelManagerDriverImpl.h"
 
 namespace DymoPrinterDriver
 {
-    /**
-     LanguageMonitor for LabelManager printers
-     Supported features are:
-     */
+
     class CLabelManagerLanguageMonitor: public ILanguageMonitor
     {
     public:
@@ -47,16 +25,16 @@ namespace DymoPrinterDriver
             NO_POWER_BIT        = 0x80,
             INCORRECT_SIZE_BIT  = 0xFF
         };
-        
+
         CLabelManagerLanguageMonitor(IPrintEnvironment& Environment, bool UseSleep = true, size_t ReadStatusTimeout = 10);
         virtual ~CLabelManagerLanguageMonitor();
-        
+
         virtual void StartDoc();
         virtual void EndDoc();
-        
+
         virtual void StartPage();
         virtual void EndPage();
-        
+
         virtual void ProcessData(const buffer_t& Data);
 
         void SetDeviceName(const std::string& Value);
@@ -66,10 +44,10 @@ namespace DymoPrinterDriver
     private:
         // check if printer is locally connected, i.e. to usb port
         bool IsLocal();
-        
+
         // checks status
         void CheckStatus();
-        
+
         // Read status byte from the printer
         // return true if status has been read, false otherwise
         bool ReadStatus(buffer_t& Status);
@@ -81,21 +59,17 @@ namespace DymoPrinterDriver
         IPrintEnvironment&                      Environment_;
         bool                                    IsFirstPage_;
         buffer_t                                PageData_;
-        
+
         std::string                             DeviceName_;
         CLabelManagerDriver::tape_width_t       TapeWidth_;
 
         bool                                    UseSleep_; // for test purpose only
         bool                                    LastReadStatusResult_;
-        
+
         size_t                                  ReadStatusTimeout_;
     };
-    
-    
+
+
 }; //namespace
 
-#endif
-
-/*
- * End of "$Id$".
- */
+#endif // LABELMANAGER_LANGUAGE_MONITOR_H

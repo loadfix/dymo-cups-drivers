@@ -1,23 +1,3 @@
-// -*- C++ -*-
-// $Id: TestNLLHalftoning.cpp 4759 2008-06-19 19:02:27Z vbuzuev $
-
-// DYMO LabelWriter Drivers
-// Copyright (C) 2008 Sanford L.P.
-
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
-// of the License, or (at your option) any later version.
-
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-
 #include "TestNLLHalftoning.h"
 #include "TestCommon.h"
 #include <ostream>
@@ -28,19 +8,19 @@ using namespace DymoPrinterDriver;
 // Registers the fixture into the 'registry'
 CPPUNIT_TEST_SUITE_REGISTRATION(NonLinearLaplacianTest);
 
-void 
+void
 NonLinearLaplacianTest::setUp()
 {
 }
 
 
-void 
+void
 NonLinearLaplacianTest::tearDown()
 {
 }
 
 
-void 
+void
 NonLinearLaplacianTest::testBlock()
 {
   // 8x10 pixels wide, 24bits per pixel
@@ -57,10 +37,10 @@ NonLinearLaplacianTest::testBlock()
       255,255,255, 255,255,255, 255,255,255, 255,255,255, 255,255,255, 255,255,255, 255,255,255, 255,255,255,
       255,255,255, 255,255,255, 255,255,255, 255,255,255, 255,255,255, 255,255,255, 255,255,255, 255,255,255,
     };
-  byte OutputData[] = 
-    { 
+  byte OutputData[] =
+    {
       0x00, 0,
-      0x38, 0, 
+      0x38, 0,
       0x38, 0,
       0x38, 0,
       0x38, 0,
@@ -68,7 +48,7 @@ NonLinearLaplacianTest::testBlock()
       0x38, 0,
       0x38, 0,
       0x00, 0,
-      0x00, 0, 
+      0x00, 0,
     };
 
   buffer_t OutputLine;
@@ -80,7 +60,7 @@ NonLinearLaplacianTest::testBlock()
     buffer_t line(pInputImage + i * 8 * 3, pInputImage + (i + 1) * 8 * 3);
     InputImage.push_back(line);
   }
-    
+
   CHalftoneFilter::image_buffer_t OutputImage;
   H.ProcessImage(InputImage, OutputImage);
 
@@ -89,10 +69,6 @@ NonLinearLaplacianTest::testBlock()
     Output.insert(Output.end(), OutputImage[i].begin(), OutputImage[i].end());
 
   CPPUNIT_ASSERT_EQUAL(
-    buffer_t(OutputData, OutputData + sizeof(OutputData)), 
+    buffer_t(OutputData, OutputData + sizeof(OutputData)),
     Output);
 }
-
-/*
- * End of "$Id: TestNLLHalftoning.cpp 4759 2008-06-19 19:02:27Z vbuzuev $".
- */

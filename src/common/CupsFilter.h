@@ -1,25 +1,5 @@
-// -*- C++ -*-
-// $Id: CupsFilter.h 15959 2011-09-02 14:40:29Z pineichen $
-
-// DYMO LabelWriter Drivers
-// Copyright (C) 2008 Sanford L.P.
-
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
-// of the License, or (at your option) any later version.
-
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-
-#ifndef hfc4bbdea_8a1b_427c_9ab5_50b84576b19e
-#define hfc4bbdea_8a1b_427c_9ab5_50b84576b19e
+#ifndef CUPS_FILTER_H
+#define CUPS_FILTER_H
 
 #include <cups/cups.h>
 #include <cups/raster.h>
@@ -29,7 +9,6 @@
 #include "CupsPrintEnvironment.h"
 #include "ErrorDiffusionHalftoning.h"
 #include "NonLinearLaplacianHalftoning.h"
-
 
 namespace DymoPrinterDriver
 {
@@ -42,24 +21,24 @@ class CCupsFilter
 {
 public:
   CCupsFilter();
-    
+
   int Run(int argc, char* argv[]);
 
-private:    
+private:
   void InitDocument(const char* opts);
 
   CCupsPrintEnvironmentForLM          PrintEnvironmentForLM_;
   LM                                  LanguageMonitor_;
   CCupsPrintEnvironmentForDriver      PrintEnvironmentForDriver_;
   D                                   Driver_;
-    
+
   std::string                         HalftoningMethod_;
 };
 
 
 template <class D, class DI, class LM>
-CCupsFilter<D, DI, LM>::CCupsFilter(): 
-  PrintEnvironmentForLM_(), LanguageMonitor_(PrintEnvironmentForLM_), 
+CCupsFilter<D, DI, LM>::CCupsFilter():
+  PrintEnvironmentForLM_(), LanguageMonitor_(PrintEnvironmentForLM_),
   PrintEnvironmentForDriver_(LanguageMonitor_), Driver_(PrintEnvironmentForDriver_),
   HalftoningMethod_()
 {
@@ -120,7 +99,7 @@ CCupsFilter<D, DI, LM>::Run(int argc, char* argv[])
 
     DI::ProcessPageOptions(Driver_, LanguageMonitor_, PageHeader);
     LanguageMonitor_.StartPage();
-      
+
     if(PrintEnvironmentForLM_.GetJobStatus() != IPrintEnvironment::jsOK)
         break;
 
@@ -129,7 +108,7 @@ CCupsFilter<D, DI, LM>::Run(int argc, char* argv[])
     buffer_t InputLine;
     buffer_t OutputLine;
     CHalftoneFilter::image_buffer_t InputImage;
-                
+
     bool UseCustomHalftoning    = PageHeader.cupsBitsPerPixel > 1;
     bool IsProcessLineSupported = true;
 
@@ -138,12 +117,12 @@ CCupsFilter<D, DI, LM>::Run(int argc, char* argv[])
     {
       if (HalftoningMethod_ == "NLL")
         H.reset(new CNLLHalftoning(5, CHalftoneFilter::itRGB, CHalftoneFilter::itBW));
-      else // error diffusion is default                
+      else // error diffusion is default
         H.reset(new CErrorDiffusionHalftoning(CHalftoneFilter::itRGB, CHalftoneFilter::itBW));
-                
-      IsProcessLineSupported = H->IsProcessLineSupported();    
+
+      IsProcessLineSupported = H->IsProcessLineSupported();
     }
-        
+
     //CErrorDiffusionHalftoning H(CHalftoneFilter::itRGB, CHalftoneFilter::itBW);
     for (size_t y = 0; y < PageHeader.cupsHeight; ++y)
     {
@@ -151,12 +130,12 @@ CCupsFilter<D, DI, LM>::Run(int argc, char* argv[])
         fprintf(stderr, "INFO: Printing page %d, %d%% complete...\n", Page, int(100 * y / PageHeader.cupsHeight));
 
       std::fill(Buffer.begin(), Buffer.end(), 0);
-            
+
       size_t bytesRead = cupsRasterReadPixels(RasterData, &Buffer[0], PageHeader.cupsBytesPerLine);
       if (bytesRead != PageHeader.cupsBytesPerLine)
       {
         fprintf(stderr, "Error: cupsRasterReadPixels() failed: expected %d read, actually was %i", PageHeader.cupsBytesPerLine, (int)bytesRead);
-        
+
         break;
       }
 
@@ -170,10 +149,10 @@ CCupsFilter<D, DI, LM>::Run(int argc, char* argv[])
         }
         else
           InputImage.push_back(Buffer); // cache for later processing
-      }    
+      }
       else
         Driver_.ProcessRasterLine(Buffer); // process line as-is, because it is already B&W
-                
+
     } // all lines
 
     // process cached image by custom halftoning if needed
@@ -183,16 +162,16 @@ CCupsFilter<D, DI, LM>::Run(int argc, char* argv[])
       H->ProcessImage(InputImage, OutputImage);
       for (size_t i = 0; i < OutputImage.size(); ++i)
         Driver_.ProcessRasterLine(OutputImage[i]);
-            
+
     }
-        
+
     Driver_.EndPage();
     LanguageMonitor_.EndPage();
   }
-  
+
   Driver_.EndDoc();
   LanguageMonitor_.EndDoc();
-    
+
   cupsRasterClose(RasterData);
   if (fd != 0)
     close(fd);
@@ -201,11 +180,11 @@ CCupsFilter<D, DI, LM>::Run(int argc, char* argv[])
     fputs("ERROR: No pages found!\n", stderr);
   else
     fputs("INFO: Ready to print.\n", stderr);
-	
+
   //fputs("DEBUG: DYMO filter hack: sending ESC A at the end\n", stderr);
   //char buf[2] = {0x1b, 'A'};
   //write(1, buf, 2);
-  //close(1);	
+  //close(1);
 
   return (Page == 0);
 }
@@ -215,7 +194,7 @@ void
 CCupsFilter<D, DI, LM>::InitDocument(const char* opts)
 {
   fprintf(stderr, "DEBUG: -----------------------------options are: %s\n", opts);
-    
+
   ppd_file_t* ppd = ppdOpenFile(getenv("PPD"));
   if (!ppd)
   {
@@ -247,12 +226,8 @@ CCupsFilter<D, DI, LM>::InitDocument(const char* opts)
 
   cupsFreeOptions(OptionCount, Options);
   ppdClose(ppd);
-}                                                      
+}
 
 }; // namespace
 
-#endif
-
-/*
- * End of "$Id: CupsFilter.h 15959 2011-09-02 14:40:29Z pineichen $".
- */
+#endif // CUPS_FILTER_H

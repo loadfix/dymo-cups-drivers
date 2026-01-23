@@ -1,106 +1,185 @@
-// -*- C++ -*-
-// $Id: Halftoning.h 15960 2011-09-02 14:42:28Z pineichen $
-
-// DYMO LabelWriter Drivers
-// Copyright (C) 2008 Sanford L.P.
-
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
-// of the License, or (at your option) any later version.
-
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-
-
-#ifndef h4D098F6A_47C6_4e9d_BD74_2DC6034F8EEF
-#define h4D098F6A_47C6_4e9d_BD74_2DC6034F8EEF
+#ifndef HALFTONING_H
+#define HALFTONING_H
 
 #include <stdlib.h>
 #include "CommonTypedefs.h"
 
-//namespace dymo
 namespace DymoPrinterDriver
 {
 
 class CHalftoneFilter
 {
 public:
-  // image format
-  typedef enum
-  {
-    itBW,       // Black and White
-    itXRGB,     // four bytes per pixel, 8 bits per color, msb is not used (default on MacOSX)
-    itRGB,      // three bytes per pixel, 8 bits per color (default on CUPS)
-  } image_t;
+   // image format
+   typedef enum
+   {
+      itBW,     // one bit per pixel, black and white
+      itXRGB,   // four bytes per pixel, 8 bits per color, msb is not used (default on MacOSX)
+      itRGB,    // three bytes per pixel, 8 bits per color (default on CUPS)
+   } image_t;
 
-  typedef std::vector<buffer_t> image_buffer_t;
+   typedef std::vector<buffer_t> image_buffer_t;
 
-  CHalftoneFilter(image_t InputImageType, image_t OutputImageType);
-  virtual ~CHalftoneFilter();
+   CHalftoneFilter(image_t InputImageType, image_t OutputImageType) : _inputImageType(InputImageType), _outputImageType(OutputImageType) {}
+   virtual ~CHalftoneFilter() {}
 
+   // Line-by-line interface
+   virtual bool IsProcessLineSupported() = 0;
+   virtual void ProcessLine(const buffer_t& InputLine, buffer_t& OutputLine) = 0;
 
-  // line-by-line interface
-  virtual bool IsProcessLineSupported() = 0;
-  virtual void ProcessLine(const buffer_t& InputLine, buffer_t& OutputLine) = 0;
+   // Full-image-at-once interface
+   virtual void ProcessImage(const void* ImageData, size_t ImageWidth, size_t ImageHeight, size_t LineDelta, std::vector<buffer_t>& OutputImage) = 0;
+   virtual void ProcessImage(const image_buffer_t& InputImage, image_buffer_t& OutputImage) = 0;
 
-  // full-image-at-once interface
-  virtual void ProcessImage(const void* ImageData, size_t ImageWidth, size_t ImageHeight, size_t LineDelta, std::vector<buffer_t>& OutputImage) = 0;
-  virtual void ProcessImage(const image_buffer_t& InputImage, image_buffer_t& OutputImage) = 0;
+   image_t GetInputImageType() { return _inputImageType; }
+   image_t GetOutputImageType() { return _outputImageType; }
 
-  image_t GetInputImageType();
-  image_t GetOutputImageType();
-    
-  // convert RGB value to Gray Scale
-  byte RGBToGrayScale(byte R, byte G, byte B);
-    
-  // pixelValue (0 - white, 1 - black)
-  void SetPixelBW(buffer_t& buf, int pixelNo, int pixelValue);
-    
-  // based on inputImageType extract color component of current pixel
-  void ExtractRGB(const buffer_t& InputLine, int PixelNo, byte& R, byte& G, byte& B);
-  // same as previous but return colors as packed integer value
-  int ExtractRGB(const buffer_t& InputLine, int PixelNo);
-    
-  // return imageWidth based on inputImageType and input line data
-  size_t CalcImageWidth(const buffer_t& InputLine);
-  // return buffer size needed to store an input line based on inputImageType
-  size_t CalcBufferSize(size_t ImageWidth);
-  // calc output buffer size
-  size_t CalcOutputBufferSize(size_t ImageWidth);
-    
+   // Convert RGB value to Gray Scale
+   byte RGBToGrayScale(byte R, byte G, byte B)
+   {
+      // White should remain white
+      if((R == 255) && (G == 255) && (B == 255))
+         return 255;
+      // black should remain black
+      else if((R == 0) && (G == 0) && (B == 0))
+         return 0;
+      // and if gray scale then keep it
+      else if((R == G) && (G == B))
+         return R;
+      else
+      {
+         int r = 0 + ((int(R) * 299) / 1000) + ((int(G) * 587) / 1000) + ((int(B) * 114) / 1000);
+         if(r > 255)
+            return 255;
+         return byte(r);
+      }
+   }
+
+   // PixelValue (0 - white, 1 - black)
+   void SetPixelBW(buffer_t& buf, int pixelNo, int pixelValue)
+   {
+      if(pixelValue)
+         buf[pixelNo / 8] |= (1 << (7 - pixelNo % 8));
+      else
+         buf[pixelNo / 8] &= ~(1 << (7 - pixelNo % 8));
+   }
+
+   // Based on inputImageType extract color component of current pixel
+   void ExtractRGB(const buffer_t& InputLine, int PixelNo, byte& R, byte& G, byte& B)
+   {
+      switch(_inputImageType)
+      {
+         case itXRGB:
+            R = InputLine[4 * PixelNo + 1];
+            G = InputLine[4 * PixelNo + 2];
+            B = InputLine[4 * PixelNo + 3];
+            break;
+         case itRGB:
+            R = InputLine[3 * PixelNo + 0];
+            G = InputLine[3 * PixelNo + 1];
+            B = InputLine[3 * PixelNo + 2];
+            break;
+         default:
+            // We shouldn't come here!
+            break;
+      }
+   }
+
+   // Same as previous but return colors as packed integer value
+   int ExtractRGB(const buffer_t& InputLine, int PixelNo)
+   {
+      switch(_inputImageType)
+      {
+         case itXRGB:
+            return (int(InputLine[4 * PixelNo + 1]) << 16)
+                   | (int(InputLine[4 * PixelNo + 2]) << 8)
+                   | (InputLine[4 * PixelNo + 3]);
+         case itRGB:
+            return (int(InputLine[3 * PixelNo + 0]) << 16)
+                   | (int(InputLine[3 * PixelNo + 1]) << 8)
+                   | (InputLine[3 * PixelNo + 2]);
+         default:
+            // We shouldn't come here!
+            return -1;
+      }
+
+      return 0;
+   }
+
+   // Return imageWidth based on inputImageType and input line data
+   size_t CalcImageWidth(const buffer_t& InputLine)
+   {
+      switch(_inputImageType)
+      {
+         case itXRGB:
+            return InputLine.size() / 4;
+         case itRGB:
+            return InputLine.size() / 3;
+         default:
+            // We shouldn't come here!
+            return 0;
+      }
+
+      return 0;
+   }
+
+   // Return buffer size needed to store an input line based on inputImageType
+   size_t CalcBufferSize(size_t ImageWidth)
+   {
+      switch(_inputImageType)
+      {
+         case itXRGB:
+            return ImageWidth * 4;
+         case itRGB:
+            return ImageWidth * 3;
+         default:
+            // We shouldn't come here!
+            return 0;
+      }
+
+      return 0;
+   }
+
+   // Calc output buffer size
+   size_t CalcOutputBufferSize(size_t ImageWidth)
+   {
+      switch(_outputImageType)
+      {
+         case itBW:
+            if(ImageWidth % 8 == 0)
+               return ImageWidth / 8;
+            else
+               return ImageWidth / 8 + 1;
+         default:
+            // We shouldn't come here!
+            return 0;
+      }
+
+      return 0;
+   }
+
 private:
-  image_t InputImageType_;
-  image_t OutputImageType_;    
+  image_t _inputImageType;
+  image_t _outputImageType;
 };
 
-
+// Error Halftoning
 class EHalftoneError
 {
 public:
-  typedef enum
-  {
-    heUnsupportedImageType = 1,
-  } error_t;
+   typedef enum
+   {
+      heUnsupportedImageType = 1,
+   } error_t;
 
-  EHalftoneError(error_t ErrorCode);
-        
-  error_t GetErrorCode();
+   EHalftoneError(error_t ErrorCode) : _errorCode(ErrorCode) {}
+
+   error_t GetErrorCode() { return _errorCode; }
 
 private:
-  error_t ErrorCode_;
+   error_t _errorCode;
 };
 
 }
 
-#endif
-
-/*
- * End of "$Id: Halftoning.h 15960 2011-09-02 14:42:28Z pineichen $".
- */
+#endif // HALFTONING_H

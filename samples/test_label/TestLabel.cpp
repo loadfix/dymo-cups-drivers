@@ -67,7 +67,7 @@ CreateLabelImage(int Width, int Height)
 
   // setup cairo
   cairo_set_antialias(c, CAIRO_ANTIALIAS_NONE);
-  
+
   // clear image
   cairo_set_source_rgb(c, 1, 1, 1);
   cairo_paint(c);
@@ -131,7 +131,7 @@ CreateLabelImage(int Width, int Height)
   cairo_paint(c);
   cairo_restore(c);
 
-  
+
   // draw address 2
   cairo_select_font_face(c, "sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
   cairo_set_font_size(c, 50);
@@ -166,7 +166,7 @@ CreateLabelImage(int Width, int Height)
   cairo_set_source_surface(c, Photo, 850, 330);
   cairo_paint(c);
   cairo_restore(c);
-  
+
   // draw small description
   cairo_select_font_face(c, "sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
   cairo_set_font_size(c, 20);
@@ -175,8 +175,8 @@ CreateLabelImage(int Width, int Height)
     cairo_move_to(c, 30, 640);
     cairo_show_text(c, "Printed on Linux using DYMO CUPS drivers and Cairo graphics library");
     cairo_stroke(c);
-  
-  
+
+
   // save to file
   if (cairo_surface_write_to_png(Surface, PNGFileName) != CAIRO_STATUS_SUCCESS)
     throw Error("Unable to write to PNG file");
@@ -199,7 +199,7 @@ int main(int argc, char** argv)
 
     int Width = 1112;
     int Height = 664;
-    
+
     CreateLabelImage(Width, Height);
 
     int             num_options = 0;
@@ -212,11 +212,11 @@ int main(int argc, char** argv)
     num_options = cupsAddOption("DymoHalftoning", "ErrorDiffusion", num_options, &options);
     num_options = cupsAddOption("DymoPrintQuality", "Graphics", num_options, &options);
     //    num_options = cupsAddOption("orientation-requested", "1", num_options, &options);
-      
+
 
     cupsPrintFile(argv[1], PNGFileName, "Test print with Cairo", num_options, options);
     cupsFreeOptions(num_options, options);
-  
+
     return 0;
   }
   catch(std::exception& e)

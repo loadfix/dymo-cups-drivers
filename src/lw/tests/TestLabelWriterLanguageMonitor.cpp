@@ -1,23 +1,3 @@
-// -*- C++ -*-
-// $Id: TestLabelWriterLanguageMonitor.cpp 4759 2008-06-19 19:02:27Z vbuzuev $
-
-// DYMO LabelWriter Drivers
-// Copyright (C) 2008 Sanford L.P.
-
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
-// of the License, or (at your option) any later version.
-
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-
 #include "TestLabelWriterLanguageMonitor.h"
 #include "MOCK_PrintEnvironment.h"
 #include "MOCK_LWLMPrintEnvironment.h"
@@ -34,20 +14,20 @@ const byte ESC = 0x1b;
 CPPUNIT_TEST_SUITE_REGISTRATION(LabelWriterLMTest);
 
 
-void 
+void
 LabelWriterLMTest::setUp()
 {
 }
 
 
-void 
+void
 LabelWriterLMTest::tearDown()
 {
 }
 
 
 
-void 
+void
 LabelWriterLMTest::testGoodJob()
 {
   MockLWLMPrintEnvironment    Env;
@@ -66,7 +46,7 @@ LabelWriterLMTest::testGoodJob()
   LM.StartPage();
 
   LM.ProcessData(PrinterData2);
-    
+
   LM.EndPage();
   LM.EndDoc();
 
@@ -75,7 +55,7 @@ LabelWriterLMTest::testGoodJob()
     Env.GetData());
 }
 
-void 
+void
 LabelWriterLMTest::testPaperOut()
 {
   MockLWLMPrintEnvironment    Env;
@@ -97,8 +77,8 @@ LabelWriterLMTest::testPaperOut()
   Env.ClearData(); // don't need reset command
   LM.StartPage();
 
-  LM.ProcessData(PrinterData2); 
-   
+  LM.ProcessData(PrinterData2);
+
   Env.PushMode(MockLWLMPrintEnvironment::mtPaperOut);
   LM.EndPage();
   LM.EndDoc();
@@ -108,7 +88,7 @@ LabelWriterLMTest::testPaperOut()
     Env.GetData());
 }
 
-void 
+void
 LabelWriterLMTest::testPaperOutAfterReprint()
 {
   MockLWLMPrintEnvironment    Env;
@@ -130,8 +110,8 @@ LabelWriterLMTest::testPaperOutAfterReprint()
   Env.ClearData(); // don't need reset command
   LM.StartPage();
 
-  LM.ProcessData(PrinterData2); 
-   
+  LM.ProcessData(PrinterData2);
+
   Env.PushMode(MockLWLMPrintEnvironment::mtPaperOut); // this will lead to second reprint
   Env.PushMode(MockLWLMPrintEnvironment::mtTOF);      // this will lead to begin of first reprint
   Env.PushMode(MockLWLMPrintEnvironment::mtPaperOut); // this will lead to first reprint
@@ -143,7 +123,7 @@ LabelWriterLMTest::testPaperOutAfterReprint()
     Env.GetData());
 }
 
-void 
+void
 LabelWriterLMTest::testPollForPaperIn()
 {
   MockLWLMPrintEnvironment    Env;
@@ -165,7 +145,7 @@ LabelWriterLMTest::testPollForPaperIn()
   Env.ClearData(); // don't need reset command
   LM.StartPage();
 
-  LM.ProcessData(PrinterData2); 
+  LM.ProcessData(PrinterData2);
 
   Env.PushMode(MockLWLMPrintEnvironment::mtPaperOut, 5);
   LM.EndPage();
@@ -176,7 +156,7 @@ LabelWriterLMTest::testPollForPaperIn()
     Env.GetData());
 }
 
-void 
+void
 LabelWriterLMTest::testOneGoodPageOneNot()
 {
   MockLWLMPrintEnvironment    Env;
@@ -202,11 +182,11 @@ LabelWriterLMTest::testOneGoodPageOneNot()
   Env.ClearData(); // don't need reset command
   LM.StartPage();
 
-  LM.ProcessData(PrinterData11); 
+  LM.ProcessData(PrinterData11);
   LM.EndPage();
 
   Env.PushMode(MockLWLMPrintEnvironment::mtPaperOut);
-  LM.ProcessData(PrinterData22); 
+  LM.ProcessData(PrinterData22);
   LM.EndPage();
   LM.EndDoc();
 
@@ -216,7 +196,7 @@ LabelWriterLMTest::testOneGoodPageOneNot()
 }
 
 
-void 
+void
 LabelWriterLMTest::testRollSynchronize()
 {
   MockLWLMPrintEnvironment    Env;
@@ -231,7 +211,7 @@ LabelWriterLMTest::testRollSynchronize()
 
   buffer_t b  = CLabelWriterDriver::GetResetCommand();
   buffer_t b2 = CLabelWriterDriverTwinTurbo::GetRollSelectCommand(CLabelWriterDriverTwinTurbo::rtLeft);
-    
+
   b.insert(b.end(), b2.begin(), b2.end());
 
   CPPUNIT_ASSERT_EQUAL(
@@ -239,7 +219,7 @@ LabelWriterLMTest::testRollSynchronize()
     Env.GetData());
 }
 
-void 
+void
 LabelWriterLMTest::testResetPrinter()
 {
   MockLWLMPrintEnvironment    Env;
@@ -253,7 +233,7 @@ LabelWriterLMTest::testResetPrinter()
     Env.GetData());
 }
 
-void 
+void
 LabelWriterLMTest::testStatusReadFailed()
 {
   MockLWLMPrintEnvironment    Env;
@@ -271,11 +251,11 @@ LabelWriterLMTest::testStatusReadFailed()
   Env.ClearData(); // don't need reset command
 
   LM.StartPage();
-  LM.ProcessData(PrinterData2); 
+  LM.ProcessData(PrinterData2);
   LM.EndPage();
 
   LM.StartPage();
-  LM.ProcessData(PrinterData2); 
+  LM.ProcessData(PrinterData2);
   LM.EndPage();
 
   LM.EndDoc();
@@ -285,7 +265,7 @@ LabelWriterLMTest::testStatusReadFailed()
     Env.GetData());
 }
 
-void 
+void
 LabelWriterLMTest::testContinuousPaper()
 {
   MockLWLMPrintEnvironment    Env;
@@ -304,11 +284,11 @@ LabelWriterLMTest::testContinuousPaper()
   Env.ClearData(); // don't need reset command
 
   LM.StartPage();
-  LM.ProcessData(PrinterData2); 
+  LM.ProcessData(PrinterData2);
   LM.EndPage();
 
   LM.StartPage();
-  LM.ProcessData(PrinterData2); 
+  LM.ProcessData(PrinterData2);
   LM.EndPage();
 
   LM.EndDoc();
@@ -318,7 +298,7 @@ LabelWriterLMTest::testContinuousPaper()
     Env.GetData());
 }
 
-void 
+void
 LabelWriterLMTest::testRollChangedBit()
 {
   MockLWLMPrintEnvironment    Env;
@@ -366,11 +346,3 @@ LabelWriterLMTest::testRollChangedBit()
     buffer_t(OutputPrinterData2, OutputPrinterData2 + sizeof(OutputPrinterData2)),
     Env.GetData());
 }
-
-/*
- * End of "$Id: TestLabelWriterLanguageMonitor.cpp 4759 2008-06-19 19:02:27Z vbuzuev $".
- */
-
-
-
-

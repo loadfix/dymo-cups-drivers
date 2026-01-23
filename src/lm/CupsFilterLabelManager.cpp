@@ -1,23 +1,3 @@
-// -*- C++ -*-
-// $Id: CupsFilterLabelManager.cpp 16948 2012-01-24 10:15:02Z aleksandr $
-
-// DYMO LabelWriter Drivers
-// Copyright (C) 2008 Sanford L.P.
-
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
-// of the License, or (at your option) any later version.
-
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-
 #include <cups/ppd.h>
 #include "CupsFilterLabelManager.h"
 
@@ -31,9 +11,9 @@ CDriverInitializerLabelManager::ProcessPPDOptions(CLabelManagerDriver& Driver, C
   if (choice)
   {
     if (!strcasecmp(choice->choice, "Cut"))
-      Driver.SetCutOptions(CLabelManagerDriver::coCut);
+      Driver.SetCutOption(CLabelManagerDriver::coCut);
     else if (!strcasecmp(choice->choice, "ChainMarks"))
-      Driver.SetCutOptions(CLabelManagerDriver::coChainMarks);
+      Driver.SetCutOption(CLabelManagerDriver::coChainMarks);
   }
   //else
   //    fputs("WARNING: unable to get CutOptions choice\n", stderr);
@@ -43,7 +23,7 @@ CDriverInitializerLabelManager::ProcessPPDOptions(CLabelManagerDriver& Driver, C
   if (choice)
   {
     //fprintf(stderr, "DEBUG: ----------- Process LabelAlignemnt %s----------\n", choice->choice);
-    
+
     if (!strcasecmp(choice->choice, "Center"))
       Driver.SetAlignment(CLabelManagerDriver::alCenter);
     else if (!strcasecmp(choice->choice, "Left"))
@@ -61,42 +41,41 @@ CDriverInitializerLabelManager::ProcessPPDOptions(CLabelManagerDriver& Driver, C
   }
   else
     fputs("WARNING: unable to get PrintChainMarksAtDocEnd choice\n", stderr);
-    
+
   choice = ppdFindMarkedChoice(ppd, "DymoContinuousPaper");
   if (choice)
   {
-    Driver.SetContinuousPaper((atoi(choice->choice)));
+    // Note: SetContinuousPaper doesn't exist in new driver, use SetPaperType instead
+    if (atoi(choice->choice) != 0)
+      Driver.SetPaperType(IPrinterDriver::ptContinuous);
+    else
+      Driver.SetPaperType(IPrinterDriver::ptRegular);
   }
   else
     fputs("WARNING: unable to get ContinuousPaper choice\n", stderr);
-    
-  choice = ppdFindMarkedChoice(ppd, "DymoTapeColor");
-  if (choice)
-  {
-    Driver.SetTapeColor(CLabelManagerDriver::tape_color_t((atoi(choice->choice))));
-  }
-  else
-    fputs("WARNING: unable to get TapeColor choice\n", stderr);
-    
+
+  // Note: SetTapeColor doesn't exist in the new driver implementation
+  // Tape color is not configurable in the new driver
+
   Driver.SetDeviceName(ppd->modelname);
-  
+
   if (!strcasecmp(ppd->modelname, "DYMO LabelWriter DUO Tape"))
   {
     Driver.SetMaxPrintableWidth(96);
     Driver.SetNormalLeader(75);
     Driver.SetMinLeader(61);
     Driver.SetAlignedLeader(43);
-    Driver.SetMinPageLines(133);
+    Driver.SetMinLabelLength(133);
     Driver.SetSupportAutoCut(true);
   }
-    
+
   if (!strcasecmp(ppd->modelname, "DYMO LabelWriter DUO Tape 128"))
   {
     Driver.SetMaxPrintableWidth(128);
     Driver.SetNormalLeader(75);
     Driver.SetMinLeader(61);
     Driver.SetAlignedLeader(43);
-    Driver.SetMinPageLines(133);
+    Driver.SetMinLabelLength(133);
     Driver.SetSupportAutoCut(true);
   }
 
@@ -106,9 +85,9 @@ CDriverInitializerLabelManager::ProcessPPDOptions(CLabelManagerDriver& Driver, C
     Driver.SetNormalLeader(75);
     Driver.SetMinLeader(55);
     Driver.SetAlignedLeader(43);
-    Driver.SetMinPageLines(133);
+    Driver.SetMinLabelLength(133);
     Driver.SetSupportAutoCut(true);
-  }    
+  }
 
   if (!strcasecmp(ppd->modelname, "DYMO LabelMANAGER 400"))
   {
@@ -116,19 +95,19 @@ CDriverInitializerLabelManager::ProcessPPDOptions(CLabelManagerDriver& Driver, C
     Driver.SetNormalLeader(75);
     Driver.SetMinLeader(55);
     Driver.SetAlignedLeader(43);
-    Driver.SetMinPageLines(133);
+    Driver.SetMinLabelLength(133);
     Driver.SetSupportAutoCut(true);
-  }    
-    
+  }
+
   if (!strcasecmp(ppd->modelname, "DYMO LabelPOINT 350"))
   {
     Driver.SetMaxPrintableWidth(96);
     Driver.SetNormalLeader(75);
     Driver.SetMinLeader(55);
     Driver.SetAlignedLeader(43);
-    Driver.SetMinPageLines(133);
+    Driver.SetMinLabelLength(133);
     Driver.SetSupportAutoCut(false);
-  }    
+  }
 
   if (!strcasecmp(ppd->modelname, "DYMO LabelMANAGER PC"))
   {
@@ -136,9 +115,9 @@ CDriverInitializerLabelManager::ProcessPPDOptions(CLabelManagerDriver& Driver, C
     Driver.SetNormalLeader(75);
     Driver.SetMinLeader(55);
     Driver.SetAlignedLeader(43);
-    Driver.SetMinPageLines(133);
+    Driver.SetMinLabelLength(133);
     Driver.SetSupportAutoCut(false);
-  }    
+  }
 
   if (!strcasecmp(ppd->modelname, "DYMO LabelMANAGER PC II"))
   {
@@ -146,9 +125,9 @@ CDriverInitializerLabelManager::ProcessPPDOptions(CLabelManagerDriver& Driver, C
     Driver.SetNormalLeader(75);
     Driver.SetMinLeader(55);
     Driver.SetAlignedLeader(43);
-    Driver.SetMinPageLines(133);
+    Driver.SetMinLabelLength(133);
     Driver.SetSupportAutoCut(false);
-  }    
+  }
 
   if (!strcasecmp(ppd->modelname, "DYMO LabelWriter 450 DUO Tape"))
   {
@@ -156,17 +135,17 @@ CDriverInitializerLabelManager::ProcessPPDOptions(CLabelManagerDriver& Driver, C
     Driver.SetNormalLeader(75);
     Driver.SetMinLeader(61);
     Driver.SetAlignedLeader(43);
-    Driver.SetMinPageLines(133);
+    Driver.SetMinLabelLength(133);
     Driver.SetSupportAutoCut(true);
   }
-    
+
   if (!strcasecmp(ppd->modelname, "DYMO LabelMANAGER PnP"))
   {
     Driver.SetMaxPrintableWidth(64);
     Driver.SetNormalLeader(75);
     Driver.SetMinLeader(58);
     Driver.SetAlignedLeader(43);
-    Driver.SetMinPageLines(30);
+    Driver.SetMinLabelLength(30);
     Driver.SetSupportAutoCut(false);
   }
 
@@ -176,7 +155,7 @@ CDriverInitializerLabelManager::ProcessPPDOptions(CLabelManagerDriver& Driver, C
      Driver.SetNormalLeader(125);
      Driver.SetMinLeader(92);
      Driver.SetAlignedLeader(72);
-     Driver.SetMinPageLines(222);
+     Driver.SetMinLabelLength(222);
      Driver.SetSupportAutoCut(true);
   }
 
@@ -186,7 +165,7 @@ CDriverInitializerLabelManager::ProcessPPDOptions(CLabelManagerDriver& Driver, C
     Driver.SetNormalLeader(75);
     Driver.SetMinLeader(58);
     Driver.SetAlignedLeader(43);
-    Driver.SetMinPageLines(63);
+    Driver.SetMinLabelLength(63);
     Driver.SetSupportAutoCut(false);
  }
 
@@ -196,9 +175,9 @@ CDriverInitializerLabelManager::ProcessPPDOptions(CLabelManagerDriver& Driver, C
      Driver.SetNormalLeader(125);
      Driver.SetMinLeader(92);
      Driver.SetAlignedLeader(72);
-     Driver.SetMinPageLines(222);
+     Driver.SetMinLabelLength(222);
      Driver.SetSupportAutoCut(true);
-     Driver.SetTSDevice(true);
+     // Note: SetTSDevice is not available in new driver implementation
   }
 }
 
@@ -206,13 +185,13 @@ void
 CDriverInitializerLabelManager::ProcessPageOptions(CLabelManagerDriver& Driver, CDummyLanguageMonitor& LM, cups_page_header2_t& PageHeader)
 {
   //fprintf(stderr, "DEBUG: ------ PageHeader.cupsMediaType: %d\n", PageHeader.cupsMediaType);
-    
+
   // cupsMadiaType contain information about current paper
   // the lsb contain
   CLabelManagerDriver::tape_width_t TapeWidth = CLabelManagerDriver::tape_width_t(PageHeader.cupsMediaType & 0xff);
 
-  Driver.SetAutoPaper(PageHeader.cupsMediaType >> 8);
-        
+  // Note: SetAutoPaper is not available in new driver implementation
+
   // adjust tape center
   if (!strcasecmp(Driver.GetDeviceName().c_str(), "DYMO LabelWriter DUO Tape"))
   {
@@ -266,14 +245,14 @@ CDriverInitializerLabelManager::ProcessPageOptions(CLabelManagerDriver& Driver, 
     else if (TapeWidth == CLabelManagerDriver::tw19mm)
       Driver.SetTapeAlignmentOffset(-4);
   }
-  
+
 }
 
 void
 CDriverInitializerLabelManagerWithLM::ProcessPPDOptions(CLabelManagerDriver& Driver, CLabelManagerLanguageMonitor& LM, ppd_file_t* ppd)
 {
     CDriverInitializerLabelManager::ProcessPPDOptions(Driver, (CDummyLanguageMonitor&)LM, ppd);
-    
+
     LM.SetDeviceName(ppd->modelname);
 }
 
@@ -284,11 +263,6 @@ CDriverInitializerLabelManagerWithLM::ProcessPageOptions(CLabelManagerDriver& Dr
 
     LM.SetTapeWidth(CLabelManagerDriver::tape_width_t(PageHeader.cupsMediaType & 0xff));
 }
-    
+
 
 } // namespace
-
-
-/*
- * End of "$Id: CupsFilterLabelManager.cpp 16948 2012-01-24 10:15:02Z aleksandr $".
- */

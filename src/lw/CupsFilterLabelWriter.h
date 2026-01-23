@@ -1,30 +1,12 @@
-// -*- C++ -*-
-// $Id: CupsFilterLabelWriter.h 7049 2009-02-06 23:24:54Z vbuzuev $
-
-// DYMO LabelWriter Drivers
-// Copyright (C) 2008 Sanford L.P.
-
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
-// of the License, or (at your option) any later version.
-
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-
-#ifndef hd8574b83_b264_47b2_8d33_a46ae75691d2
-#define hd8574b83_b264_47b2_8d33_a46ae75691d2
+#ifndef CUPS_FILTER_LABELWRITER_H
+#define CUPS_FILTER_LABELWRITER_H
 
 #include <cups/cups.h>
 #include <cups/raster.h>
 #include <cups/ppd.h>
 #include "LabelWriterDriver.h"
+#include "LabelWriterDriverImpl.h"
+#include "LabelWriterDriverTwinTurbo.h"
 #include "LabelWriterLanguageMonitor.h"
 #include "DummyLanguageMonitor.h"
 
@@ -62,8 +44,4 @@ public:
 
 }
 
-#endif
-
-/*
- * End of "$Id: CupsFilterLabelWriter.h 7049 2009-02-06 23:24:54Z vbuzuev $".
- */
+#endif // CUPS_FILTER_LABELWRITER_H

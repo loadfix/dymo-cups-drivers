@@ -1,30 +1,7 @@
-// -*- C++ -*-
-// $Id: Halftoning.cpp 4759 2008-06-19 19:02:27Z vbuzuev $
-
-// DYMO LabelWriter Drivers
-// Copyright (C) 2008 Sanford L.P.
-
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
-// of the License, or (at your option) any later version.
-
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-
 #include "Halftoning.h"
 #include <algorithm>
 #include <assert.h>
 
-//using namespace std;
-
-//namespace dymo
 namespace DymoPrinterDriver
 {
 
@@ -37,19 +14,19 @@ CHalftoneFilter::~CHalftoneFilter()
 {
 }
 
-CHalftoneFilter::image_t 
+CHalftoneFilter::image_t
 CHalftoneFilter::GetInputImageType()
 {
   return InputImageType_;
 }
 
-CHalftoneFilter::image_t 
+CHalftoneFilter::image_t
 CHalftoneFilter::GetOutputImageType()
 {
   return OutputImageType_;
 }
 
-byte 
+byte
 CHalftoneFilter::RGBToGrayScale(byte R, byte G, byte B)
 {
   // white should remain white
@@ -58,12 +35,12 @@ CHalftoneFilter::RGBToGrayScale(byte R, byte G, byte B)
   else if ((R == 0) && (G == 0) && (B == 0))
     return 0;
   else
-  {  
+  {
     int r = 0 + ((int(R) * 299) / 1000) + ((int(G) * 587) / 1000) + ((int(B) * 114) / 1000);
     if (r > 255)
       return 255;
     return byte(r);
-  }    
+  }
 }
 
 // set pixel pixelNo to
@@ -77,7 +54,7 @@ CHalftoneFilter::SetPixelBW(buffer_t& buf, int pixelNo, int pixelValue)
     buf[pixelNo / 8] &= ~(1 << (7 - pixelNo % 8));
 }
 
-void 
+void
 CHalftoneFilter::ExtractRGB(const buffer_t& InputLine, int PixelNo, byte& R, byte& G, byte& B)
 {
   switch (InputImageType_)
@@ -94,10 +71,10 @@ CHalftoneFilter::ExtractRGB(const buffer_t& InputLine, int PixelNo, byte& R, byt
       break;
     default:
       assert(0);
-  }                        
+  }
 }
 
-size_t 
+size_t
 CHalftoneFilter::CalcImageWidth(const buffer_t& InputLine)
 {
   switch (InputImageType_)
@@ -107,14 +84,14 @@ CHalftoneFilter::CalcImageWidth(const buffer_t& InputLine)
     case itRGB:
       return InputLine.size() / 3;
     default:
-      assert(0);    
-  }            
+      assert(0);
+  }
 
   return 0; // for MSVC compiler
 }
 
 
-size_t 
+size_t
 CHalftoneFilter::CalcBufferSize(size_t ImageWidth)
 {
   switch (InputImageType_)
@@ -124,8 +101,8 @@ CHalftoneFilter::CalcBufferSize(size_t ImageWidth)
     case itRGB:
       return ImageWidth * 3;
     default:
-      assert(0);    
-  }            
+      assert(0);
+  }
 
   return 0; // for MSVC compiler
 }
@@ -141,30 +118,30 @@ CHalftoneFilter::CalcOutputBufferSize(size_t ImageWidth)
       else
         return ImageWidth / 8 + 1;
     default:
-      assert(0);    
-  }            
+      assert(0);
+  }
 
   return 0; // for MSVC compiler
 }
 
-int 
+int
 CHalftoneFilter::ExtractRGB(const buffer_t& InputLine, int PixelNo)
 {
   switch (InputImageType_)
   {
     case itXRGB:
-      return 
+      return
         (int(InputLine[4*PixelNo + 1]) << 16)
         | (int(InputLine[4*PixelNo + 2]) << 8)
         | (InputLine[4*PixelNo + 3] );
-    case itRGB:        
-      return 
+    case itRGB:
+      return
         (int(InputLine[3*PixelNo + 0]) << 16)
         | (int(InputLine[3*PixelNo + 1]) << 8)
         | (InputLine[3*PixelNo + 2] );
     default:
-      assert(0);        
-  }    
+      assert(0);
+  }
 
   return 0; // for MSVC compiler
 }
@@ -176,8 +153,8 @@ CHalftoneFilter::ExtractRGB(const buffer_t& InputLine, int PixelNo)
 EHalftoneError::EHalftoneError(error_t ErrorCode): ErrorCode_(ErrorCode)
 {
 }
-        
-EHalftoneError::error_t 
+
+EHalftoneError::error_t
 EHalftoneError::GetErrorCode()
 {
   return ErrorCode_;
@@ -185,7 +162,3 @@ EHalftoneError::GetErrorCode()
 
 
 } // namespace
-
-/*
- * End of "$Id: Halftoning.cpp 4759 2008-06-19 19:02:27Z vbuzuev $".
- */

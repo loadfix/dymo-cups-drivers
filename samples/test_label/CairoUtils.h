@@ -14,7 +14,7 @@ public:
   operator cairo_surface_t* () { return ptr_; }
 private:
   cairo_surface_t* ptr_;
-  
+
 };
 
 class CairoPtr
@@ -28,7 +28,7 @@ public:
 
 private:
   cairo_t* ptr_;
-  
+
 };
 
 #endif

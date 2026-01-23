@@ -84,8 +84,8 @@ int main(int argc, char** argv)
        << setw(10) << "-----"
        << setw(10) << "------"
        << endl;
-    
-    
+
+
   for (int i = 0; i < ppd->num_sizes; ++i)
   {
     ppd_size_t size = ppd->sizes[i];
@@ -100,9 +100,9 @@ int main(int argc, char** argv)
          << endl;
 
   }
-  
+
 
   ppdClose(ppd);
-  
+
   return 0;
 }

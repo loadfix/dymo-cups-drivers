@@ -1,23 +1,3 @@
-// -*- C++ -*-
-// $Id: CupsPrintEnvironment.cpp 14976 2011-04-26 15:24:48Z aleksandr $
-
-// DYMO LabelWriter Drivers
-// Copyright (C) 2008 Sanford L.P.
-
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
-// of the License, or (at your option) any later version.
-
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-
 #include <stdio.h>
 #include <string>
 #include "CupsPrintEnvironment.h"
@@ -28,7 +8,7 @@
 namespace DymoPrinterDriver
 {
 
-CCupsPrintEnvironmentForDriver::CCupsPrintEnvironmentForDriver(ILanguageMonitor& LanguageMonitor): 
+CCupsPrintEnvironmentForDriver::CCupsPrintEnvironmentForDriver(ILanguageMonitor& LanguageMonitor):
   PRNFile_(NULL), LanguageMonitor_(LanguageMonitor)
 {
   const char* PrnDir = getenv("DYMO_PRN_DIR");
@@ -39,19 +19,19 @@ CCupsPrintEnvironmentForDriver::CCupsPrintEnvironmentForDriver(ILanguageMonitor&
       FileName += getenv("PRINTER");
     else
       FileName += "~dymo";
-    FileName += ".prn";        
-    PRNFile_ = fopen(FileName.c_str(), "w+b");    
-  }   
+    FileName += ".prn";
+    PRNFile_ = fopen(FileName.c_str(), "w+b");
+  }
 }
 
 CCupsPrintEnvironmentForDriver::~CCupsPrintEnvironmentForDriver()
 {
   if (PRNFile_)
-    fclose(PRNFile_);    
+    fclose(PRNFile_);
 }
 
 
-void
+bool
 CCupsPrintEnvironmentForDriver::WriteData(const buffer_t& DataBuffer)
 {
   fprintf(stderr, "DEBUG: CCupsPrintEnvironmentForDriver::WriteData() buffer size is %i\n", (int)DataBuffer.size());
@@ -62,25 +42,27 @@ CCupsPrintEnvironmentForDriver::WriteData(const buffer_t& DataBuffer)
     if (write(1, &DataBuffer[0], DataBuffer.size()) == -1)
     {
       fprintf(stderr, "ERROR: CCupsPrintEnvironmentForDriver::WriteData() write() failed, errno=%d\n", errno);
-
+      return false;
     }
-    
+
     if (PRNFile_)
     {
       size_t res = fwrite(&DataBuffer[0], 1, DataBuffer.size(), PRNFile_);
       fprintf(stderr, "DEBUG: CCupsPrintEnvironmentForDriver::WriteData() PRN fwrite result is %i\n", (int)res);
     }
-            
-    LanguageMonitor_.ProcessData(DataBuffer);    
-  }        
+
+    LanguageMonitor_.ProcessData(DataBuffer);
+  }
+  return true;
 }
 
-void 
+bool
 CCupsPrintEnvironmentForDriver::ReadData(buffer_t& DataBuffer)
 {
   // do nothing - driver is not able to read data, only LM is
-    
+
   DataBuffer.clear();
+  return true;
 }
 
 IPrintEnvironment::job_status_t
@@ -108,7 +90,7 @@ CCupsPrintEnvironmentForLM::~CCupsPrintEnvironmentForLM()
 }
 
 
-void
+bool
 CCupsPrintEnvironmentForLM::WriteData(const buffer_t& DataBuffer)
 {
   fprintf(stderr, "DEBUG: CCupsPrintEnvironmentForLM::WriteData() buffer size is %i\n", (int)DataBuffer.size());
@@ -119,34 +101,42 @@ CCupsPrintEnvironmentForLM::WriteData(const buffer_t& DataBuffer)
     if (write(1, &DataBuffer[0], DataBuffer.size()) == -1)
     {
       fprintf(stderr, "ERROR: CCupsPrintEnvironmentForLM::WriteData() write() failed, errno=%d\n", errno);
-
+      return false;
     }
   }
+  return true;
 }
 
-void 
+bool
 CCupsPrintEnvironmentForLM::ReadData(buffer_t& DataBuffer)
 {
   //TODO: add the implementation here
   // note that CUPS 1.1 does not support reading data from the printer
-  // only CUPS 1.2 supports 
+  // only CUPS 1.2 supports
   // there should be API to read the 'back-channel' safely
   // also the data is avalable using read file with fd == 3
-    
+
   DataBuffer.clear();
 
   byte buf[16];
   ssize_t bytesRead = cupsBackChannelRead((char*)buf, sizeof(buf), 2.5);
   if (bytesRead == -1)
+  {
     fprintf(stderr, "DEBUG: CCupsPrintEnvironmentForLM::ReadData() unable to read data, errno=%d\n", errno);
+    return false;
+  }
   else if (bytesRead == 0)
+  {
     fprintf(stderr, "DEBUG: CCupsPrintEnvironmentForLM::ReadData() no data\n");
+    return true; // No data is not an error
+  }
   else
   {
     //DataBuffer.push_back(buf[bytesRead - 1]);
     DataBuffer.insert(DataBuffer.begin(), buf, buf + bytesRead);
 
-    fprintf(stderr, "DEBUG: CCupsPrintEnvironmentForLM::ReadData() has read %i bytes %x\n", (int)bytesRead, int(DataBuffer[0])); 
+    fprintf(stderr, "DEBUG: CCupsPrintEnvironmentForLM::ReadData() has read %i bytes %x\n", (int)bytesRead, int(DataBuffer[0]));
+    return true;
   }
 }
 
@@ -190,15 +180,7 @@ CCupsPrintEnvironmentForLM::SetJobStatus(job_status_t JobStatus)
         default:
             assert(0);
     }
-    
+
 }
 
 } // namespace
-
-/*
- * End of "$Id: CupsPrintEnvironment.cpp 14976 2011-04-26 15:24:48Z aleksandr $".
- */
-
-
-
-
