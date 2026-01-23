@@ -112,11 +112,11 @@ To install the compiled binaries and data files use this command (this will requ
  make install
  ```
 
-## Known Problems
+## Known issues
 
 1. Error message "CUPS modeldir <dir> is not existed..."
 
-While running "configure" script tries to determine where CUPS is installed. 
+While running "configure" script tries to determine where CUPS is installed.
 For that it uses 'cups-config' utility if existed or uses default values for the dirs.
 If CUPS is installed into different directories you might see the above error message.
 To avoid it pass proper directories to "configure" script using environment variables, e.g.
