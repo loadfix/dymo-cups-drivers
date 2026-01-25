@@ -15,11 +15,11 @@ LabelWriterDriver::LabelWriterDriver(IPrintEnvironment& environment) :
    deviceName(),
    height(0),
    maxPrintableWidth(MAX_PRINTABLE_WIDTH),
-   density(pdNormal),
-   quality(pqText),
-   speed(psNormal),
-   paperType(ptRegular),
-   mediaType(mtDefault),
+   density(PRINT_DENSITY_NORMAL),
+   quality(PRINT_QUALITY_TEXT),
+   speed(PRINT_SPEED_NORMAL),
+   paperType(PAPER_TYPE_REGULAR),
+   mediaType(MEDIA_TYPE_DEFAULT),
    supportHighSpeed(false)
 { }
 
@@ -50,7 +50,7 @@ void LabelWriterDriver::startPage()
         setPrintMedia();
     }
 
-    if(paperType == IPrinterDriver::ptContinuous)
+    if(paperType == IPrinterDriver::PAPER_TYPE_CONTINUOUS)
         setLabelLength(0xFFFF);
     else
         setLabelLength(0);
@@ -97,13 +97,13 @@ void LabelWriterDriver::processRasterLine(const buffer_t& lineBuffer)
    processRasterLineInternal(b);
 }
 
-bool LabelWriterDriver::isBlank(const buffer_t& buf)
+bool LabelWriterDriver::isBlank(const buffer_t& buffer)
 {
-    size_t size = buf.size();
+    size_t size = buffer.size();
 
     for(size_t i = 0; i < size; i++)
     {
-        if(buf[i] != 0xFF) // white
+        if(buffer[i] != 0xFF) // white
             return false;
     }
 
@@ -179,16 +179,16 @@ void LabelWriterDriver::setPrintDensity()
 
     switch (density)
     {
-        case pdLow:
+        case PRINT_DENSITY_LOW:
             commandBuffer[1] = 'c';
             break;
-        case pdMedium:
+        case PRINT_DENSITY_MEDIUM:
             commandBuffer[1] = 'd';
             break;
-        case pdNormal:
+        case PRINT_DENSITY_NORMAL:
             commandBuffer[1] = 'e';
             break;
-        case pdHigh:
+        case PRINT_DENSITY_HIGH:
             commandBuffer[1] = 'g';
             break;
         default:
@@ -204,10 +204,10 @@ void LabelWriterDriver::setPrintQuality()
 
     switch(quality)
     {
-        case pqText:
+        case PRINT_QUALITY_TEXT:
             commandBuffer[1] = 'h';
             break;
-        case pqBarcodeAndGraphics:
+        case PRINT_QUALITY_BARCODE_AND_GRAPHICS:
             commandBuffer[1] = 'i';
             break;
         default:
@@ -226,10 +226,10 @@ void LabelWriterDriver::setPrintSpeed()
 
     switch(speed)
     {
-        case psNormal:
+        case PRINT_SPEED_NORMAL:
             commandBuffer[2] = 0x10;
             break;
-        case psHigh:
+        case PRINT_SPEED_HIGH:
             commandBuffer[2] = 0x20;
             break;
         default:
@@ -245,10 +245,10 @@ void LabelWriterDriver::setPrintMedia()
 
     switch(mediaType)
     {
-        case mtDefault:
+        case MEDIA_TYPE_DEFAULT:
             commandBuffer[2] = 0x00;
             break;
-        case mtDurable:
+        case MEDIA_TYPE_DURABLE:
             commandBuffer[2] = 0x01;
             break;
         default:
@@ -285,8 +285,8 @@ buffer_t LabelWriterDriver::getResetCommand()
 
 buffer_t LabelWriterDriver::getRequestStatusCommand()
 {
-    byte buf[] = {ESC, 'A'};
-    return buffer_t(buf, buf + sizeof(buf));
+    byte buffer[] = {ESC, 'A'};
+    return buffer_t(buffer, buffer + sizeof(buffer));
 }
 
 };

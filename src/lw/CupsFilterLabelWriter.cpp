@@ -14,9 +14,9 @@ void DriverInitializerLabelWriter::processPPDOptions(LabelWriterDriver& Driver, 
   if (choice)
   {
     if (!strcasecmp(choice->choice, "Text"))
-      Driver.setQuality(LabelWriterDriver::pqText);
+      Driver.setQuality(LabelWriterDriver::PRINT_QUALITY_TEXT);
     else if (!strcasecmp(choice->choice, "Graphics"))
-      Driver.setQuality(LabelWriterDriver::pqBarcodeAndGraphics);
+      Driver.setQuality(LabelWriterDriver::PRINT_QUALITY_BARCODE_AND_GRAPHICS);
   }
   else
     fputs("WARNING: unable to get PrintQuality choice\n", stderr);
@@ -26,13 +26,13 @@ void DriverInitializerLabelWriter::processPPDOptions(LabelWriterDriver& Driver, 
   if (choice)
   {
     if (!strcasecmp(choice->choice, "Light"))
-      Driver.setDensity(LabelWriterDriver::pdLow);
+      Driver.setDensity(LabelWriterDriver::PRINT_DENSITY_LOW);
     else if (!strcasecmp(choice->choice, "Medium"))
-      Driver.setDensity(LabelWriterDriver::pdMedium);
+      Driver.setDensity(LabelWriterDriver::PRINT_DENSITY_MEDIUM);
     else if (!strcasecmp(choice->choice, "Normal"))
-      Driver.setDensity(LabelWriterDriver::pdNormal);
+      Driver.setDensity(LabelWriterDriver::PRINT_DENSITY_NORMAL);
     else if (!strcasecmp(choice->choice, "Dark"))
-      Driver.setDensity(LabelWriterDriver::pdHigh);
+      Driver.setDensity(LabelWriterDriver::PRINT_DENSITY_HIGH);
   }
   else
     fputs("WARNING: unable to get PrintDensity choice\n", stderr);
@@ -53,14 +53,14 @@ void
 DriverInitializerLabelWriter::processPageOptions(LabelWriterDriver& Driver, LanguageMonitor::Dummy& LanguageMonitor, cups_page_header2_t& PageHeader)
 {
 
-  if ((PageHeader.cupsMediaType == int(LabelWriterDriver::ptRegular)) || (PageHeader.cupsMediaType == int(LabelWriterDriver::ptContinuous)))
+  if ((PageHeader.cupsMediaType == int(LabelWriterDriver::PAPER_TYPE_REGULAR)) || (PageHeader.cupsMediaType == int(LabelWriterDriver::PAPER_TYPE_CONTINUOUS)))
   {
     Driver.setPaperType(LabelWriterDriver::paper_type_t(PageHeader.cupsMediaType));
   }
   else
   {
     fprintf(stderr, "WARNING: Invalid value for cupsMediaType (%d)\n", PageHeader.cupsMediaType);
-    Driver.setPaperType(LabelWriterDriver::ptRegular);
+    Driver.setPaperType(LabelWriterDriver::PAPER_TYPE_REGULAR);
   }
   // Note: Page height is set via SetVerticalResolution in the new driver implementation
   // Page offset is not supported in the new driver
@@ -76,11 +76,11 @@ DriverInitializerLabelWriterTwinTurbo::processPPDOptions(LabelWriterDriverTwinTu
   if (choice)
   {
     if (!strcasecmp(choice->choice, "Left"))
-      Driver.setRoll(LabelWriterDriverTwinTurbo::rtLeft);
+      Driver.setRoll(LabelWriterDriverTwinTurbo::ROLL_LEFT);
     else if (!strcasecmp(choice->choice, "Right"))
-      Driver.setRoll(LabelWriterDriverTwinTurbo::rtRight);
+      Driver.setRoll(LabelWriterDriverTwinTurbo::ROLL_RIGHT);
     else
-      Driver.setRoll(LabelWriterDriverTwinTurbo::rtAuto);
+      Driver.setRoll(LabelWriterDriverTwinTurbo::ROLL_AUTO);
   }
   else
     fputs("WARNING: unable to get InputSlot choice\n", stderr);

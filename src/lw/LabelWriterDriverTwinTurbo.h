@@ -11,9 +11,9 @@ class LabelWriterDriverTwinTurbo : public LabelWriterDriver400
 public:
     typedef enum
     {
-        rtAuto = 0,
-        rtLeft,
-        rtRight
+        ROLL_AUTO = 0,
+        ROLL_LEFT,
+        ROLL_RIGHT
     } roll_t;
 
     LabelWriterDriverTwinTurbo(IPrintEnvironment& environment);
@@ -30,7 +30,7 @@ protected:
     void sendRollSelect(roll_t value);
 
 private:
-    roll_t _roll;
+    roll_t roll;
 };
 
 }

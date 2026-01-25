@@ -6,10 +6,10 @@ const byte ESC = 0x1B;
 const byte SYN = 0x16;
 const byte ETB = 0x17;
 
-LabelWriterDriver::LabelWriterDriver(IPrintEnvironment& Environment):
-  Environment_(Environment),
-  Resolution_(resUnknown), Density_(pdNormal), Quality_(pqText), PageHeight_(0x0800), PaperType_(ptRegular),
-  MaxPrintWidth_(84),PageOffset_(0, 0),LastDotTab_(size_t(-1)), LastBytesPerLine_(size_t(-1)), EmptyLinesCount_(0)
+LabelWriterDriver::LabelWriterDriver(IPrintEnvironment& environment):
+  environment(environment),
+  resolution(RESOLUTION_UNKNOWN), density(PRINT_DENSITY_NORMAL), quality(PRINT_QUALITY_TEXT), pageHeight(0x0800), paperType(PAPER_TYPE_REGULAR),
+  maxPrintWidth(84),pageOffset(0, 0),lastDotTab(size_t(-1)), lastBytesPerLine(size_t(-1)), emptyLinesCount(0)
 {
 }
 
@@ -18,103 +18,103 @@ LabelWriterDriver::~LabelWriterDriver()
 }
 
 void
-LabelWriterDriver::StartDoc()
+LabelWriterDriver::startDoc()
 {
-  SendCommand(GetResetCommand());
-  SendResolution(Resolution_);
-  SendLineTab(0);
-  SendDotTab(0);
-  SendPrintQuality(Quality_);
-  SendPrintDensity(Density_);
+  sendCommand(getResetCommand());
+  sendResolution(resolution);
+  sendLineTab(0);
+  sendDotTab(0);
+  sendPrintQuality(quality);
+  sendPrintDensity(density);
 }
 
 void
-LabelWriterDriver::EndDoc()
+LabelWriterDriver::endDoc()
 {
 }
 
 void
-LabelWriterDriver::StartPage()
+LabelWriterDriver::startPage()
 {
-  switch (PaperType_)
+  switch (paperType)
   {
-    case ptRegular:      SendLabelLength(PageHeight_); break;
-    case ptContinuous:   SendLabelLength(0xffff); break;
+    case PAPER_TYPE_REGULAR:      sendLabelLength(pageHeight); break;
+    case PAPER_TYPE_CONTINUOUS:   sendLabelLength(0xffff); break;
     default:        assert(0);
   }
 
-  LastDotTab_ = size_t(-1);
-  LastBytesPerLine_ = size_t(-1);
-  EmptyLinesCount_ = 0;
+  lastDotTab = size_t(-1);
+  lastBytesPerLine = size_t(-1);
+  emptyLinesCount = 0;
 }
 
 void
-LabelWriterDriver::EndPage()
+LabelWriterDriver::endPage()
 {
-  SendFormFeed();
+  sendFormFeed();
 }
 
 
 void
-LabelWriterDriver::SendNotCompressedData(
-  const buffer_t& Buf, size_t LeaderBlanks, size_t TrailerBlanks)
+LabelWriterDriver::sendNotCompressedData(
+  const buffer_t& buffer, size_t leaderBlanks, size_t trailerBlanks)
 {
   byte syn = SYN;
 
-  size_t DataSize = Buf.size() - LeaderBlanks - TrailerBlanks;
+  size_t dataSize = buffer.size() - leaderBlanks - trailerBlanks;
 
   // set bytes per line in case of it changes from last raster line
-  if (LastBytesPerLine_ != DataSize)
+  if (lastBytesPerLine != dataSize)
   {
-    SendBytesPerLine(DataSize);
-    LastBytesPerLine_ = DataSize;
+    sendBytesPerLine(dataSize);
+    lastBytesPerLine = dataSize;
   }
 
-  SendCommand(&syn, sizeof(syn));
-  SendCommand(&Buf[0] + LeaderBlanks, DataSize);
+  sendCommand(&syn, sizeof(syn));
+  sendCommand(&buffer[0] + leaderBlanks, dataSize);
 }
 
 void
-LabelWriterDriver::SendCompressedData(
-  const buffer_t& CompressedBuf, size_t NotCompressedSize)
+LabelWriterDriver::sendCompressedData(
+  const buffer_t& compressedBuffer, size_t notCompressedSize)
 {
   byte etb = ETB;
 
   // set bytes per line in case of it changes from last raster line
-  if (LastBytesPerLine_ != NotCompressedSize)
+  if (lastBytesPerLine != notCompressedSize)
   {
-    SendBytesPerLine(NotCompressedSize);
-    LastBytesPerLine_ = NotCompressedSize;
+    sendBytesPerLine(notCompressedSize);
+    lastBytesPerLine = notCompressedSize;
   }
 
-  SendCommand(&etb, sizeof(etb));
-  SendCommand(&CompressedBuf[0], CompressedBuf.size());
+  sendCommand(&etb, sizeof(etb));
+  sendCommand(&compressedBuffer[0], compressedBuffer.size());
 }
 
 void
-LabelWriterDriver::GetBlanks(
-  const buffer_t& Buf, size_t& LeaderBlanks, size_t& TrailerBlanks)
+LabelWriterDriver::getBlanks(
+  const buffer_t& buffer, size_t& leaderBlanks, size_t& trailerBlanks)
 {
   size_t i = 0;
 
-  LeaderBlanks    = 0;
-  TrailerBlanks   = 0;
+  leaderBlanks    = 0;
+  trailerBlanks   = 0;
 
-  size_t BufSize = Buf.size();
+  size_t bufferSize = buffer.size();
 
   // count left spaces
-  for (i = 0; i < BufSize; ++i)
-    if (Buf[i] == 0)
-      ++LeaderBlanks;
+  for (i = 0; i < bufferSize; ++i)
+    if (buffer[i] == 0)
+      ++leaderBlanks;
     else
       break;
 
-  if (i == BufSize) return;
+  if (i == bufferSize) return;
 
   // count right spaces
-  for (i = BufSize - 1; i >= 0; --i)
-    if (Buf[i] == 0)
-      ++TrailerBlanks;
+  for (i = bufferSize - 1; i >= 0; --i)
+    if (buffer[i] == 0)
+      ++trailerBlanks;
     else
       break;
 } // GetBlanks()
@@ -123,48 +123,48 @@ LabelWriterDriver::GetBlanks(
 // 7 6 5 4 3 2 1 0
 // msb           lsb
 
-// Returns Value of bit BitNo in byte Data
+// Returns value of bit BitNo in byte Data
 // if bit unset returns 0, else - not 0
 static inline byte
-GetBitValue(byte data, size_t bitNo)
+GetBitValue(byte data, size_t bitNumber)
 {
-  return data & (1 << bitNo);
+  return data & (1 << bitNumber);
 }
 
 // Advanses to one bit in byte sequence
 static inline void
-NextBit(size_t& curByteNo, size_t& curBitNo)
+NextBit(size_t& currentByteNumber, size_t& currentBitNumber)
 {
-  if (curBitNo == 0)
+  if (currentBitNumber == 0)
   {
-    curByteNo = curByteNo + 1;
-    curBitNo = 7;
+    currentByteNumber = currentByteNumber + 1;
+    currentBitNumber = 7;
   }
   else
-    curBitNo = curBitNo - 1;
+    currentBitNumber = currentBitNumber - 1;
 }
 
 // Returns RLE compressed value for data in Data with size DataLen
-// start compression at CurByteNo/CurBitNo
-// At exit CureByteNo, CurBitNo contains next bit after compressed sequence
+// start compression at curByteNo/curBitNo
+// At exit CureByteNo, curBitNo contains next bit after compressed sequence
 static byte
-GetCompressedSequenceValue(const byte* data, size_t dataLen, size_t& curByteNo, size_t& curBitNo)
+GetCompressedSequenceValue(const byte* data, size_t dataLength, size_t& currentByteNumber, size_t& currentBitNumber)
 {
   byte bitCount = 0;
   byte bitValue = 0;
-  byte startBitValue = GetBitValue(data[curByteNo], curBitNo);
-  NextBit(curByteNo, curBitNo);
+  byte startBitValue = GetBitValue(data[currentByteNumber], currentBitNumber);
+  NextBit(currentByteNumber, currentBitNumber);
 
   // while data exist and not max len of sequence
-  while ((curByteNo < dataLen) && (bitCount < 0x7f))
+  while ((currentByteNumber < dataLength) && (bitCount < 0x7f))
   {
-    bitValue = GetBitValue(data[curByteNo], curBitNo);
+    bitValue = GetBitValue(data[currentByteNumber], currentBitNumber);
 
     // same as prev bit
     if ((startBitValue && bitValue) || (!startBitValue && !bitValue))
     {
       bitCount++;
-      NextBit(curByteNo, curBitNo);
+      NextBit(currentByteNumber, currentBitNumber);
     }
     else // end of sequence
       break;
@@ -177,129 +177,129 @@ GetCompressedSequenceValue(const byte* data, size_t dataLen, size_t& curByteNo, 
 }
 
 static void
-CompressData(buffer_t& CompressedData, const byte* Data, size_t DataSize)
+CompressData(buffer_t& compressedData, const byte* data, size_t dataSize)
 {
-  size_t CurByteNo        = 0;
-  size_t CurBitNo         = 7;
-  size_t CompressedOffset = 0;
+  size_t currentByteNumber        = 0;
+  size_t currentBitNumber         = 7;
+  size_t compressedOffset = 0;
 
-  while (CurByteNo < DataSize)
+  while (currentByteNumber < dataSize)
   {
-    if (CompressedOffset >= DataSize - 1)
+    if (compressedOffset >= dataSize - 1)
     {
-      CompressedData.clear(); // will write non-compressed data
+      compressedData.clear(); // will write non-compressed data
       return;
     }
-    CompressedData.push_back(GetCompressedSequenceValue(Data, DataSize, CurByteNo, CurBitNo));
-    ++CompressedOffset;
+    compressedData.push_back(GetCompressedSequenceValue(data, dataSize, currentByteNumber, currentBitNumber));
+    ++compressedOffset;
   }
 }
 
 static void
-ShiftDataRight(const buffer_t& Buf, buffer_t& ShiftedBuf, size_t ShiftValue)
+ShiftDataRight(const buffer_t& buffer, buffer_t& shiftedBuffer, size_t shiftValue)
 {
   // shift bytes first
-  int ShiftedLen = ShiftedBuf.size() - ShiftValue / 8;
-  size_t ShiftedOffset = ShiftValue / 8;
-  ShiftValue   = ShiftValue % 8;
+  int shiftedLength = shiftedBuffer.size() - shiftValue / 8;
+  size_t shiftedOffset = shiftValue / 8;
+  shiftValue   = shiftValue % 8;
 
-  if ((ShiftedLen <= 0) || (Buf.size() == 0)) return;
+  if ((shiftedLength <= 0) || (buffer.size() == 0)) return;
 
   // shift bits
-  ShiftedBuf[ShiftedOffset] = Buf[0] >> ShiftValue; // first
+  shiftedBuffer[shiftedOffset] = buffer[0] >> shiftValue; // first
   size_t i = 0;
-  for (i = 1; ((i < Buf.size()) && (i < size_t(ShiftedLen))); ++i)
-    ShiftedBuf[ShiftedOffset + i] = (Buf[i - 1] << (8 - ShiftValue)) | (Buf[i] >> ShiftValue);
-  if (i < size_t(ShiftedLen))
-    ShiftedBuf[ShiftedOffset + Buf.size()] = (Buf[Buf.size() - 1] << (8 - ShiftValue));
+  for (i = 1; ((i < buffer.size()) && (i < size_t(shiftedLength))); ++i)
+    shiftedBuffer[shiftedOffset + i] = (buffer[i - 1] << (8 - shiftValue)) | (buffer[i] >> shiftValue);
+  if (i < size_t(shiftedLength))
+    shiftedBuffer[shiftedOffset + buffer.size()] = (buffer[buffer.size() - 1] << (8 - shiftValue));
 }
 
 static void
-ShiftDataLeft(const buffer_t& Buf, buffer_t& ShiftedBuf, size_t ShiftValue)
+ShiftDataLeft(const buffer_t& buffer, buffer_t& shiftedBuffer, size_t shiftValue)
 {
   // shift bytes first
-  int ShiftedLen = ShiftedBuf.size() - ShiftValue / 8;
-  ShiftValue   = ShiftValue % 8;
+  int shiftedLength = shiftedBuffer.size() - shiftValue / 8;
+  shiftValue   = shiftValue % 8;
 
-  if ((ShiftedLen <= 0) || (Buf.size() == 0)) return;
+  if ((shiftedLength <= 0) || (buffer.size() == 0)) return;
 
   // shift bits
   size_t i = 0;
-  for (i = 0; ((i < Buf.size() - 1) && (i < size_t(ShiftedLen))); ++i)
-    ShiftedBuf[i] = (Buf[i] << ShiftValue) | (Buf[i + 1] >> (8 - ShiftValue));
-  if (i < size_t(ShiftedLen))
-    ShiftedBuf[Buf.size() - 1] = (Buf[Buf.size() - 1] << ShiftValue); // last
+  for (i = 0; ((i < buffer.size() - 1) && (i < size_t(shiftedLength))); ++i)
+    shiftedBuffer[i] = (buffer[i] << shiftValue) | (buffer[i + 1] >> (8 - shiftValue));
+  if (i < size_t(shiftedLength))
+    shiftedBuffer[buffer.size() - 1] = (buffer[buffer.size() - 1] << shiftValue); // last
 }
 
 
 static void
-ShiftData(const buffer_t& Buf, buffer_t& ShiftedBuf, int ShiftValue)
+ShiftData(const buffer_t& buffer, buffer_t& shiftedBuffer, int shiftValue)
 {
   // clear shift buffer first
-  for (size_t i = 0; i < ShiftedBuf.size(); ++i)
-    ShiftedBuf[i] = 0;
+  for (size_t i = 0; i < shiftedBuffer.size(); ++i)
+    shiftedBuffer[i] = 0;
 
-  if (ShiftValue >= 0)
-    ShiftDataRight(Buf, ShiftedBuf, ShiftValue);
+  if (shiftValue >= 0)
+    ShiftDataRight(buffer, shiftedBuffer, shiftValue);
   else
-    ShiftDataLeft(Buf, ShiftedBuf, -ShiftValue);
+    ShiftDataLeft(buffer, shiftedBuffer, -shiftValue);
 }
 
 void
-LabelWriterDriver::ProcessRasterLine(const buffer_t& lineBuffer)
+LabelWriterDriver::processRasterLine(const buffer_t& lineBuffer)
 {
   buffer_t b = lineBuffer;
 
-  if (PageOffset_.x > 0)
+  if (pageOffset.x > 0)
   {
-    buffer_t b2(b.size() + (PageOffset_.x + 7) / 8, 0);
-    ShiftData(b, b2, PageOffset_.x);
+    buffer_t b2(b.size() + (pageOffset.x + 7) / 8, 0);
+    ShiftData(b, b2, pageOffset.x);
     b = b2;
   }
 
-  if (b.size() > MaxPrintWidth_)
+  if (b.size() > maxPrintWidth)
   {
     fputs("WARNING: LabelWriterDriver::ProcessRasterLine(): page width is greater max page width, truncated\n", stderr);
-    b = buffer_t(b.begin(), b.begin() + MaxPrintWidth_);
+    b = buffer_t(b.begin(), b.begin() + maxPrintWidth);
   }
 
-  size_t LeaderBlanks = 0;
-  size_t TrailerBlanks = 0;
+  size_t leaderBlanks = 0;
+  size_t trailerBlanks = 0;
 
   // get blanks count
-  GetBlanks(b, LeaderBlanks, TrailerBlanks);
+  getBlanks(b, leaderBlanks, trailerBlanks);
 
-  if (LeaderBlanks + TrailerBlanks == b.size())
+  if (leaderBlanks + trailerBlanks == b.size())
   {
     // remember empty line
-    ++EmptyLinesCount_;
+    ++emptyLinesCount;
   }
   else // not empty line
   {
     // skip empty lines
-    if (EmptyLinesCount_)
-      SendSkipLines(EmptyLinesCount_);
+    if (emptyLinesCount)
+      sendSkipLines(emptyLinesCount);
 
-    EmptyLinesCount_ = 0;
+    emptyLinesCount = 0;
 
     // set dot tab
     // Bug Fix for DLS80AM-1421
     // NOTE: an ESC B needs to be send for each raster line. Otherwise the LW 3xx series output
     // will be distorted.
-    //if (LastDotTab_ != LeaderBlanks)
+    //if (lastDotTab != leaderBlanks)
     //{
-      SendDotTab(LeaderBlanks);
-      LastDotTab_ = LeaderBlanks;
+      sendDotTab(leaderBlanks);
+      lastDotTab = leaderBlanks;
     //}
 
     // calculate compressed data size
-    buffer_t CompressedData;
-    CompressData(CompressedData, &b[0] + LeaderBlanks, b.size() - LeaderBlanks - TrailerBlanks);
+    buffer_t compressedData;
+    CompressData(compressedData, &b[0] + leaderBlanks, b.size() - leaderBlanks - trailerBlanks);
 
-    if ((CompressedData.size() > 0) && (CompressedData.size() < b.size() - LeaderBlanks - TrailerBlanks))
-      SendCompressedData(CompressedData, b.size() - LeaderBlanks - TrailerBlanks);
+    if ((compressedData.size() > 0) && (compressedData.size() < b.size() - leaderBlanks - trailerBlanks))
+      sendCompressedData(compressedData, b.size() - leaderBlanks - trailerBlanks);
     else
-      SendNotCompressedData(b, LeaderBlanks, TrailerBlanks);
+      sendNotCompressedData(b, leaderBlanks, trailerBlanks);
   }
 
 
@@ -307,247 +307,247 @@ LabelWriterDriver::ProcessRasterLine(const buffer_t& lineBuffer)
 
 
 void
-LabelWriterDriver::SendCommand(const byte* Buf, size_t BufSize)
+LabelWriterDriver::sendCommand(const byte* buffer, size_t bufferSize)
 {
-  Environment_.WriteData(buffer_t(Buf, Buf + BufSize));
+  environment.WriteData(buffer_t(buffer, buffer + bufferSize));
 }
 
 void
-LabelWriterDriver::SendCommand(const buffer_t& Buf)
+LabelWriterDriver::sendCommand(const buffer_t& buffer)
 {
-  Environment_.WriteData(Buf);
+  environment.WriteData(buffer);
 }
 
 LabelWriterDriver::resolution_t
-LabelWriterDriver::GetResolution()
+LabelWriterDriver::getResolution()
 {
-  return Resolution_;
+  return resolution;
 }
 
 LabelWriterDriver::density_t
-LabelWriterDriver::GetDensity()
+LabelWriterDriver::getDensity()
 {
-  return Density_;
+  return density;
 }
 
 LabelWriterDriver::quality_t
-LabelWriterDriver::GetQuality()
+LabelWriterDriver::getQuality()
 {
-  return Quality_;
+  return quality;
 }
 
 size_t
-LabelWriterDriver::GetPageHeight()
+LabelWriterDriver::getPageHeight()
 {
-  return PageHeight_;
+  return pageHeight;
 }
 
 LabelWriterDriver::paper_type_t
-LabelWriterDriver::GetPaperType()
+LabelWriterDriver::getPaperType()
 {
-  return PaperType_;
+  return paperType;
 }
 
 void
-LabelWriterDriver::SetResolution(LabelWriterDriver::resolution_t Value)
+LabelWriterDriver::setresolution(LabelWriterDriver::resolution_t value)
 {
-  Resolution_ = Value;
+  resolution = value;
 }
 
 void
-LabelWriterDriver::SetDensity(LabelWriterDriver::density_t Value)
+LabelWriterDriver::setdensity(LabelWriterDriver::density_t value)
 {
-  Density_ = Value;
+  density = value;
 }
 
 void
-LabelWriterDriver::SetQuality(LabelWriterDriver::quality_t Value)
+LabelWriterDriver::setquality(LabelWriterDriver::quality_t value)
 {
-  Quality_ = Value;
+  quality = value;
 }
 
 void
-LabelWriterDriver::SetPageHeight(size_t Value)
+LabelWriterDriver::setpageHeight(size_t value)
 {
-  PageHeight_ = Value;
+  pageHeight = value;
 }
 
 void
-LabelWriterDriver::SetPaperType(LabelWriterDriver::paper_type_t Value)
+LabelWriterDriver::setpaperType(LabelWriterDriver::paper_type_t value)
 {
-  PaperType_ = Value;
+  paperType = value;
 }
 
 void
-LabelWriterDriver::SetMaxPrintWidth(size_t Value)
+LabelWriterDriver::setMaxPrintWidth(size_t value)
 {
-  MaxPrintWidth_ = Value;
+  maxPrintWidth = value;
 }
 
 void
-LabelWriterDriver::SetPageOffset(point_t Value)
+LabelWriterDriver::setPageOffset(point_t value)
 {
-  PageOffset_ = Value;
+  pageOffset = value;
 }
 
 void
-LabelWriterDriver::SendLineTab(size_t Value)
+LabelWriterDriver::sendLineTab(size_t value)
 {
-  byte buf[] = {ESC, 'Q', 0, 0};
-  buf[2] = (Value >> 8) & 0xff;
-  buf[3] = Value & 0xff;
+  byte buffer[] = {ESC, 'Q', 0, 0};
+  buffer[2] = (value >> 8) & 0xff;
+  buffer[3] = value & 0xff;
 
-  SendCommand(buf, sizeof(buf));
+  sendCommand(buffer, sizeof(buffer));
 }
 
 void
-LabelWriterDriver::SendDotTab(size_t Value)
+LabelWriterDriver::sendDotTab(size_t value)
 {
-  byte buf[] = {ESC, 'B', 0};
-  buf[2] = Value;
+  byte buffer[] = {ESC, 'B', 0};
+  buffer[2] = value;
 
-  SendCommand(buf, sizeof(buf));
+  sendCommand(buffer, sizeof(buffer));
 }
 
 void
-LabelWriterDriver::SendFormFeed()
+LabelWriterDriver::sendFormFeed()
 {
-  byte buf[] = {ESC, 'E'};
+  byte buffer[] = {ESC, 'E'};
 
-  SendCommand(buf, sizeof(buf));
+  sendCommand(buffer, sizeof(buffer));
 }
 
 void
-LabelWriterDriver::SendBytesPerLine(size_t Value)
+LabelWriterDriver::sendBytesPerLine(size_t value)
 {
-  byte buf[] = {ESC, 'D', 0};
-  buf[2] = Value;
+  byte buffer[] = {ESC, 'D', 0};
+  buffer[2] = value;
 
-  SendCommand(buf, sizeof(buf));
+  sendCommand(buffer, sizeof(buffer));
 }
 
 void
-LabelWriterDriver::SendSkipLines(size_t Value)
+LabelWriterDriver::sendSkipLines(size_t value)
 {
   const size_t MAX_LINES = 255;
 
   // a hardware can skip no more 255 lines at time
-  byte buf[] = {ESC, 'f', 1, 0};
+  byte buffer[] = {ESC, 'f', 1, 0};
 
-  while (Value > 0)
+  while (value > 0)
   {
-    if (Value > MAX_LINES)
+    if (value > MAX_LINES)
     {
-      buf[3] = MAX_LINES;
-      Value -= MAX_LINES;
+      buffer[3] = MAX_LINES;
+      value -= MAX_LINES;
     }
     else
     {
-      buf[3] = Value;
-      Value  = 0;
+      buffer[3] = value;
+      value  = 0;
     }
 
-    SendCommand(buf, sizeof(buf));
+    sendCommand(buffer, sizeof(buffer));
   }
 }
 
 void
-LabelWriterDriver::SendLabelLength(size_t Value)
+LabelWriterDriver::sendLabelLength(size_t value)
 {
-  byte buf[] = {ESC, 'L', 0, 0};
-  buf[2] = (Value >> 8) & 0xff;
-  buf[3] = Value & 0xff;
+  byte buffer[] = {ESC, 'L', 0, 0};
+  buffer[2] = (value >> 8) & 0xff;
+  buffer[3] = value & 0xff;
 
-  SendCommand(buf, sizeof(buf));
+  sendCommand(buffer, sizeof(buffer));
 }
 
 void
-LabelWriterDriver::SendResolution(resolution_t Value)
+LabelWriterDriver::sendResolution(resolution_t value)
 {
-  if (Value == resUnknown)
+  if (value == RESOLUTION_UNKNOWN)
     return;
 
-  byte buf[] = {ESC, 0};
-  switch (Value)
+  byte buffer[] = {ESC, 0};
+  switch (value)
   {
-    case res136:
-      buf[1] = 'z';
+    case RESOLUTION_136:
+      buffer[1] = 'z';
       break;
-    case res204:
-      buf[1] = 'y';
+    case RESOLUTION_204:
+      buffer[1] = 'y';
       break;
     default:
       assert(0);
       break;
   }
 
-  SendCommand(buf, sizeof(buf));
+  sendCommand(buffer, sizeof(buffer));
 }
 
 void
-LabelWriterDriver::SendPrintDensity(density_t Value)
+LabelWriterDriver::sendPrintDensity(density_t value)
 {
-  byte buf[] = {ESC, 'e'};
+  byte buffer[] = {ESC, 'e'};
 
-  switch (Value)
+  switch (value)
   {
-    case pdLow:     buf[1] = 'c'; break;
-    case pdMedium:  buf[1] = 'd'; break;
-    case pdNormal:  buf[1] = 'e'; break;
-    case pdHigh:    buf[1] = 'g'; break;
-    default:        buf[1] = 'e'; break; // normal
+    case PRINT_DENSITY_LOW:     buffer[1] = 'c'; break;
+    case PRINT_DENSITY_MEDIUM:  buffer[1] = 'd'; break;
+    case PRINT_DENSITY_NORMAL:  buffer[1] = 'e'; break;
+    case PRINT_DENSITY_HIGH:    buffer[1] = 'g'; break;
+    default:        buffer[1] = 'e'; break; // normal
   }
 
-  SendCommand(buf, sizeof(buf));
+  sendCommand(buffer, sizeof(buffer));
 }
 
 void
-LabelWriterDriver::SendPrintQuality(quality_t Value)
+LabelWriterDriver::sendPrintQuality(quality_t value)
 {
-  byte buf[] = {ESC, 'h'};
+  byte buffer[] = {ESC, 'h'};
 
-  switch (Value)
+  switch (value)
   {
-    case pqText:                buf[1] = 'h'; break;
-    case pqBarcodeAndGraphics:  buf[1] = 'i'; break;
-    default:                    buf[1] = 'h'; break; // text
+    case PRINT_QUALITY_TEXT:                buffer[1] = 'h'; break;
+    case PRINT_QUALITY_BARCODE_AND_GRAPHICS:  buffer[1] = 'i'; break;
+    default:                    buffer[1] = 'h'; break; // text
   }
 
-  SendCommand(buf, sizeof(buf));
+  sendCommand(buffer, sizeof(buffer));
 }
 
 buffer_t
-LabelWriterDriver::GetResetCommand()
+LabelWriterDriver::getResetCommand()
 {
   return buffer_t(156, ESC);
 }
 
 buffer_t
-LabelWriterDriver::GetRequestStatusCommand()
+LabelWriterDriver::getRequestStatusCommand()
 {
-  byte buf[] = {ESC, 'A'};
+  byte buffer[] = {ESC, 'A'};
 
-  return buffer_t(buf, buf + sizeof(buf));
+  return buffer_t(buffer, buffer + sizeof(buffer));
 }
 
 size_t
-LabelWriterDriver::GetEmptyLinesCount()
+LabelWriterDriver::getEmptyLinesCount()
 {
-  return EmptyLinesCount_;
+  return emptyLinesCount;
 }
 
 void
-LabelWriterDriver::SetEmptyLinesCount(size_t Value)
+LabelWriterDriver::setEmptyLinesCount(size_t value)
 {
-  EmptyLinesCount_ = Value;
+  emptyLinesCount = value;
 }
 
 ////////////////////////////////////////////////////////////////
 // LabelWriterDriver400
 ////////////////////////////////////////////////////////////////
 
-LabelWriterDriver400::LabelWriterDriver400(IPrintEnvironment& Environment):
-  LabelWriterDriver(Environment)
+LabelWriterDriver400::LabelWriterDriver400(IPrintEnvironment& environment):
+  LabelWriterDriver(environment)
 {
 }
 
@@ -556,45 +556,45 @@ LabelWriterDriver400::~LabelWriterDriver400()
 }
 
 void
-LabelWriterDriver400::StartDoc()
+LabelWriterDriver400::startDoc()
 {
-  LabelWriterDriver::StartDoc();
+  LabelWriterDriver::startDoc();
 }
 
 void
-LabelWriterDriver400::EndDoc()
+LabelWriterDriver400::endDoc()
 {
   SendFormFeed();
 }
 
 void
-LabelWriterDriver400::EndPage()
+LabelWriterDriver400::endPage()
 {
-  SendShortFormFeed();
+  sendShortFormFeed();
 }
 
 buffer_t
-LabelWriterDriver400::GetShortFormFeedCommand()
+LabelWriterDriver400::getShortFormFeedCommand()
 {
-  byte buf[] = {ESC, 'G'};
+  byte buffer[] = {ESC, 'G'};
 
-  return buffer_t(buf, buf + sizeof(buf));
+  return buffer_t(buffer, buffer + sizeof(buffer));
 }
 
 void
-LabelWriterDriver400::SendShortFormFeed()
+LabelWriterDriver400::sendShortFormFeed()
 {
-  byte buf[] = {ESC, 'G'};
+  byte buffer[] = {ESC, 'G'};
 
-  SendCommand(buf, sizeof(buf));
+  sendCommand(buffer, sizeof(buffer));
 }
 
 ////////////////////////////////////////////////////////////////
 // LabelWriterDriver TwinTurbo
 ////////////////////////////////////////////////////////////////
 
-LabelWriterDriverTwinTurbo::LabelWriterDriverTwinTurbo(IPrintEnvironment& Environment):
-  LabelWriterDriver400(Environment), Roll_(rtAuto)
+LabelWriterDriverTwinTurbo::LabelWriterDriverTwinTurbo(IPrintEnvironment& environment):
+  LabelWriterDriver400(environment), roll(ROLL_AUTO)
 {
 }
 
@@ -603,33 +603,33 @@ LabelWriterDriverTwinTurbo::~LabelWriterDriverTwinTurbo()
 }
 
 void
-LabelWriterDriverTwinTurbo::StartDoc()
+LabelWriterDriverTwinTurbo::startDoc()
 {
   LabelWriterDriver400::StartDoc();
-  SendRollSelect(Roll_);
+  SendRollSelect(roll);
 }
 
 LabelWriterDriverTwinTurbo::roll_t
-LabelWriterDriverTwinTurbo::GetRoll()
+LabelWriterDriverTwinTurbo::getRoll()
 {
-  return Roll_;
+  return roll;
 }
 
 void
-LabelWriterDriverTwinTurbo::SetRoll(LabelWriterDriverTwinTurbo::roll_t Value)
+LabelWriterDriverTwinTurbo::setRoll(LabelWriterDriverTwinTurbo::roll_t value)
 {
-  Roll_ = Value;
+  roll = value;
 }
 
 buffer_t
-LabelWriterDriverTwinTurbo::GetRollSelectCommand(roll_t Value)
+LabelWriterDriverTwinTurbo::getRollSelectCommand(roll_t value)
 {
   byte buf[] = {ESC, 'q', '0'};
 
-  switch (Value)
+  switch (value)
   {
-    case rtLeft:    buf[2] = '1'; break;
-    case rtRight:   buf[2] = '2'; break;
+    case ROLL_LEFT:    buf[2] = '1'; break;
+    case ROLL_RIGHT:   buf[2] = '2'; break;
     default:        buf[2] = '0'; break;
   }
 
@@ -637,11 +637,11 @@ LabelWriterDriverTwinTurbo::GetRollSelectCommand(roll_t Value)
 }
 
 void
-LabelWriterDriverTwinTurbo::SendRollSelect(LabelWriterDriverTwinTurbo::roll_t Value)
+LabelWriterDriverTwinTurbo::sendRollSelect(LabelWriterDriverTwinTurbo::roll_t value)
 {
-  buffer_t buf = GetRollSelectCommand(Value);
+  buffer_t buffer = getRollSelectCommand(value);
 
-  SendCommand(&buf[0], buf.size());
+  sendCommand(&buffer[0], buffer.size());
 }
 
 

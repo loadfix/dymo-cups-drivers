@@ -11,148 +11,148 @@ class LabelManagerDriver: public IPrinterDriver
 public:
   typedef enum
   {
-    tw6mm = 0,
-    tw9mm,
-    tw12mm,
-    tw19mm,
-    tw24mm,
-    tw32mm
+    TAPE_WIDTH_6MM = 0,
+    TAPE_WIDTH_9MM,
+    TAPE_WIDTH_12MM,
+    TAPE_WIDTH_19MM,
+    TAPE_WIDTH_24MM,
+    TAPE_WIDTH_32MM
   } tape_width_t;
 
   typedef enum
   {
-    coCut = 0,
-    coChainMarks
-  } cut_t;
+    CUT_OPTION_CUT = 0,
+    CUT_OPTION_CHAIN_MARKS
+  } cut_option_t;
 
   typedef enum
   {
-    alCenter = 0,
-    alLeft,
-    alRight
+    ALIGN_CENTER = 0,
+    ALIGN_LEFT,
+    ALIGN_RIGHT
   } alignment_t;
 
   typedef enum
   {
-    tcBlackOnWhite = 0,
-    tcBlackOnBlue,
-    tcBlackOnRed,
-    tcBlackOnSilver,
-    tcBlackOnYellow,
-    tcBlackOnGold,
-    tcBlackOnGreen,
-    tcBlackOnFluorescentGreen,
-    tcBlackOnFluorescentRed,
-    tcWhiteOnClear,
-    tcWhiteOnBlack,
-    tcBlueOnWhite,
-    tcRedOnWhite
+    TAPE_COLOR_BLACK_ON_WHITE = 0,
+    TAPE_COLOR_BLACK_ON_BLUE,
+    TAPE_COLOR_BLACK_ON_RED,
+    TAPE_COLOR_BLACK_ON_SILVER,
+    TAPE_COLOR_BLACK_ON_YELLOW,
+    TAPE_COLOR_BLACK_ON_GOLD,
+    TAPE_COLOR_BLACK_ON_GREEN,
+    TAPE_COLOR_BLACK_ON_FLUORESCENT_GREEN,
+    TAPE_COLOR_BLACK_ON_FLUORESCENT_RED,
+    TAPE_COLOR_WHITE_ON_CLEAR,
+    TAPE_COLOR_WHITE_ON_BLACK,
+    TAPE_COLOR_BLUE_ON_WHITE,
+    TAPE_COLOR_RED_ON_WHITE
   } tape_color_t;
 
-  LabelManagerDriver(IPrintEnvironment& Environment);
+  LabelManagerDriver(IPrintEnvironment& environment);
   virtual ~LabelManagerDriver();
 
-  virtual void StartDoc();
-  virtual void EndDoc();
+  virtual void startDoc();
+  virtual void endDoc();
 
-  virtual void StartPage();
-  virtual void EndPage();
+  virtual void startPage();
+  virtual void endPage();
 
-  virtual void ProcessRasterLine(const buffer_t& LineBuffer);
+  virtual void processRasterLine(const buffer_t& lineBuffer);
 
-  void SetDeviceName(const std::string& DeviceName);
-  void SetSupportAutoCut(bool Value);
-  void SetTSDevice(bool Value);
-  void SetCutOptions(cut_t Value);
-  void SetAlignment(alignment_t Value);
-  void SetContinuousPaper(bool Value);
-  void SetPrintChainMarksAtDocEnd(bool Value);
-  void SetAutoPaper(bool Value);
-  void SetTapeAlignmentOffset(int Value);
-  void SetTapeColor(tape_color_t Value);
+  void setDeviceName(const std::string& deviceName);
+  void setSupportAutoCut(bool value);
+  void setTSDevice(bool value);
+  void setCutOptions(cut_option_t value);
+  void setAlignment(alignment_t value);
+  void setContinuousPaper(bool value);
+  void setPrintChainMarksAtDocEnd(bool value);
+  void setAutoPaper(bool value);
+  void setTapeAlignmentOffset(int value);
+  void setTapeColor(tape_color_t value);
 
-  void SetMaxPrintableWidth(size_t Value);
-  void SetNormalLeader(size_t Value);
-  void SetMinLeader(size_t Value);
-  void SetAlignedLeader(size_t Value);
-  void SetMinPageLines(size_t Value);
+  void setMaxPrintableWidth(size_t value);
+  void setNormalLeader(size_t value);
+  void setMinLeader(size_t value);
+  void setAlignedLeader(size_t value);
+  void setMinPageLines(size_t value);
 
-  const std::string&  GetDeviceName();
-  bool                IsSupportAutoCut();
-  bool                IsTSDevice();
-  cut_t               GetCutOptions();
-  alignment_t         GetAlignment();
-  bool                IsContinuousPaper();
-  bool                IsPrintChainMarksAtDocEnd();
-  bool                IsAutoPaper();
-  tape_color_t        GetTapeColor();
-  int                 GetTapeAlignmentOffset();
-  size_t              GetMaxPrintableWidth();
-  size_t              GetNormalLeader();
-  size_t              GetMinLeader();
-  size_t              GetAlignedLeader();
-  size_t              GetMinPageLines();
+  const std::string&  getDeviceName();
+  bool                isSupportAutoCut();
+  bool                isTSDevice();
+  cut_option_t        getCutOptions();
+  alignment_t         getAlignment();
+  bool                isContinuousPaper();
+  bool                isPrintChainMarksAtDocEnd();
+  bool                isAutoPaper();
+  tape_color_t        getTapeColor();
+  int                 getTapeAlignmentOffset();
+  size_t              getMaxPrintableWidth();
+  size_t              getNormalLeader();
+  size_t              getMinLeader();
+  size_t              getAlignedLeader();
+  size_t              getMinPageLines();
 
-  static buffer_t GetRequestStatusCommand();
+  static buffer_t getRequestStatusCommand();
 
 protected:
   // helper function to send printer commands
-  void SendCommand(const byte* Buf, size_t BufSize);
-  void SendCommand(const buffer_t& Buf);
-  void SendCommandTS(const buffer_t& Buf);
-  void FlushCommandTS();
-  void EndCommandTS();
-  void SendDotTab(size_t Value);
-  void SendCut();
-  void SendChainMark();
-  void SendBytesPerLine(size_t Value);
-  void SendSkipLines(size_t Value);
-  void SendTapeColor(tape_color_t Value);
+  void sendCommand(const byte* buffer, size_t bufferSize);
+  void sendCommand(const buffer_t& buffer);
+  void sendCommandTS(const buffer_t& buffer);
+  void flushCommandTS();
+  void endCommandTS();
+  void sendDotTab(size_t value);
+  void sendCut();
+  void sendChainMark();
+  void sendBytesPerLine(size_t value);
+  void sendSkipLines(size_t value);
+  void sendTapeColor(tape_color_t value);
 
-  void GetBlanks(const buffer_t& Buf, size_t& LeaderBlanks, size_t& TrailerBlanks);
+  void getBlanks(const buffer_t& buffer, size_t& leaderBlanks, size_t& trailerBlanks);
 
-  size_t GetMaxBytesPerLine();
+  size_t getMaxBytesPerLine();
 private:
-  IPrintEnvironment& Environment_;
+  IPrintEnvironment& environment;
 
   // job params
-  cut_t           CutOptions_;
-  alignment_t     Alignment_;
-  bool            ContinuousPaper_;
-  bool            PrintChainMarksAtDocEnd_;
-  bool            AutoPaper_; // don't send last empty lines
-  int             TapeAlignmentOffset_; // offset to justify output for the current label type . it is different for different tape sizes and models
-  tape_color_t    TapeColor_;
+  cut_option_t    cutOptions;
+  alignment_t     alignment;
+  bool            continuousPaper;
+  bool            printChainMarksAtDocEnd;
+  bool            autoPaper; // don't send last empty lines
+  int             tapeAlignmentOffset; // offset to justify output for the current label type . it is different for different tape sizes and models
+  tape_color_t    tapeColor;
 
   // device params
-  std::string     DeviceName_;
-  bool            SupportAutoCut_;
-  bool            TSDevice_;
-  size_t          MaxPrintableWidth_; // in dots
-  size_t          NormalLeader_;
-  size_t          MinLeader_;
-  size_t          AlignedLeader_;
-  size_t          MinPageLines_;
+  std::string     deviceName;
+  bool            supportAutoCut;
+  bool            tsDevice;
+  size_t          maxPrintableWidth; // in dots
+  size_t          normalLeader;
+  size_t          minLeader;
+  size_t          alignedLeader;
+  size_t          minPageLines;
 
   // job internal variables
-  size_t          LastDotTab_;
-  size_t          LastBytesPerLine_;
-  size_t          EmptyLinesCount_;
-  size_t          PageNo_;
-  size_t          PageLineCount_;
+  size_t          lastDotTab;
+  size_t          lastBytesPerLine;
+  size_t          emptyLinesCount;
+  size_t          pageNo;
+  size_t          pageLineCount;
 
-  std::vector<buffer_t> RasterLines_;
-  buffer_t              ShiftedRasterLine_;
+  std::vector<buffer_t> rasterLines;
+  buffer_t              shiftedRasterLine;
 
-  buffer_t TSBuffer_;
+  buffer_t tsBuffer;
 
-  FILE*           HLockFile_;
-  void ProcessRasterLineInternal(const buffer_t& LineBuffer);
-  void SendCachedRasterLines();
-  void ShiftData(const buffer_t& Buf, buffer_t& ShiftedBuf, int ShiftValue);
-  void ShiftDataLeft(const buffer_t& Buf, buffer_t& ShiftedBuf, size_t ShiftValue);
-  void ShiftDataRight(const buffer_t& Buf, buffer_t& ShiftedBuf, size_t ShiftValue);
-  int  GetShiftValue(size_t RasterLineSize);
+  FILE*           hLockFile;
+  void processRasterLineInternal(const buffer_t& lineBuffer);
+  void sendCachedRasterLines();
+  void shiftData(const buffer_t& buffer, buffer_t& shiftedBuffer, int shiftValue);
+  void shiftDataLeft(const buffer_t& buffer, buffer_t& shiftedBuffer, size_t shiftValue);
+  void shiftDataRight(const buffer_t& buffer, buffer_t& shiftedBuffer, size_t shiftValue);
+  int  getShiftValue(size_t rasterLineSize);
 };
 
 

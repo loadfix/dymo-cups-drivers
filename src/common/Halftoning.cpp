@@ -5,25 +5,8 @@
 namespace DymoPrinterDriver
 {
 
-HalftoneFilter::HalftoneFilter(image_t input_image_type, image_t output_image_type):
-  InputImageType_(input_image_type), OutputImageType_(output_image_type)
-{
-}
-
 HalftoneFilter::~HalftoneFilter()
 {
-}
-
-HalftoneFilter::image_t
-HalftoneFilter::getInputImageType()
-{
-  return InputImageType_;
-}
-
-HalftoneFilter::image_t
-HalftoneFilter::getOutputImageType()
-{
-  return OutputImageType_;
 }
 
 byte

@@ -12,28 +12,28 @@ class ILabelWriterDriver : virtual public IPrinterDriver
 public:
     typedef enum
     {
-        pdLow = 0,
-        pdMedium,
-        pdNormal,
-        pdHigh
+        PRINT_DENSITY_LOW = 0,
+        PRINT_DENSITY_MEDIUM,
+        PRINT_DENSITY_NORMAL,
+        PRINT_DENSITY_HIGH
     } density_t;
 
     typedef enum
     {
-        pqText = 0,
-        pqBarcodeAndGraphics
+        PRINT_QUALITY_TEXT = 0,
+        PRINT_QUALITY_BARCODE_AND_GRAPHICS
     } quality_t;
 
     typedef enum
     {
-        mtDefault = 0,
-        mtDurable
+        MEDIA_TYPE_DEFAULT = 0,
+        MEDIA_TYPE_DURABLE
     } media_type_t;
 
     typedef enum
     {
-        psNormal = 0,
-        psHigh
+        PRINT_SPEED_NORMAL = 0,
+        PRINT_SPEED_HIGH
     } speed_t;
 
     virtual ~ILabelWriterDriver() {}

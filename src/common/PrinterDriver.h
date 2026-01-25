@@ -14,8 +14,8 @@ class IPrinterDriver
 public:
    typedef enum
    {
-      ptRegular = 0,
-      ptContinuous = 1
+      PAPER_TYPE_REGULAR = 0,
+      PAPER_TYPE_CONTINUOUS = 1
    } paper_type_t;
 
    virtual ~IPrinterDriver() {}

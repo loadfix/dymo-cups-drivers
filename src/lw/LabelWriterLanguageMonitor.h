@@ -68,20 +68,20 @@ private:
   // reprint cached label
   void reprintLabel();
 
-  IPrintEnvironment&                      Environment_;
+  IPrintEnvironment&                      environment;
 
-  LabelWriterDriver::paper_type_t        PaperType_;
-  LabelWriterDriverTwinTurbo::roll_t     Roll_;
-  bool                                    RollUsed_;
-  bool                                    IsFirstPage_;
+  LabelWriterDriver::paper_type_t         paperType;
+  LabelWriterDriverTwinTurbo::roll_t      roll;
+  bool                                    rollUsed;
+  bool                                    isFirstPage;
 
-  buffer_t                                PageData_;
+  buffer_t                                pageData;
 
-  bool                                    UseSleep_; // for test purpose only
-  byte                                    LastStatus_;
-  bool                                    LastReadStatusResult_;
+  bool                                    useSleep; // for test purpose only
+  byte                                    lastStatus;
+  bool                                    lastReadStatusResult;
 
-  size_t                                  ReadStatusTimeout_;
+  size_t                                  readStatusTimeout;
 };
 
 

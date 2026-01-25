@@ -31,8 +31,8 @@ public:
    virtual bool getSupportAutoCut() const { return supportAutoCut; }
 
    // Cut, cutter marks or nothing
-   virtual void setCutOption(const ILabelManagerDriver::cut_t value) { cutOptions = value; fprintf(stderr, "TEST: setCutOption = %d\n", value); }
-   virtual ILabelManagerDriver::cut_t getCutOption() const { return cutOptions; }
+   virtual void setCutOption(const ILabelManagerDriver::cut_option_t value) { cutOptions = value; fprintf(stderr, "TEST: setCutOption = %d\n", value); }
+   virtual ILabelManagerDriver::cut_option_t getCutOption() const { return cutOptions; }
 
    // Label alignment on the tape
    virtual void setAlignment(const ILabelManagerDriver::alignment_t value) { alignment = value; fprintf(stderr, "TEST: setAlignment = %d\n", value); }
@@ -120,7 +120,7 @@ private:
    bool jobDidStart;
    dword pageNumber;
    dword jobID;
-   ILabelManagerDriver::cut_t cutOptions;
+   ILabelManagerDriver::cut_option_t cutOptions;
    ILabelManagerDriver::alignment_t alignment; // not being used since it will be always center aligned
    dword tapeAlignmentOffset;  // offset to justify output for the current label type. It is different for each tape size and model
    paper_type_t paperType;

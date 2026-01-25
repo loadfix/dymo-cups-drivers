@@ -13,8 +13,8 @@ LabelManagerDriver::LabelManagerDriver(IPrintEnvironment& environment) :
    pageNumber(0),
    jobID(0),
    jobDidStart(false),
-   cutOptions(ILabelManagerDriver::coCut),
-   alignment(ILabelManagerDriver::alCenter),
+   cutOptions(ILabelManagerDriver::CUT_OPTION_CUT),
+   alignment(ILabelManagerDriver::ALIGN_CENTER),
    tapeAlignmentOffset(0),
    deviceName(),
    supportAutoCut(true),
@@ -70,7 +70,7 @@ void LabelManagerDriver::startPage()
       // Advance to cutter
       setFormFeed();
 
-      if((cutOptions == ILabelManagerDriver::coCut) && supportAutoCut)
+      if((cutOptions == ILabelManagerDriver::CUT_OPTION_CUT) && supportAutoCut)
          setCutCommand();
       else
          setCutterMark();
@@ -120,7 +120,7 @@ void LabelManagerDriver::processRasterLine(const buffer_t& lineBuffer)
       b.resize(nHeight, 0);
 
    // It should be always center aligned
-   if(alignment != alLeft)
+   if(alignment != ALIGN_LEFT)
       processRasterLineInternal(b);
    // We don't have to save for future reversing since MLS prints just
    // center aligned which is taken care by the FW

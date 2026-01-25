@@ -12,9 +12,9 @@ DriverInitializerLabelManager::processPPDOptions(LabelManagerDriver& Driver, Lan
   if (choice)
   {
     if (!strcasecmp(choice->choice, "Cut"))
-      Driver.setCutOption(LabelManagerDriver::coCut);
+      Driver.setCutOption(LabelManagerDriver::CUT_OPTION_CUT);
     else if (!strcasecmp(choice->choice, "ChainMarks"))
-      Driver.setCutOption(LabelManagerDriver::coChainMarks);
+      Driver.setCutOption(LabelManagerDriver::CUT_OPTION_CHAIN_MARKS);
   }
   //else
   //    fputs("WARNING: unable to get CutOptions choice\n", stderr);
@@ -26,11 +26,11 @@ DriverInitializerLabelManager::processPPDOptions(LabelManagerDriver& Driver, Lan
     //fprintf(stderr, "DEBUG: ----------- Process LabelAlignemnt %s----------\n", choice->choice);
 
     if (!strcasecmp(choice->choice, "Center"))
-      Driver.setAlignment(LabelManagerDriver::alCenter);
+      Driver.setAlignment(LabelManagerDriver::ALIGN_CENTER);
     else if (!strcasecmp(choice->choice, "Left"))
-      Driver.setAlignment(LabelManagerDriver::alLeft);
+      Driver.setAlignment(LabelManagerDriver::ALIGN_LEFT);
     else if (!strcasecmp(choice->choice, "Right"))
-      Driver.setAlignment(LabelManagerDriver::alRight);
+      Driver.setAlignment(LabelManagerDriver::ALIGN_RIGHT);
   }
   else
     fputs("WARNING: unable to get LabelAlignment choice\n", stderr);
@@ -48,9 +48,9 @@ DriverInitializerLabelManager::processPPDOptions(LabelManagerDriver& Driver, Lan
   {
     // Note: SetContinuousPaper doesn't exist in new driver, use SetPaperType instead
     if (atoi(choice->choice) != 0)
-      Driver.setPaperType(IPrinterDriver::ptContinuous);
+      Driver.setPaperType(IPrinterDriver::PAPER_TYPE_CONTINUOUS);
     else
-      Driver.setPaperType(IPrinterDriver::ptRegular);
+      Driver.setPaperType(IPrinterDriver::PAPER_TYPE_REGULAR);
   }
   else
     fputs("WARNING: unable to get ContinuousPaper choice\n", stderr);
@@ -196,54 +196,54 @@ DriverInitializerLabelManager::processPageOptions(LabelManagerDriver& Driver, La
   // adjust tape center
   if (!strcasecmp(Driver.getDeviceName().c_str(), "DYMO LabelWriter DUO Tape"))
   {
-    if (TapeWidth == LabelManagerDriver::tw6mm)
+    if (TapeWidth == LabelManagerDriver::TAPE_WIDTH_6MM)
       Driver.setTapeAlignmentOffset(-2);
-    else if (TapeWidth == LabelManagerDriver::tw9mm)
+    else if (TapeWidth == LabelManagerDriver::TAPE_WIDTH_9MM)
       Driver.setTapeAlignmentOffset(-1);
   }
 
   // adjust tape center
   if (!strcasecmp(Driver.getDeviceName().c_str(), "DYMO LabelMANAGER PC II"))
   {
-    if (TapeWidth == LabelManagerDriver::tw12mm)
+    if (TapeWidth == LabelManagerDriver::TAPE_WIDTH_12MM)
       Driver.setTapeAlignmentOffset(2);
-    else if (TapeWidth == LabelManagerDriver::tw19mm)
+    else if (TapeWidth == LabelManagerDriver::TAPE_WIDTH_19MM)
       Driver.setTapeAlignmentOffset(-4);
   }
 
   // adjust tape center
   if (!strcasecmp(Driver.getDeviceName().c_str(), "DYMO LabelManager 500TS"))
   {
-     if (TapeWidth == LabelManagerDriver::tw12mm)
+     if (TapeWidth == LabelManagerDriver::TAPE_WIDTH_12MM)
          Driver.setTapeAlignmentOffset(2);
-     else if (TapeWidth == LabelManagerDriver::tw19mm)
+     else if (TapeWidth == LabelManagerDriver::TAPE_WIDTH_19MM)
          Driver.setTapeAlignmentOffset(-4);
  }
 
   // adjust tape center
   if (!strcasecmp(Driver.getDeviceName().c_str(), "DYMO LabelLabelWriter DUO Tape"))
   {
-    if (TapeWidth == LabelManagerDriver::tw6mm)
+    if (TapeWidth == LabelManagerDriver::TAPE_WIDTH_6MM)
       Driver.setTapeAlignmentOffset(-2);
-    else if (TapeWidth == LabelManagerDriver::tw9mm)
+    else if (TapeWidth == LabelManagerDriver::TAPE_WIDTH_9MM)
       Driver.setTapeAlignmentOffset(-1);
   }
 
   // adjust tape center
   if (!strcasecmp(Driver.getDeviceName().c_str(), "DYMO LabelWriter DUO Tape 128"))
   {
-    if (TapeWidth == LabelManagerDriver::tw12mm)
+    if (TapeWidth == LabelManagerDriver::TAPE_WIDTH_12MM)
       Driver.setTapeAlignmentOffset(2);
-    else if (TapeWidth == LabelManagerDriver::tw19mm)
+    else if (TapeWidth == LabelManagerDriver::TAPE_WIDTH_19MM)
       Driver.setTapeAlignmentOffset(-4);
   }
 
   // adjust tape center
   if (!strcasecmp(Driver.getDeviceName().c_str(), "DYMO LabelWriter 450 DUO Tape 128"))
   {
-    if (TapeWidth == LabelManagerDriver::tw12mm)
+    if (TapeWidth == LabelManagerDriver::TAPE_WIDTH_12MM)
       Driver.setTapeAlignmentOffset(2);
-    else if (TapeWidth == LabelManagerDriver::tw19mm)
+    else if (TapeWidth == LabelManagerDriver::TAPE_WIDTH_19MM)
       Driver.setTapeAlignmentOffset(-4);
   }
 

@@ -54,22 +54,22 @@ void Initializer::processCupsOptions(LabelWriterDriver& Driver, int num_options,
     Driver.setDeviceName(CupsUtils::getCupsOption("printer-make-and-model", num_options, options));
 
     if(strcasecmp(option, "Text") == 0)
-        Driver.setQuality(ILabelWriterDriver::pqText);
+        Driver.setQuality(ILabelWriterDriver::PRINT_QUALITY_TEXT);
     else if(strcasecmp(option, "Graphics") == 0)
-        Driver.setQuality(ILabelWriterDriver::pqBarcodeAndGraphics);
+        Driver.setQuality(ILabelWriterDriver::PRINT_QUALITY_BARCODE_AND_GRAPHICS);
     else
         fprintf(stderr, "WARNING: Unknown DymoPrintQuality option value = %s\n", option);
 
     option = CupsUtils::getCupsOption("DymoPrintDensity", num_options, options, "Normal");
 
     if(strcasecmp(option, "Light") == 0)
-        Driver.setDensity(ILabelWriterDriver::pdLow);
+        Driver.setDensity(ILabelWriterDriver::PRINT_DENSITY_LOW);
     else if(strcasecmp(option, "Medium") == 0)
-        Driver.setDensity(ILabelWriterDriver::pdMedium);
+        Driver.setDensity(ILabelWriterDriver::PRINT_DENSITY_MEDIUM);
     else if(strcasecmp(option, "Normal") == 0)
-        Driver.setDensity(ILabelWriterDriver::pdNormal);
+        Driver.setDensity(ILabelWriterDriver::PRINT_DENSITY_NORMAL);
     else if(strcasecmp(option, "Dark") == 0)
-        Driver.setDensity(ILabelWriterDriver::pdHigh);
+        Driver.setDensity(ILabelWriterDriver::PRINT_DENSITY_HIGH);
     else
         fprintf(stderr, "WARNING: Unknown DymoPrintDensity option value = %s\n", option);
 
@@ -78,9 +78,9 @@ void Initializer::processCupsOptions(LabelWriterDriver& Driver, int num_options,
         option = CupsUtils::getCupsOption("DymoPrintSpeed", num_options, options, "Normal");
 
         if(strcasecmp(option, "Normal") == 0)
-            Driver.setSpeed(ILabelWriterDriver::psNormal);
+            Driver.setSpeed(ILabelWriterDriver::PRINT_SPEED_NORMAL);
         else if(strcasecmp(option, "High") == 0)
-            Driver.setSpeed(ILabelWriterDriver::psHigh);
+            Driver.setSpeed(ILabelWriterDriver::PRINT_SPEED_HIGH);
         else
             fprintf(stderr, "WARNING: Unknown DymoPrintSpeed option value = %s\n", option);
 
@@ -98,11 +98,11 @@ void Initializer::processCupsOptions(LabelWriterDriver& Driver, int num_options,
             if (choice)
             {
                 if (!strcasecmp(choice->choice, "Left"))
-                    twinTurboDriver->setRoll(LabelWriterDriverTwinTurbo::rtLeft);
+                    twinTurboDriver->setRoll(LabelWriterDriverTwinTurbo::ROLL_LEFT);
                 else if (!strcasecmp(choice->choice, "Right"))
-                    twinTurboDriver->setRoll(LabelWriterDriverTwinTurbo::rtRight);
+                    twinTurboDriver->setRoll(LabelWriterDriverTwinTurbo::ROLL_RIGHT);
                 else
-                    twinTurboDriver->setRoll(LabelWriterDriverTwinTurbo::rtAuto);
+                    twinTurboDriver->setRoll(LabelWriterDriverTwinTurbo::ROLL_AUTO);
             }
             ppdClose(ppd);
         }
@@ -111,9 +111,9 @@ void Initializer::processCupsOptions(LabelWriterDriver& Driver, int num_options,
     option = CupsUtils::getCupsOption("DymoMediaType", num_options, options, "Default");
 
     if(strcasecmp(option, "Default") == 0)
-        Driver.setMediaType(ILabelWriterDriver::mtDefault);
+        Driver.setMediaType(ILabelWriterDriver::MEDIA_TYPE_DEFAULT);
     else if(strcasecmp(option, "Durable") == 0)
-        Driver.setMediaType(ILabelWriterDriver::mtDurable);
+        Driver.setMediaType(ILabelWriterDriver::MEDIA_TYPE_DURABLE);
     else
         fprintf(stderr, "WARNING: Unknown DymoMediaType option value = %s\n", option);
 }
@@ -131,9 +131,9 @@ void Initializer::processPPDOptions(LabelWriterDriver& Driver, LanguageMonitor::
     if (choice)
     {
         if (!strcasecmp(choice->choice, "Text"))
-            Driver.setQuality(ILabelWriterDriver::pqText);
+            Driver.setQuality(ILabelWriterDriver::PRINT_QUALITY_TEXT);
         else if (!strcasecmp(choice->choice, "Graphics"))
-            Driver.setQuality(ILabelWriterDriver::pqBarcodeAndGraphics);
+            Driver.setQuality(ILabelWriterDriver::PRINT_QUALITY_BARCODE_AND_GRAPHICS);
     }
 
     // Process density from PPD
@@ -141,13 +141,13 @@ void Initializer::processPPDOptions(LabelWriterDriver& Driver, LanguageMonitor::
     if (choice)
     {
         if (!strcasecmp(choice->choice, "Light"))
-            Driver.setDensity(ILabelWriterDriver::pdLow);
+            Driver.setDensity(ILabelWriterDriver::PRINT_DENSITY_LOW);
         else if (!strcasecmp(choice->choice, "Medium"))
-            Driver.setDensity(ILabelWriterDriver::pdMedium);
+            Driver.setDensity(ILabelWriterDriver::PRINT_DENSITY_MEDIUM);
         else if (!strcasecmp(choice->choice, "Normal"))
-            Driver.setDensity(ILabelWriterDriver::pdNormal);
+            Driver.setDensity(ILabelWriterDriver::PRINT_DENSITY_NORMAL);
         else if (!strcasecmp(choice->choice, "Dark"))
-            Driver.setDensity(ILabelWriterDriver::pdHigh);
+            Driver.setDensity(ILabelWriterDriver::PRINT_DENSITY_HIGH);
     }
 
     // Set max printable width for specific models
@@ -170,11 +170,11 @@ void Initializer::processPPDOptions(LabelWriterDriver& Driver, LanguageMonitor::
         if (choice)
         {
             if (!strcasecmp(choice->choice, "Left"))
-                twinTurboDriver->setRoll(LabelWriterDriverTwinTurbo::rtLeft);
+                twinTurboDriver->setRoll(LabelWriterDriverTwinTurbo::ROLL_LEFT);
             else if (!strcasecmp(choice->choice, "Right"))
-                twinTurboDriver->setRoll(LabelWriterDriverTwinTurbo::rtRight);
+                twinTurboDriver->setRoll(LabelWriterDriverTwinTurbo::ROLL_RIGHT);
             else
-                twinTurboDriver->setRoll(LabelWriterDriverTwinTurbo::rtAuto);
+                twinTurboDriver->setRoll(LabelWriterDriverTwinTurbo::ROLL_AUTO);
         }
     }
 }
@@ -184,10 +184,10 @@ void Initializer::processPageOptions(LabelWriterDriver& Driver, LanguageMonitor:
     Driver.setVerticalResolution(PageHeader.cupsHeight);
     Driver.setHorizontalResolution(PageHeader.cupsWidth);
 
-    if((PageHeader.cupsMediaType == int(IPrinterDriver::ptRegular)) || (PageHeader.cupsMediaType == int(IPrinterDriver::ptContinuous)))
+    if((PageHeader.cupsMediaType == int(IPrinterDriver::PAPER_TYPE_REGULAR)) || (PageHeader.cupsMediaType == int(IPrinterDriver::PAPER_TYPE_CONTINUOUS)))
         Driver.setPaperType(IPrinterDriver::paper_type_t(PageHeader.cupsMediaType));
     else
-        Driver.setPaperType(IPrinterDriver::ptRegular);
+        Driver.setPaperType(IPrinterDriver::PAPER_TYPE_REGULAR);
 }
 
 LabelWriterDriver* Initializer::createDriver(IPrintEnvironment& Environment, ppd_file_t* ppd)

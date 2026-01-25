@@ -12,25 +12,25 @@ class ILabelManagerDriver : virtual public IPrinterDriver
 public:
    typedef enum
    {
-      tw6mm = 0,
-      tw9mm,
-      tw12mm,
-      tw19mm,
-      tw24mm
+      TAPE_WIDTH_6MM = 0,
+      TAPE_WIDTH_9MM,
+      TAPE_WIDTH_12MM,
+      TAPE_WIDTH_19MM,
+      TAPE_WIDTH_24MM
    } tape_width_t;
 
    typedef enum
    {
-      coCut = 0,
-      coChainMarks,
-      coDoNothing
-   } cut_t;
+      CUT_OPTION_CUT = 0,
+      CUT_OPTION_CHAIN_MARKS,
+      CUT_OPTION_DO_NOTHING
+   } cut_option_t;
 
    typedef enum
    {
-      alCenter = 0,
-      alLeft,
-      alRight
+      ALIGN_CENTER = 0,
+      ALIGN_LEFT,
+      ALIGN_RIGHT
    } alignment_t;
 
    virtual ~ILabelManagerDriver() {}

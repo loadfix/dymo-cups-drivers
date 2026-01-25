@@ -19,29 +19,29 @@ void LabelManagerDriverInitializer::processCupsOptions(LabelManagerDriver& Drive
     Driver.setDeviceName(CupsUtils::getCupsOption("printer-make-and-model", num_options, options));
 
     if(strcasecmp(option, "Cut") == 0)
-        Driver.setCutOption(ILabelManagerDriver::coCut);
+        Driver.setCutOption(ILabelManagerDriver::CUT_OPTION_CUT);
     else if(strcasecmp(option, "ChainMarks") == 0)
-        Driver.setCutOption(ILabelManagerDriver::coChainMarks);
+        Driver.setCutOption(ILabelManagerDriver::CUT_OPTION_CHAIN_MARKS);
     else
         fprintf(stderr, "WARNING: Unknown DymoCutOptions option value = %s\n", option);
 
     option = CupsUtils::getCupsOption("DymoLabelAlignment", num_options, options, "Center");
 
     if(strcasecmp(option, "Center") == 0)
-        Driver.setAlignment(ILabelManagerDriver::alCenter);
+        Driver.setAlignment(ILabelManagerDriver::ALIGN_CENTER);
     else if(strcasecmp(option, "Left") == 0)
-        Driver.setAlignment(ILabelManagerDriver::alLeft);
+        Driver.setAlignment(ILabelManagerDriver::ALIGN_LEFT);
     else if(strcasecmp(option, "Right") == 0)
-        Driver.setAlignment(ILabelManagerDriver::alRight);
+        Driver.setAlignment(ILabelManagerDriver::ALIGN_RIGHT);
     else
         fprintf(stderr, "WARNING: Unknown DymoLabelAlignment option value = %s\n", option);
 
     option = CupsUtils::getCupsOption("DymoContinuousPaper", num_options, options, "0");
 
     if(strcasecmp(option, "0") == 0)
-        Driver.setPaperType(IPrinterDriver::ptRegular);
+        Driver.setPaperType(IPrinterDriver::PAPER_TYPE_REGULAR);
     else if(strcasecmp(option, "1") == 0)
-        Driver.setPaperType(IPrinterDriver::ptContinuous);
+        Driver.setPaperType(IPrinterDriver::PAPER_TYPE_CONTINUOUS);
     else
         fprintf(stderr, "WARNING: Unknown DymoContinuousPaper option value = %s\n", option);
 
@@ -68,9 +68,9 @@ void LabelManagerDriverInitializer::processPPDOptions(LabelManagerDriver& Driver
     if (choice)
     {
         if (!strcasecmp(choice->choice, "Cut"))
-            Driver.setCutOption(ILabelManagerDriver::coCut);
+            Driver.setCutOption(ILabelManagerDriver::CUT_OPTION_CUT);
         else if (!strcasecmp(choice->choice, "ChainMarks"))
-            Driver.setCutOption(ILabelManagerDriver::coChainMarks);
+            Driver.setCutOption(ILabelManagerDriver::CUT_OPTION_CHAIN_MARKS);
     }
 
     // Process label alignment from PPD
@@ -78,11 +78,11 @@ void LabelManagerDriverInitializer::processPPDOptions(LabelManagerDriver& Driver
     if (choice)
     {
         if (!strcasecmp(choice->choice, "Center"))
-            Driver.setAlignment(ILabelManagerDriver::alCenter);
+            Driver.setAlignment(ILabelManagerDriver::ALIGN_CENTER);
         else if (!strcasecmp(choice->choice, "Left"))
-            Driver.setAlignment(ILabelManagerDriver::alLeft);
+            Driver.setAlignment(ILabelManagerDriver::ALIGN_LEFT);
         else if (!strcasecmp(choice->choice, "Right"))
-            Driver.setAlignment(ILabelManagerDriver::alRight);
+            Driver.setAlignment(ILabelManagerDriver::ALIGN_RIGHT);
     }
 
     // Process chain marks at doc end from PPD
@@ -97,9 +97,9 @@ void LabelManagerDriverInitializer::processPPDOptions(LabelManagerDriver& Driver
     if (choice)
     {
         if (atoi(choice->choice) != 0)
-            Driver.setPaperType(IPrinterDriver::ptContinuous);
+            Driver.setPaperType(IPrinterDriver::PAPER_TYPE_CONTINUOUS);
         else
-            Driver.setPaperType(IPrinterDriver::ptRegular);
+            Driver.setPaperType(IPrinterDriver::PAPER_TYPE_REGULAR);
     }
 
     // Device-specific configuration based on model name
@@ -159,15 +159,15 @@ void LabelManagerDriverInitializer::processPageOptions(LabelManagerDriver& Drive
 
     if(strcasecmp(Driver.getDeviceName().c_str(), "DYMO MobileLabeler") == 0)
     {
-        if(TapeWidth == ILabelManagerDriver::tw6mm)
+        if(TapeWidth == ILabelManagerDriver::TAPE_WIDTH_6MM)
             Driver.setTapeAlignmentOffset(1);
-        else if (TapeWidth == ILabelManagerDriver::tw9mm)
+        else if (TapeWidth == ILabelManagerDriver::TAPE_WIDTH_9MM)
             Driver.setTapeAlignmentOffset(0);
-        else if (TapeWidth == ILabelManagerDriver::tw12mm)
+        else if (TapeWidth == ILabelManagerDriver::TAPE_WIDTH_12MM)
             Driver.setTapeAlignmentOffset(2); //5
-        else if (TapeWidth == ILabelManagerDriver::tw19mm)
+        else if (TapeWidth == ILabelManagerDriver::TAPE_WIDTH_19MM)
             Driver.setTapeAlignmentOffset(-1);
-        else if (TapeWidth == ILabelManagerDriver::tw24mm)
+        else if (TapeWidth == ILabelManagerDriver::TAPE_WIDTH_24MM)
             Driver.setTapeAlignmentOffset(-1);
     }
 }

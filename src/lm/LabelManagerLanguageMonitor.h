@@ -56,17 +56,17 @@ namespace DymoPrinterDriver
         void setJobStatus(byte status);
         bool checkTapeSize(buffer_t status);
 
-        IPrintEnvironment&                      Environment_;
-        bool                                    IsFirstPage_;
-        buffer_t                                PageData_;
+        IPrintEnvironment&                      environment;
+        bool                                    isFirstPage;
+        buffer_t                                pageData;
 
-        std::string                             DeviceName_;
-        LabelManagerDriver::tape_width_t       TapeWidth_;
+        std::string                             deviceName;
+        LabelManagerDriver::tape_width_t        tapeWidth;
 
-        bool                                    UseSleep_; // for test purpose only
-        bool                                    LastReadStatusResult_;
+        bool                                    useSleep; // for test purpose only
+        bool                                    lastReadStatusResult;
 
-        size_t                                  ReadStatusTimeout_;
+        size_t                                  readStatusTimeout;
     };
 
 

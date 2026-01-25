@@ -11,29 +11,29 @@ class LabelWriterDriver: public IPrinterDriver
 public:
   typedef enum
   {
-    pdLow = 0,
-    pdMedium,
-    pdNormal,
-    pdHigh
+    PRINT_DENSITY_LOW = 0,
+    PRINT_DENSITY_MEDIUM,
+    PRINT_DENSITY_NORMAL,
+    PRINT_DENSITY_HIGH
   } density_t;
 
   typedef enum
   {
-    pqText = 0,
-    pqBarcodeAndGraphics
+    PRINT_QUALITY_TEXT = 0,
+    PRINT_QUALITY_BARCODE_AND_GRAPHICS
   } quality_t;
 
   typedef enum
   {
-    ptRegular = 0,
-    ptContinuous
+    PAPER_TYPE_REGULAR = 0,
+    PAPER_TYPE_CONTINUOUS
   } paper_type_t;
 
   typedef enum
   {
-    resUnknown = 0, // unknown or irrelevant resolution
-    res136, // 136x204 dpi (SE450)
-    res204  // 204x204 dpi (SE450)
+    RESOLUTION_UNKNOWN = 0, // unknown or irrelevant resolution
+    RESOLUTION_136, // 136x204 dpi (SE450)
+    RESOLUTION_204  // 204x204 dpi (SE450)
   } resolution_t;
 
   struct point_t
@@ -48,70 +48,70 @@ public:
     }
   };
 
-  LabelWriterDriver(IPrintEnvironment& Environment);
+  LabelWriterDriver(IPrintEnvironment& environment);
   virtual ~LabelWriterDriver();
 
-  virtual void StartDoc();
-  virtual void EndDoc();
+  virtual void startDoc();
+  virtual void endDoc();
 
-  virtual void StartPage();
-  virtual void EndPage();
+  virtual void startPage();
+  virtual void endPage();
 
-  virtual void ProcessRasterLine(const buffer_t& LineBuffer);
+  virtual void processRasterLine(const buffer_t& lineBuffer);
 
-  resolution_t GetResolution();
-  density_t    GetDensity();
-  quality_t    GetQuality();
-  size_t       GetPageHeight();
-  paper_type_t GetPaperType();
+  resolution_t getResolution();
+  density_t    getDensity();
+  quality_t    getQuality();
+  size_t       getPageHeight();
+  paper_type_t getPaperType();
 
-  void         SetResolution   (resolution_t  Value);
-  void         SetDensity      (density_t     Value);
-  void         SetQuality      (quality_t     Value);
-  void         SetPageHeight   (size_t        Value);
-  void         SetPaperType    (paper_type_t  Value);
-  void         SetMaxPrintWidth(size_t        Value);
-  void         SetPageOffset   (point_t       Value);
+  void         setResolution   (resolution_t  value);
+  void         setDensity      (density_t     value);
+  void         setQuality      (quality_t     value);
+  void         setPageHeight   (size_t        value);
+  void         setPaperType    (paper_type_t  value);
+  void         setMaxPrintWidth(size_t        value);
+  void         setPageOffset   (point_t       value);
 
-  static buffer_t GetResetCommand();
-  static buffer_t GetRequestStatusCommand();
+  static buffer_t getResetCommand();
+  static buffer_t getRequestStatusCommand();
 protected:
   // helper function to send printer commands
-  void SendCommand(const byte* Buf, size_t BufSize);
-  void SendCommand(const buffer_t& Buf);
-  void SendLineTab(size_t Value);
-  void SendDotTab(size_t Value);
-  void SendFormFeed();
-  void SendBytesPerLine(size_t Value);
-  void SendSkipLines(size_t Value);
-  void SendLabelLength(size_t Value);
-  void SendPrintQuality(quality_t Value);
-  void SendPrintDensity(density_t Value);
-  void SendResolution(resolution_t Value);
+  void sendCommand(const byte* buffer, size_t bufferSize);
+  void sendCommand(const buffer_t& buffer);
+  void sendLineTab(size_t value);
+  void sendDotTab(size_t value);
+  void sendFormFeed();
+  void sendBytesPerLine(size_t value);
+  void sendSkipLines(size_t value);
+  void sendLabelLength(size_t value);
+  void sendPrintQuality(quality_t value);
+  void sendPrintDensity(density_t value);
+  void sendResolution(resolution_t value);
 
-  void GetBlanks(const buffer_t& Buf, size_t& LeaderBlanks, size_t& TrailerBlanks);
-  void SendNotCompressedData(const buffer_t& Buf, size_t LeaderBlanks, size_t TrailerBlanks);
-  void SendCompressedData(const buffer_t& CompressedBuf, size_t NotCompressedSize);
+  void getBlanks(const buffer_t& buffer, size_t& leaderBlanks, size_t& trailerBlanks);
+  void sendNotCompressedData(const buffer_t& buffer, size_t leaderBlanks, size_t trailerBlanks);
+  void sendCompressedData(const buffer_t& compressedBuffer, size_t notCompressedSize);
 
-  size_t GetEmptyLinesCount();
-  void   SetEmptyLinesCount(size_t Value);
+  size_t getEmptyLinesCount();
+  void   setEmptyLinesCount(size_t value);
 
 
 
 private:
-  IPrintEnvironment& Environment_;
+  IPrintEnvironment& environment;
 
-  resolution_t Resolution_;
-  density_t    Density_;
-  quality_t    Quality_;
-  size_t       PageHeight_;
-  paper_type_t PaperType_;
-  size_t       MaxPrintWidth_;
-  point_t      PageOffset_;
+  resolution_t resolution;
+  density_t    density;
+  quality_t    quality;
+  size_t       pageHeight;
+  paper_type_t paperType;
+  size_t       maxPrintWidth;
+  point_t      pageOffset;
 
-  size_t LastDotTab_;
-  size_t LastBytesPerLine_;
-  size_t EmptyLinesCount_;
+  size_t lastDotTab;
+  size_t lastBytesPerLine;
+  size_t emptyLinesCount;
 
 
 };
@@ -119,16 +119,16 @@ private:
 class LabelWriterDriver400: public LabelWriterDriver
 {
 public:
-  LabelWriterDriver400(IPrintEnvironment& Environment);
+  LabelWriterDriver400(IPrintEnvironment& environment);
   virtual ~LabelWriterDriver400();
 
-  virtual void StartDoc();
-  virtual void EndDoc();
-  virtual void EndPage();
+  virtual void startDoc();
+  virtual void endDoc();
+  virtual void endPage();
 
-  static buffer_t GetShortFormFeedCommand();
+  static buffer_t getShortFormFeedCommand();
 protected:
-  void SendShortFormFeed();
+  void sendShortFormFeed();
 };
 
 class LabelWriterDriverTwinTurbo: public LabelWriterDriver400
@@ -136,25 +136,25 @@ class LabelWriterDriverTwinTurbo: public LabelWriterDriver400
 public:
   typedef enum
   {
-    rtAuto = 0,
-    rtLeft,
-    rtRight
+    ROLL_AUTO = 0,
+    ROLL_LEFT,
+    ROLL_RIGHT
   } roll_t;
 
-  LabelWriterDriverTwinTurbo(IPrintEnvironment& Environment);
+  LabelWriterDriverTwinTurbo(IPrintEnvironment& environment);
   virtual ~LabelWriterDriverTwinTurbo();
 
-  virtual void StartDoc();
+  virtual void startDoc();
 
-  roll_t GetRoll();
-  void   SetRoll(roll_t Value);
+  roll_t getRoll();
+  void   setRoll(roll_t value);
 
-  static buffer_t GetRollSelectCommand(roll_t Value);
+  static buffer_t getRollSelectCommand(roll_t value);
 protected:
-  void SendRollSelect(roll_t Value);
+  void sendRollSelect(roll_t value);
 
 private:
-  roll_t Roll_;
+  roll_t roll;
 };
 
 }; //namespace
