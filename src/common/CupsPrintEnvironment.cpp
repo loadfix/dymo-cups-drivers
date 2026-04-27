@@ -99,7 +99,20 @@ CCupsPrintEnvironmentForDriver::SetJobStatus(job_status_t JobStatus)
 // CCupsPrintEnvironmentForLM
 ///////////////////////////////////////////////////////////////////////
 
+// CCupsPrintEnvironmentForLM() default-constructs. The member JobStatus_ is
+// declared in CupsPrintEnvironment.h but was previously left uninitialised —
+// reading it (via GetJobStatus()) before the first SetJobStatus() call is
+// undefined behaviour. Worse, the main filter loop in CupsFilter.h does
+// check GetJobStatus() at the top of every page iteration before any code
+// has written to it. On some executions the garbage byte happened to match
+// one of the enum values that short-circuits the loop, causing spurious
+// aborts.
+//
+// PRNFile_ is likewise initialised here for hygiene, even though the LM
+// variant of the environment never opens a capture file.
 CCupsPrintEnvironmentForLM::CCupsPrintEnvironmentForLM()
+  : PRNFile_(NULL),
+    JobStatus_(IPrintEnvironment::jsOK)
 {
 }
 
