@@ -71,7 +71,18 @@ namespace DymoPrinterDriver
     bool
     CLabelManagerLanguageMonitor::IsLocal()
     {
-        char* uri = getenv("DEVICE_URI");
+        // Mirror of CLabelWriterLanguageMonitor::IsLocal() — null-check
+        // the DEVICE_URI env var before handing it to strncmp. If the
+        // filter is invoked outside a normal CUPS job (e.g. manual
+        // invocation for debugging, or a systemd unit that doesn't
+        // export DEVICE_URI), getenv returns NULL. Passing NULL to
+        // strncmp is undefined behaviour per C17 §7.24.4.4/3 — on
+        // glibc it SIGSEGVs on the first dereference, crashing the
+        // filter on the first page's CheckStatus. Upstream DYMO got
+        // this right on the LW side but forgot the guard here.
+        const char* uri = getenv("DEVICE_URI");
+        if (uri == NULL)
+            return true;  // conservative: assume local
 
         return (strncmp(uri, "usb://", 6) == 0);
     }
