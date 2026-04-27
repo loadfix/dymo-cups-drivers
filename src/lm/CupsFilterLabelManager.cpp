@@ -19,10 +19,41 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 #include <cups/ppd.h>
+#include <cerrno>
+#include <climits>
+#include <cstdlib>
 #include "CupsFilterLabelManager.h"
 
 namespace DymoPrinterDriver
 {
+
+// Parse a small integer PPD choice value. strtol with errno checking
+// replaces the plain `atoi(choice->choice)` pattern flagged by
+// clang-tidy cert-err34-c and flawfinder CWE-190 (STATIC_ANALYSIS.md S-7).
+//
+// PPD values the LabelManager driver reads through this helper are all
+// tiny ints: booleans (0/1) for DymoPrintChainMarksAtDocEnd and
+// DymoContinuousPaper, and a 0..N enum for DymoTapeColor. We clamp to
+// [INT_MIN, INT_MAX] rather than a tighter range so the caller's enum
+// cast continues to behave exactly like it did with atoi; the win is
+// that malformed / overflowing input no longer silently becomes
+// whatever atoi happened to return, but falls back to the caller-
+// supplied default.
+static int ParseIntChoice(const char* s, int defaultValue)
+{
+    if (s == NULL || *s == '\0')
+        return defaultValue;
+
+    errno = 0;
+    char* end = NULL;
+    long v = std::strtol(s, &end, 10);
+
+    // Reject: no digits, trailing garbage, or out-of-int-range overflow.
+    if (end == s || *end != '\0' || errno == ERANGE || v < INT_MIN || v > INT_MAX)
+        return defaultValue;
+
+    return static_cast<int>(v);
+}
 
 void
 CDriverInitializerLabelManager::ProcessPPDOptions(CLabelManagerDriver& Driver, CDummyLanguageMonitor& LM, ppd_file_t* ppd)
@@ -57,23 +88,23 @@ CDriverInitializerLabelManager::ProcessPPDOptions(CLabelManagerDriver& Driver, C
   choice = ppdFindMarkedChoice(ppd, "DymoPrintChainMarksAtDocEnd");
   if (choice)
   {
-    Driver.SetPrintChainMarksAtDocEnd((atoi(choice->choice)));
+    Driver.SetPrintChainMarksAtDocEnd(ParseIntChoice(choice->choice, 0));
   }
   else
     fputs("WARNING: unable to get PrintChainMarksAtDocEnd choice\n", stderr);
-    
+
   choice = ppdFindMarkedChoice(ppd, "DymoContinuousPaper");
   if (choice)
   {
-    Driver.SetContinuousPaper((atoi(choice->choice)));
+    Driver.SetContinuousPaper(ParseIntChoice(choice->choice, 0));
   }
   else
     fputs("WARNING: unable to get ContinuousPaper choice\n", stderr);
-    
+
   choice = ppdFindMarkedChoice(ppd, "DymoTapeColor");
   if (choice)
   {
-    Driver.SetTapeColor(CLabelManagerDriver::tape_color_t((atoi(choice->choice))));
+    Driver.SetTapeColor(CLabelManagerDriver::tape_color_t(ParseIntChoice(choice->choice, CLabelManagerDriver::tcBlackOnWhite)));
   }
   else
     fputs("WARNING: unable to get TapeColor choice\n", stderr);
