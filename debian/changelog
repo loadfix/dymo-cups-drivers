@@ -1,3 +1,28 @@
+dymo-cups-drivers (1.4.0-12build3+loadfix2) resolute; urgency=medium
+
+  * Act on findings from independent spec-conformance review against
+    "DYMO LabelWriter 450 Series Technical Reference" Rev. 10/09
+    (committed as TECH_REVIEW.md).
+  * F-1 (MEDIUM): rename PAPER_FEED_BIT -> PAPER_JAM_BIT and route
+    ESC-A status bit 6 to jsSlotStatusError instead of jsPaperOut.
+    A real paper jam now surfaces in CUPS as
+    com.dymo.slot-status-error, not com.dymo.out-of-paper-error.
+  * F-3, F-4, F-7 (LOW): comment the non-spec ESC Q emission in
+    StartDoc (LW 3xx workaround); document that the 156-ESC reset is
+    a sync-recovery not a firmware-default reset; correct the dormant
+    PageHeight_ default from 0x0800 (2048) to the spec's documented
+    3058.
+  * F-5, F-8, F-11 (LOW/INFO): document that ESC B per raster line,
+    idempotent StartDoc parameter re-sends, and the 4XL MaxPrintWidth
+    override are deliberate trade-offs / outside-spec-scope, with
+    inline comments explaining what to do if anyone wants to change
+    them.
+  * No behavioural change for the LW 450 family end-to-end print path
+    vs. loadfix1. The F-1 fix activates only if someone re-enables
+    the back-channel language monitor in a future patch.
+
+ -- loadfix <noreply@anthropic.com>  Mon, 27 Apr 2026 19:30:00 +1000
+
 dymo-cups-drivers (1.4.0-12build3+loadfix1) resolute; urgency=medium
 
   * Non-maintainer upload fixing the "zombie print job" issue on DYMO
