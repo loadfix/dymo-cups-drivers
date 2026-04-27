@@ -131,9 +131,24 @@ namespace DymoPrinterDriver
             time_t   BeginTime   = time(NULL);
             bool     StatusOK    = ReadStatus(Status);
 
-            // request status while good or bad condition or timeout
+            // Request status while good or bad condition or timeout.
+            //
+            // Upstream wrote the inner loop condition as
+            //   `!StatusOK || (Status[0] & BUSY_BIT)`
+            // with no check that Status.size() >= 1 when StatusOK is
+            // false. ReadStatus() guarantees Status is non-empty only
+            // on return-true; on return-false Status may be empty,
+            // and Status[0] on an empty std::vector is undefined
+            // behaviour. This mirror of Fix 2 (LW side):
+            //
+            //   * Adds a `Status.size() > 0` guard before Status[0].
+            //   * Breaks out of the inner loop on a read-failure so
+            //     we don't spin when the back-channel is dead.
             int i = 0;
-            while ((!StatusOK || (Status[0] & BUSY_BIT)) && (difftime(time(NULL), BeginTime) < ReadStatusTimeout_))
+            while (StatusOK
+                   && Status.size() > 0
+                   && (Status[0] & BUSY_BIT)
+                   && (difftime(time(NULL), BeginTime) < ReadStatusTimeout_))
             {
                 fprintf(stderr, "DEBUG: CLabelManagerLanguageMonitor::CheckStatus() 2 %i\n", i);
 
@@ -148,6 +163,18 @@ namespace DymoPrinterDriver
 
                 fprintf(stderr, "DEBUG: CLabelManagerLanguageMonitor::CheckStatus() timeout\n");
 
+                break;
+            }
+
+            // Bail out of the outer loop on read-failure or an empty
+            // status buffer — there's nothing useful we can interpret.
+            // Without this, a completely unreadable back-channel would
+            // fall through and dereference Status[0] below, then re-
+            // enter the outer loop on ReprintLabel failure. Matches the
+            // defensive treatment added in Fix 2 on the LW side.
+            if (!StatusOK || Status.size() == 0)
+            {
+                fprintf(stderr, "DEBUG: CLabelManagerLanguageMonitor::CheckStatus() read-failure-break\n");
                 break;
             }
 
@@ -257,6 +284,16 @@ namespace DymoPrinterDriver
 
         if (!strcasecmp(DeviceName_.c_str(), "DYMO LabelMANAGER 450"))
         {
+            // The LabelMANAGER 450 carries its tape-width code in the
+            // SECOND status byte. ReadStatus() returns a buffer_t of
+            // whatever size cupsBackChannelRead delivered — on older
+            // LM 450 firmware, or on a short read, that can be one
+            // byte. std::vector::operator[] is unchecked; Status[1] on
+            // a size-1 vector is undefined behaviour and has been seen
+            // to segfault.
+            if (Status.size() < 2)
+                return false;  // treat as "size doesn't match" — safe default
+
             if(((Status[1] & 0xFF) == 0x00) ||
                (((Status[1] & 0xFF) == 0x01) && TapeWidth_ == CLabelManagerDriver::tw6mm) ||
                (((Status[1] & 0xFF) == 0x02) && TapeWidth_ == CLabelManagerDriver::tw9mm) ||
