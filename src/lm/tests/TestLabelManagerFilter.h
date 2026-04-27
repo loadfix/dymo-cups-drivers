@@ -26,6 +26,7 @@
 #include "../LabelManagerDriver.h"
 #include "DummyLanguageMonitor.h"
 #include <cups/cups.h>
+#include <cups/ppd.h>
 
 class LabelManagerFilterTest: public CPPUNIT_NS::TestFixture
 {

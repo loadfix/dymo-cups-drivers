@@ -89,12 +89,12 @@ AC_SUBST(cups_cflags)
 warning_flags="-Wall -Wno-unknown-pragmas"
 debug_flags=""
 optimization_flags="-O2"
-CXXFLAGS="${optimization_flags} ${warning_flags} ${debug_flags} ${cups_cflags}"
+CXXFLAGS+=" ${optimization_flags} ${warning_flags} ${debug_flags} ${cups_cflags}"
 
 
 AC_CHECK_LIB(cups, cupsMarkOptions, , AC_ERROR([Can't find cups library]))
 AC_CHECK_LIB(cupsimage, cupsRasterReadHeader, , AC_ERROR([Can't find cupsimage library]))
-AC_CHECK_HEADERS([cups/cups.h cups/raster.h],, AC_ERROR([Can't find cups headers]))
+AC_CHECK_HEADERS([cups/cups.h cups/raster.h cups/ppd.h],, AC_ERROR([Can't find cups headers]))
 
 AC_CHECK_LIB(pthread, pthread_create,, AC_ERROR([Can't find pthread library]))
 AC_CHECK_HEADERS([pthread.h],, AC_ERROR([Can't find pthread headers]))
