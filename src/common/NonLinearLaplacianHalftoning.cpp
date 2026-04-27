@@ -307,10 +307,22 @@ CNLLHalftoning::ProcessImage(const std::vector<buffer_t>& InputImage, std::vecto
     size_t x1 = (r % 2) ? 3 : 0;
     size_t y1 = 3 * r;
 
-    // for all blocks in the row
-    // both leftest and rightest pixels of the block is 
-    while ((x1 - 3 < ImageWidth_) || (x1 + 2 < ImageWidth_))
-    {        
+    // For all blocks in the row: continue while either the block's
+    // leftmost or rightmost pixel column falls inside the image width.
+    //
+    // Upstream wrote this as `(x1 - 3 < ImageWidth_) || (x1 + 2 < ImageWidth_)`.
+    // Because x1 is size_t (unsigned), the first subterm wraps around
+    // to SIZE_MAX - 2 when x1 < 3 — the author's intended "left pixel
+    // is inside the image" check never evaluates correctly for x1 in
+    // {0, 1, 2}. The short-circuit OR with the second subterm rescues
+    // termination (the loop still exits correctly) but the coverage
+    // check is broken, and on the left edge of even rows (where
+    // x1 = 0) the leftmost-column test never fires.
+    //
+    // Guard the subtraction with an explicit `x1 >= 3` so the left-edge
+    // check is correct when it runs, and no-ops safely otherwise.
+    while ((x1 >= 3 && x1 - 3 < ImageWidth_) || (x1 + 2 < ImageWidth_))
+    {
       CNLLBlock Block(*this, InputImage, x1, y1, OutputImage);
             
       Block.FillBlock();
