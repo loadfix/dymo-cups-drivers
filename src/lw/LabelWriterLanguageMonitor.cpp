@@ -118,36 +118,54 @@ CLabelWriterLanguageMonitor::CheckStatusAndReprint()
   while (true) // reprint also can fail, so don't forget to recheck status after reprint
   {
     fprintf(stderr, "DEBUG: CLabelWriterLanguageMonitor::CheckStatusAndReprint() 1\n");
-    
+
     byte    Status      = 0;
     time_t  BeginTime   = time(NULL);
-//    bool    StatusOK    = ReadStatus(Status);
+    bool    StatusOK    = ReadStatus(Status);
 
-    // request status while good or bad condition or timeout
+    // Request status while neither a good condition (TOF), a bad condition
+    // (ERROR / ROLL_CHANGED), a read failure, nor the wall-clock timeout has
+    // been reached.
+    //
+    // Upstream DYMO commented out the `StatusOK` read-failure guard (see git
+    // history at aac3cb6 / a062d61 of src/lw/LabelWriterLanguageMonitor.cpp).
+    // With Status initialised to 0 and `StatusOK` ignored, the inner-loop
+    // condition `!((Status & TOF_BIT) || ...)` is always true until either
+    // the printer finally ACKs or the ReadStatusTimeout_ (default 10s)
+    // wall-clock elapses. On a healthy USB link the ACK arrives within a few
+    // ms, but a silent back-channel causes a full 10s busy-spin on every
+    // single page — and every iteration writes an ESC-A request byte into
+    // the print stdout stream, polluting the USB pipeline.
+    //
+    // Reinstating the `StatusOK` guard makes the loop exit immediately on
+    // an unreadable back-channel (cupsBackChannelRead returning -1 or 0
+    // bytes), converting a 10-second hang into an O(100ms) noop. Correct
+    // status bits still win the race when the printer responds promptly.
     int i = 0;
     while (
-      //StatusOK
-     !((Status & TOF_BIT) || (Status & ERROR_BIT) || (Status & ROLL_CHANGED_BIT))
+      StatusOK
+      && !((Status & TOF_BIT) || (Status & ERROR_BIT) || (Status & ROLL_CHANGED_BIT))
       && (difftime(time(NULL), BeginTime) < ReadStatusTimeout_))
     {
       fprintf(stderr, "DEBUG: CLabelWriterLanguageMonitor::CheckStatusAndReprint() 2 %i\n", i);
-//      StatusOK =
-      ReadStatus(Status);
+      StatusOK = ReadStatus(Status);
       //usleep(100000);
       i++;
-    }     
+    }
 
     if (difftime(time(NULL), BeginTime) >= ReadStatusTimeout_)
     {
       fprintf(stderr, "DEBUG: CLabelWriterLanguageMonitor::CheckStatusAndReprint() timeout\n");
       break;
     }
-    
-    //if (!StatusOK)
-    //{
-    //  fprintf(stderr, "DEBUG: CLabelWriterLanguageMonitor::CheckStatusAndReprint() 3\n");
-    //  break;
-    //}
+
+    if (!StatusOK)
+    {
+      // Read failure — back-channel is gone or the printer isn't answering.
+      // Nothing useful we can do; fall out so EndPage can return.
+      fprintf(stderr, "DEBUG: CLabelWriterLanguageMonitor::CheckStatusAndReprint() read-failure-break\n");
+      break;
+    }
     
     // error - needs reprint
     if ((Status & ERROR_BIT) || (Status & ROLL_CHANGED_BIT) || !(Status & TOF_BIT))
