@@ -25,6 +25,9 @@
 #include <cups/raster.h>
 #include <cups/ppd.h>
 #include <memory>
+#include <signal.h>
+#include <stdio.h>
+#include <unistd.h>
 #include <string>
 #include "CupsPrintEnvironment.h"
 #include "ErrorDiffusionHalftoning.h"
@@ -33,6 +36,24 @@
 
 namespace DymoPrinterDriver
 {
+
+// gCancelRequested is set to non-zero by CancelJobSignalHandler() when the
+// filter receives SIGTERM or SIGINT. The main print loop in Run() polls this
+// flag at the top of every page so that a cancel mid-job causes a clean
+// EndDoc / stdout-close sequence instead of the default terminate-process
+// behaviour (which leaves the printer in mid-page state and the CUPS job
+// marked "now printing" indefinitely).
+//
+// `volatile sig_atomic_t` is the only type guaranteed to be safe to write
+// from an async signal handler and read from the main thread, per
+// [async.signal.safe].
+static volatile sig_atomic_t gCancelRequested = 0;
+
+extern "C" inline void CancelJobSignalHandler(int /*sig*/)
+{
+  gCancelRequested = 1;
+}
+
 
 // Generic Cups filter
 // D - Driver
@@ -71,6 +92,41 @@ CCupsFilter<D, DI, LM>::Run(int argc, char* argv[])
 {
   setbuf(stderr, NULL);
 
+  // Install minimal, reentrant-safe signal handling.
+  //
+  // Upstream left these defaulted, which causes two latent failures:
+  //
+  // 1. SIGPIPE default = terminate. When the CUPS USB backend dies (e.g.
+  //    after a USB reset) our write(1, ...) receives SIGPIPE and the
+  //    filter exits WITHOUT running the dtors that emit ESC E (final
+  //    form feed) or close fd 3. The printer is left mid-page, the
+  //    scheduler sees a filter crash rather than a clean exit, and
+  //    nothing flushes the raster backlog. Ignoring SIGPIPE converts
+  //    the failed write into a -1/errno=EPIPE return which the existing
+  //    error paths handle.
+  //
+  // 2. SIGTERM default = terminate. When CUPS cancels a job mid-print
+  //    the scheduler sends SIGTERM; we exit without sending the printer
+  //    any terminator byte. The printer ends up stuck waiting for more
+  //    data. Catching SIGTERM and setting a one-shot flag allows the
+  //    main loop to break cleanly and call EndDoc (which emits ESC E)
+  //    before returning. SIGINT gets the same treatment so Ctrl-C on a
+  //    manually-invoked filter for debugging also cleans up.
+  {
+    struct sigaction ignoreAction;
+    ignoreAction.sa_handler = SIG_IGN;
+    sigemptyset(&ignoreAction.sa_mask);
+    ignoreAction.sa_flags = 0;
+    sigaction(SIGPIPE, &ignoreAction, NULL);
+
+    struct sigaction cancelAction;
+    cancelAction.sa_handler = CancelJobSignalHandler;
+    sigemptyset(&cancelAction.sa_mask);
+    cancelAction.sa_flags = 0;
+    sigaction(SIGTERM, &cancelAction, NULL);
+    sigaction(SIGINT,  &cancelAction, NULL);
+  }
+
   if ((argc < 6) || (argc > 7))
   {
     fputs("ERROR: using: <filter> job-id user title copies options [file]\n", stderr);
@@ -106,6 +162,14 @@ CCupsFilter<D, DI, LM>::Run(int argc, char* argv[])
   cups_page_header2_t PageHeader;
   while (cupsRasterReadHeader2(RasterData, &PageHeader))
   {
+    // Honour SIGTERM / SIGINT mid-print: break out of the page loop so
+    // EndDoc runs (emitting ESC E to terminate the current form) before
+    // we exit.
+    if (gCancelRequested)
+    {
+      fputs("INFO: Cancel requested; stopping after current page.\n", stderr);
+      break;
+    }
     ++Page;
 
     fprintf(stderr, "PAGE: %d 1\n", Page);
@@ -201,13 +265,34 @@ CCupsFilter<D, DI, LM>::Run(int argc, char* argv[])
     fputs("ERROR: No pages found!\n", stderr);
   else
     fputs("INFO: Ready to print.\n", stderr);
-	
-  //fputs("DEBUG: DYMO filter hack: sending ESC A at the end\n", stderr);
-  //char buf[2] = {0x1b, 'A'};
-  //write(1, buf, 2);
-  //close(1);	
 
-  return (Page == 0);
+  // Explicitly close stdout before return.
+  //
+  // Upstream left these lines commented out:
+  //   //write(1, buf, 2);
+  //   //close(1);
+  //
+  // The CUPS USB backend reads from stdin (the pipe end connected to
+  // this filter's stdout). Until that pipe is closed, the backend keeps
+  // a read() outstanding and thinks there may be more data coming. On
+  // a process that exits via return-from-main, the C runtime does
+  // close the fd — but only after running destructors and atexit
+  // handlers, which can be arbitrary ms later. During that gap the
+  // scheduler continues to mark the job "now printing".
+  //
+  // Closing fd 1 explicitly here gives the backend an immediate EOF on
+  // its read(), so it can finalise the job and the scheduler can retire
+  // it. This is the proximate cure for the "zombie job that lingers
+  // after the filter has obviously completed" symptom.
+  fflush(stdout);
+  close(1);
+
+  // Return 0 even when no pages were produced. Returning non-zero
+  // causes CUPS to mark the job as aborted; for a legitimately empty
+  // CUPS-raster stream (e.g. an application sent an empty document)
+  // that is the wrong state. We have already logged "ERROR: No pages
+  // found!" so the user can see what happened.
+  return 0;
 }
 
 template<class D, class DI, class LM>
