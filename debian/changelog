@@ -1,3 +1,34 @@
+dymo-cups-drivers (1.4.0-12build3+loadfix5) resolute; urgency=medium
+
+  * Act on findings from multi-tool static analysis (STATIC_ANALYSIS.md,
+    covering cppcheck 2.19, clang-tidy 21.1.8, clang static analyzer,
+    gcc -fanalyzer 15.2, flawfinder 2.0.19). Five fixes:
+  * Fix 18 (S-2, S-3 HIGH): initialise CLabelManagerDriver::PageLineCount_
+    and CNLLHalftoning::ImageWidth_/ImageHeight_ in their ctor init
+    lists; reading them before a write was latent UB.
+  * Fix 19 (S-5 HIGH): delete copy-ctor and copy-assignment on both
+    CCupsPrintEnvironmentForDriver and ...ForLM. These classes own a
+    raw FILE* and would double-fclose if accidentally copied.
+  * Fix 20 (S-7 MEDIUM): replace atoi() with a range-checking strtol
+    helper at the three PPD value parse sites in the LabelManager
+    initializer. Overflow / malformed input now falls back to a
+    caller-supplied default instead of silently producing 0.
+  * Fix 21 (S-11 LOW): rewrite `for (size_t i = BufSize-1; i >= 0; --i)`
+    as `for (size_t i = BufSize; i-- > 0; )` in LW and LM GetBlanks.
+    The old loop terminated only by invariant (upstream caught by
+    `else break;` at the first non-zero byte, plus a guard); the new
+    idiom terminates by construction.
+  * Fix 22 (S-1 HIGH): hoist the Process*Options LM parameter type
+    from CDummyLanguageMonitor& to ILanguageMonitor&. Eliminates six
+    sibling-class reinterpret_casts that were safe-by-accident
+    (upstream callees don't dereference the parameter) but would
+    become UB on any edit that did.
+  * All fixes commented with cross-references to STATIC_ANALYSIS.md
+    so a future reviewer can follow the trail. No runtime behaviour
+    change on the happy path.
+
+ -- loadfix <noreply@anthropic.com>  Mon, 27 Apr 2026 21:30:00 +1000
+
 dymo-cups-drivers (1.4.0-12build3+loadfix4) resolute; urgency=medium
 
   * Delete src_v2/ entirely (~900KB, 0 files installed). The tree was
