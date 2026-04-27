@@ -224,6 +224,77 @@ use this fork on a wider printer or exotic media.
 
 ---
 
+## Fixes 8–10 (loadfix2) — acting on TECH_REVIEW.md
+
+After the loadfix1 build burned in on real hardware, an external agent
+reviewed the tree against "DYMO LabelWriter 450 Series Technical
+Reference" Rev. 10/09. The review is committed as `TECH_REVIEW.md`.
+Eleven findings were flagged (F-1 through F-11, severities MEDIUM →
+INFO). Loadfix2 addresses them all.
+
+### Fix 8 — F-1 MEDIUM: Paper Jam vs. Paper Out
+
+Spec p.10 / p.17 define the ESC-A status byte bit 6 (0x40) as **Paper
+Jam**. Upstream DYMO named it `PAPER_FEED_BIT` and routed it through
+`SetJobStatus` as `jsPaperOut`, causing the user to see a physical jam
+reported as "out of paper". Renamed to `PAPER_JAM_BIT` and routed to
+`jsSlotStatusError` (already surfaced via the CUPS environment as
+`STATE: com.dymo.slot-status-error`, declared in the LW 450 PPDs).
+Activates only if the back-channel language monitor is re-enabled.
+
+### Fix 9 — F-3, F-4, F-7 LOW: Document StartDoc + reset + PageHeight
+
+Three small notes-only changes consolidated:
+
+  * F-3: `SendLineTab(0)` in StartDoc emits `ESC Q 00 00`. Not in the
+    LW 450 opcode table; silently ignored by 450 firmware per spec p.9.
+    Required for LW 3xx firmware (which shares this base class), so
+    removing it would break 3xx. Comment added explaining the
+    constraint and what to do if 450-specific divergence is needed.
+  * F-4: `GetResetCommand()` returns 156 consecutive `ESC` bytes, which
+    is spec p.9's sync-recovery sequence (minimum 85) — NOT the
+    spec's "Reset Printer" command (ESC @, 0x1B 0x40) which would
+    also restore firmware defaults. The driver re-sets every parameter
+    in StartDoc, so final state is deterministic. Comment added to
+    make the distinction obvious.
+  * F-7: `PageHeight_` default was 0x0800 (2048), not the spec's
+    documented firmware default of 3058. Never actually emitted in
+    practice (StartPage always recomputes from the CUPS page header)
+    but the misleading constant caused confusion. Swapped to 3058.
+
+### Fix 10 — F-5, F-8, F-11 LOW/INFO: Document deliberate deviations
+
+Three performance-advice deviations from the spec that are intentional:
+
+  * F-5: `ESC B n` (dot tab) is emitted per raster line, not "only on
+    change" as spec p.11 recommends. The commented-out optimisation
+    breaks LW 3xx output per DYMO DLS80AM-1421. Inline comment
+    expanded to explain.
+  * F-8: Quality / density / dot-tab / bytes-per-line are re-sent on
+    every job even when matching firmware defaults. Accepted trade-off
+    for deterministic post-reset state. Covered by the StartDoc
+    comment added in Fix 9.
+  * F-11: `MaxPrintWidth_ = 156` for LW 4XL exceeds the LW 450 Series
+    spec's 84-byte cap. 4XL is outside this spec document's scope
+    (different physical hardware, different print-head width). Comment
+    added to the override block explaining what each per-model value
+    corresponds to and why 4XL looks out-of-bounds.
+
+### Findings F-2, F-6, F-9, F-10 — already addressed or N/A
+
+  * F-2 ROLL_CHANGED_BIT (LOW) — Twin-Turbo-specific undocumented
+    extension; dead bit on single-roll LW 450. The enum comment block
+    added in Fix 8 already documents this.
+  * F-6 cosmetic PPD Resolution option (LOW) — already documented at
+    the code site in loadfix1's Fix 6. No source change.
+  * F-9 disabled back-channel (INFO) — intentional and spec-compliant
+    per the review's own analysis. Already documented at the
+    `IsBackchannelSupported()` site in Fix 1.
+  * F-10 unimplemented ESC @ / ESC * / ESC V (INFO) — spec commands a
+    print filter does not need.
+
+---
+
 ## Testing
 
 Tested on Ubuntu 25.10 with CUPS 2.4.16 against a DYMO LabelWriter
