@@ -35,12 +35,27 @@ class CCupsPrintEnvironmentForDriver: public IPrintEnvironment
 public:
   CCupsPrintEnvironmentForDriver(ILanguageMonitor& LanguageMonitor);
   virtual ~CCupsPrintEnvironmentForDriver();
+
+  // Rule of Three: this class owns a raw FILE* and closes it in its
+  // destructor. If a copy were ever made (by accident — e.g. a caller
+  // writes `auto env = originalEnv;`) the compiler-generated copy
+  // constructor would shallow-copy PRNFile_ and the destructor of the
+  // second instance would fclose() an already-closed stream. Delete
+  // both the copy ctor and the copy-assignment operator so such
+  // accidents produce a compile error instead.
+  //
+  // A move-based alternative (e.g. std::unique_ptr<FILE, decltype(&fclose)>)
+  // would be cleaner still but changes more of the surface area than
+  // warranted. See STATIC_ANALYSIS.md §S-5.
+  CCupsPrintEnvironmentForDriver(const CCupsPrintEnvironmentForDriver&) = delete;
+  CCupsPrintEnvironmentForDriver& operator=(const CCupsPrintEnvironmentForDriver&) = delete;
+
   virtual void WriteData(const buffer_t& DataBuffer);
   virtual void ReadData(buffer_t& DataBuffer);
   virtual job_status_t GetJobStatus();
   virtual void SetJobStatus(job_status_t JobStatus);
-    
-private:    
+
+private:
   FILE* PRNFile_;
   ILanguageMonitor& LanguageMonitor_;
 };
@@ -52,12 +67,20 @@ class CCupsPrintEnvironmentForLM: public IPrintEnvironment
 public:
   CCupsPrintEnvironmentForLM();
   virtual ~CCupsPrintEnvironmentForLM();
+
+  // See the Rule-of-Three comment on CCupsPrintEnvironmentForDriver.
+  // This variant never opens PRNFile_ in the current code, but it
+  // holds the handle as a member and a future edit could. Being
+  // non-copyable is the right default for a resource-owning type.
+  CCupsPrintEnvironmentForLM(const CCupsPrintEnvironmentForLM&) = delete;
+  CCupsPrintEnvironmentForLM& operator=(const CCupsPrintEnvironmentForLM&) = delete;
+
   virtual void WriteData(const buffer_t& DataBuffer);
   virtual void ReadData(buffer_t& DataBuffer);
   virtual job_status_t GetJobStatus();
   virtual void SetJobStatus(job_status_t JobStatus);
-    
-private:    
+
+private:
   FILE* PRNFile_;
   IPrintEnvironment::job_status_t JobStatus_;
 };
