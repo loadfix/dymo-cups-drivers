@@ -1,3 +1,20 @@
+dymo-cups-drivers (1.4.0-12build3+loadfix4) resolute; urgency=medium
+
+  * Delete src_v2/ entirely (~900KB, 0 files installed). The tree was
+    DYMO's unfinished rewrite; independent review found it strictly
+    worse than src/ on every axis relevant to the LW 450 family it
+    targets (drops RLE compression, drops Twin Turbo subclasses, has
+    an async-signal-unsafe signal handler, doesn't fix any of our
+    earlier loadfix bugs, declares five member functions that are
+    never implemented). The one feature worth salvaging would have
+    been LW 550 / 5XL support, which is out of scope for this fork.
+    Git history preserves the tree for anyone who wants to resurrect
+    it.
+  * Simplify Makefile.am and configure.ac back to their pre-Fix-7
+    shape now that the dead tree isn't there to work around.
+
+ -- loadfix <noreply@anthropic.com>  Mon, 27 Apr 2026 20:45:00 +1000
+
 dymo-cups-drivers (1.4.0-12build3+loadfix3) resolute; urgency=medium
 
   * Act on findings from independent code-review (BUGS.md). Seven

@@ -170,23 +170,48 @@ opcodes for 300 DPI mode. Out of scope for this series.
 
 ---
 
-## Fix 7 — Exclude `src_v2/` from the build
+## Fix 7 — Remove `src_v2/` entirely
 
-**Files:** `Makefile.am`, `configure.ac`
+**Files:** the whole `src_v2/` tree, plus `Makefile.am`, `configure.ac`.
 
-`src_v2/` is DYMO's unfinished "version 2" tree. It was shipped
-alongside `src/` in the 1.4.0.5 tarball but never wired up to install
-anywhere. On modern toolchains it fails to compile:
+`src_v2/` was DYMO's unfinished "version 2" rewrite, shipped alongside
+`src/` in the 1.4.0.5 tarball but never wired up to install anywhere.
+Initial treatment in loadfix1 was just to drop it from `SUBDIRS` and
+`AC_CONFIG_FILES` so `make` could succeed on modern toolchains (it
+uses `std::auto_ptr`, removed in C++17, and deprecated Boost
+`posix_time` APIs).
 
-  * `src_v2/common/CupsFilter.h` uses `std::auto_ptr`, removed from the
-    standard library in C++17.
-  * Several files use `boost::get_system_time()` and
-    `boost::posix_time::seconds`, deprecated in Boost ≥ 1.66.
+After the loadfix3 code review (`BUGS.md`) an independent agent
+surveyed `src_v2/` for anything worth porting to `src/`. The tree
+turned out to be strictly worse than `src/` on every axis we care about
+for the LabelWriter 450 family:
 
-Ubuntu 25.10 ships GCC 14 with default `-std=gnu++17` and Boost 1.86,
-so `src_v2` hard-fails the build before any of the fixes above can be
-exercised. Dropping `src_v2` from `SUBDIRS` and from `AC_CONFIG_FILES`
-lets `make` succeed. `src/` is what ships anyway.
+  * **Regressions.** Drops the RLE compression path (~150 lines);
+    removes the `CLabelWriterDriver400` / `CLabelWriterDriverTwinTurbo`
+    subclasses — so Twin Turbo roll selection and the 400-family
+    EndDoc / EndPage form-feed sequencing are gone.
+  * **Same bugs.** `CCupsPrintEnvironmentForLM::JobStatus_` is still
+    uninitialised in its ctor (our Fix 3 is not there).
+  * **New bugs.** `raster2dymolw_v2.cpp`'s signal handler calls
+    `fputs()` and `Abort()` from signal context — both are not
+    async-signal-safe per POSIX. Our Fix 5 uses the correct
+    `volatile sig_atomic_t` flag.
+  * **Incomplete.** Five member functions are declared in the v2
+    headers but never implemented in the .cpp files.
+  * **Identical test coverage.** The `src_v2/**/tests/` files are
+    byte-for-byte copies of `src/**/tests/`, so the v2 tree adds no
+    verification.
+  * **The one genuine addition** — LW 550 / 5XL / 5XL Pro / 550 Pro /
+    550 Twin Pro support — targets hardware a generation newer than
+    the 450 family this fork is scoped to. Shipping that would mean
+    building a second filter binary (`raster2dymolw_v2`), shipping
+    8 extra PPDs, and maintaining a C++17-port of the v2 tree. Not
+    proportional to the payoff for our target users.
+
+Resolution: `git rm -r src_v2/`. The tree's git history remains in
+the fork if anyone ever wants to resurrect it. `Makefile.am` and
+`configure.ac` were simplified back to their pre-fix-7 layout — no
+more apologetic comments about an excluded tree.
 
 ---
 

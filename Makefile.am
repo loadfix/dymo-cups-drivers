@@ -17,12 +17,6 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-# src_v2/ is DYMO's unfinished "version 2" tree. It uses std::auto_ptr
-# (removed from the standard library in C++17) and deprecated Boost
-# posix_time APIs, so it does not compile on GCC >= 11 with default flags.
-# The production filter binaries are built from src/; src_v2/ was never
-# wired up to install anywhere. Exclude it from SUBDIRS so `make` on a
-# modern toolchain succeeds.
 SUBDIRS = src ppd docs samples
 EXTRA_DIST = dymo-cups-drivers.spec LICENSE
 
