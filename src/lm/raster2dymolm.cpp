@@ -36,10 +36,40 @@
 
 using namespace DymoPrinterDriver;
 
+// IsBackchannelSupported() — mirror of the same fix on the LW side.
+//
+// The LabelManager language monitor has the same architectural problem
+// as the LabelWriter one: it injects ESC-status-request bytes into the
+// main stdout stream and blocks inside cupsBackChannelRead waiting for
+// replies. On modern CUPS + USB the reply path is unreliable; the
+// filter can exit while pending status bytes are still in the pipe,
+// leaving CUPS with a zombie "now printing" job that blocks the queue
+// until cancel-a + systemctl restart cups. Fix 1 disabled this on the
+// LW side and the zombie-job symptom vanished.
+//
+// The LM side had the same upstream value `return true;` and has
+// therefore been at risk of the same failure mode. Flipping it to
+// `return false;` selects CDummyLanguageMonitor, consistent with the
+// LW treatment.
+//
+// What we lose on the LM side as a consequence:
+//   * Tape-cassette-present / tape-size-mismatch / head-overheat state
+//     reporting to CUPS (STATE: com.dymo.*).
+//   * Auto-reprint-on-recovery when the user replaces a tape cassette
+//     mid-job.
+//
+// The LabelManager driver's outbound commands (label-length, feed,
+// raster data, cut / form-feed) are emitted by the driver class
+// regardless of which language monitor is wired in, so prints still
+// function; what's lost is purely the status-reporting / reprint
+// loop.
+//
+// See src/lw/raster2dymolw.cpp for the longer rationale. Reference:
+// BUGS.md finding 3.11.
 static bool
 IsBackchannelSupported()
 {
-    return true;
+    return false;
 }
 
 int
