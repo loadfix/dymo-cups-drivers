@@ -41,15 +41,43 @@ using namespace DymoPrinterDriver;
 
 
 //#define CUPS_12 1
+//
+// IsBackchannelSupported()
+// ------------------------
+// Historically this returned `true` unconditionally (see git history of this
+// file at upstream DYMO 1.4.0.5). The effect is that raster2dymolw always
+// instantiates CLabelWriterLanguageMonitor, which during every EndPage() and
+// on the first StartPage() calls CheckStatusAndReprint() — a loop that
+// injects ESC-A status-request bytes into the print stdout stream and then
+// blocks inside cupsBackChannelRead() waiting for the printer's reply.
+//
+// Under modern CUPS (>= 1.6) on Linux with USB DYMO LabelWriter 450 / 450
+// Turbo / 450 DUO Label hardware, this back-channel reply path is unreliable.
+// The read frequently times out; the filter exits but leaves pending status
+// bytes in the USB backend's write pipe, and the CUPS scheduler never sees
+// the job complete. Subsequent jobs stack up forever behind a zombie
+// "now printing" entry.
+//
+// The original commented-out probe (fstat on fd 3) would have returned false
+// when there is no back-channel — which is in fact how current CUPS delivers
+// jobs to this filter: the back-channel is not connected to the USB device's
+// status-read endpoint in a way this driver's polling semantics rely on.
+//
+// The safest, smallest fix is to return false so the filter selects
+// CDummyLanguageMonitor instead. The dummy monitor does nothing per page; all
+// printer-essential commands (reset, label length, short form feed at end of
+// page, final form feed at end of document, resolution and density setup)
+// are emitted by CLabelWriterDriver / CLabelWriterDriver400 regardless. What
+// we lose is:
+//   * State reporting to CUPS (STATE: com.dymo.out-of-paper-error et al).
+//   * Automatic reprint of a label when the printer reports an error
+//     mid-page. Neither is essential for a working print of a good job.
+//
+// For a detailed rationale, see CHANGES.md entry "Fix 1".
 static bool
 IsBackchannelSupported()
 {
-  return true;
-
-  // if the backend channel is supported the fd is 3
-  //struct stat stat;   
-
-  //return fstat(3, &stat) == 0;
+  return false;
 }
 
 int
