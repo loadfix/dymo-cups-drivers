@@ -307,13 +307,28 @@ CLabelWriterLanguageMonitor::PollUntilPaperIn()
 void
 CLabelWriterLanguageMonitor::SetJobStatus(byte Status)
 {
+  // Translate the printer's ESC-A status byte into the CUPS-facing
+  // job_status_t enum. Precedence matters: the spec (p.10) notes that
+  // the Error bit (0x80) is set whenever bit 5 or bit 6 is set, so
+  // we must test for paper-out and paper-jam specifically before
+  // falling back to the generic jsError.
+  //
+  // Paper Jam (bit 6 / 0x40) surfaces through CUPS as
+  // com.dymo.slot-status-error, which the LW 450-family PPDs already
+  // declare (e.g. ppd/lw450.ppd line ~51). Upstream DYMO named this
+  // bit "PAPER_FEED_BIT" and folded it into jsPaperOut, causing users
+  // to see a physical jam reported as "out of paper" and try to fix
+  // it by loading more labels. Distinguishing the two lets CUPS show
+  // the correct reason and lets the user take the right action.
   IPrintEnvironment::job_status_t JobStatus = IPrintEnvironment::jsOK;
-        
-  if ((Status & PAPER_OUT_BIT) || (Status & PAPER_FEED_BIT))
+
+  if (Status & PAPER_OUT_BIT)
     JobStatus = IPrintEnvironment::jsPaperOut;
+  else if (Status & PAPER_JAM_BIT)
+    JobStatus = IPrintEnvironment::jsSlotStatusError;
   else if (Status & ERROR_BIT)
     JobStatus = IPrintEnvironment::jsError;
-    
+
   Environment_.SetJobStatus(JobStatus);
 }
 

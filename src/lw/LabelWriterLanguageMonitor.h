@@ -35,12 +35,36 @@ namespace DymoPrinterDriver
 class CLabelWriterLanguageMonitor: public ILanguageMonitor
 {
 public:
+  // Status byte layout per "DYMO LabelWriter 450 Series Technical
+  // Reference" Rev. 10/09 (pages 10 and 17):
+  //
+  //   bit 0 (0x01) Ready              — always 1 when printer is powered
+  //   bit 1 (0x02) Top-of-Form        — label gap sensed under print head
+  //   bit 2 (0x04) Reserved
+  //   bit 3 (0x08) Reserved           (LW 450 spec says "Not used").
+  //                                   On Twin Turbo firmware this is an
+  //                                   undocumented "Roll Changed" flag,
+  //                                   used by the reprint path to decide
+  //                                   whether to skip the reverse feed.
+  //                                   Guaranteed 0 on single-roll LW 450
+  //                                   variants per spec, so the bit is
+  //                                   safe to key off here.
+  //   bit 4 (0x10) Reserved
+  //   bit 5 (0x20) Out of Paper
+  //   bit 6 (0x40) Paper Jam          — spec calls this bit Paper Jam,
+  //                                   NOT paper feed. Upstream DYMO named
+  //                                   it PAPER_FEED_BIT and routed it to
+  //                                   CUPS as jsPaperOut, making a jam
+  //                                   indistinguishable from an empty
+  //                                   roll in the user-visible state.
+  //                                   Renamed and routed separately here.
+  //   bit 7 (0x80) Error              — also set when bits 5 or 6 are set
   enum status_bits
   {
     TOF_BIT             = 0x02,
     ROLL_CHANGED_BIT    = 0x08,
     PAPER_OUT_BIT       = 0x20,
-    PAPER_FEED_BIT      = 0x40,
+    PAPER_JAM_BIT       = 0x40,
     ERROR_BIT           = 0x80,
   };
     
