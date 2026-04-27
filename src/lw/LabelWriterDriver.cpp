@@ -155,8 +155,19 @@ CLabelWriterDriver::GetBlanks(
 
   if (i == BufSize) return;
 
-  // count right spaces
-  for (i = BufSize - 1; i >= 0; --i)
+  // Count trailing zero bytes.
+  //
+  // Idiom note: `for (size_t i = BufSize; i-- > 0; )` instead of
+  // `for (size_t i = BufSize - 1; i >= 0; --i)`. The older form is a
+  // latent infinite loop — `i` is unsigned, so `i >= 0` is always
+  // true and the only reason it terminates today is the `else break;`
+  // at the non-zero byte. cppcheck unsignedPositive and gcc
+  // -Wtype-limits both flag the old shape; STATIC_ANALYSIS.md §S-11
+  // and TECH_REVIEW.md §3.1 note it as "works by invariant, not
+  // construction". This rewrite evaluates the loop body for
+  // i = BufSize-1, BufSize-2, ..., 0, then decrements to the
+  // sentinel SIZE_MAX and exits the guard cleanly.
+  for (size_t i = BufSize; i-- > 0; )
     if (Buf[i] == 0)
       ++TrailerBlanks;
     else

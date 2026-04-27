@@ -174,12 +174,17 @@ CLabelManagerDriver::GetBlanks(
 
   if (i == BufSize) return;
 
-  // count right spaces 
-  for (i = BufSize - 1; i >= 0; --i)
+  // Count trailing zero bytes. Rewrite of the upstream
+  // `for (size_t i = BufSize - 1; i >= 0; --i)` into the standard
+  // unsigned-decrement idiom — see the LW-side sibling function
+  // (src/lw/LabelWriterDriver.cpp) for the full rationale and the
+  // static-analysis references (cppcheck unsignedPositive,
+  // gcc -Wtype-limits, STATIC_ANALYSIS.md §S-11).
+  for (size_t i = BufSize; i-- > 0; )
     if (Buf[i] == 0)
       ++TrailerBlanks;
     else
-      break;  
+      break;
 } // GetBlanks()
 
 
