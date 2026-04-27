@@ -24,6 +24,7 @@
 #include <cups/cups.h>
 #include <cups/raster.h>
 #include <cups/ppd.h>
+#include <fcntl.h>   // open() and O_RDONLY for the optional input-file path
 #include <memory>
 #include <signal.h>
 #include <stdio.h>
@@ -113,13 +114,19 @@ CCupsFilter<D, DI, LM>::Run(int argc, char* argv[])
   //    before returning. SIGINT gets the same treatment so Ctrl-C on a
   //    manually-invoked filter for debugging also cleans up.
   {
-    struct sigaction ignoreAction;
+    // Zero-initialise sigaction so implementation-private fields
+    // (glibc's sa_restorer, for example) aren't left holding stack
+    // garbage. glibc ignores sa_restorer when SA_RESTORER isn't set,
+    // so this is belt-and-braces today — but musl, older glibc, and
+    // non-Linux POSIX libc vary, and leaving private fields
+    // uninitialised is a latent portability hazard.
+    struct sigaction ignoreAction = {};
     ignoreAction.sa_handler = SIG_IGN;
     sigemptyset(&ignoreAction.sa_mask);
     ignoreAction.sa_flags = 0;
     sigaction(SIGPIPE, &ignoreAction, NULL);
 
-    struct sigaction cancelAction;
+    struct sigaction cancelAction = {};
     cancelAction.sa_handler = CancelJobSignalHandler;
     sigemptyset(&cancelAction.sa_mask);
     cancelAction.sa_flags = 0;

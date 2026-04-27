@@ -20,6 +20,7 @@
 
 #include <stdio.h>
 #include <string>
+#include <unistd.h>  // write() — not guaranteed transitively via <stdio.h>
 #include "CupsPrintEnvironment.h"
 #include <errno.h>
 #include <cups/cups.h>
