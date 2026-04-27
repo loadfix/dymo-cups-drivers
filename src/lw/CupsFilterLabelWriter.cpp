@@ -77,6 +77,20 @@ void CDriverInitializerLabelWriter::ProcessPPDOptions(CLabelWriterDriver& Driver
   else
     fputs("WARNING: unable to get PrintDensity choice\n", stderr);
     
+  // Per-model MaxPrintWidth_ overrides. The values below are in bytes
+  // (one byte = 8 dots at 300 DPI). The default set by the base ctor
+  // is 84 bytes (672 dots = 2.24 inches), which matches the LW 450
+  // family (label head is 2.25"). Narrow and wide models override:
+  //
+  //   LW 300/310/315  — 58 bytes (464 dots = 1.55", smaller head)
+  //   LW 4XL          — 156 bytes (1248 dots = 4.16"). This exceeds
+  //                     the LW 450 Series spec's 84-byte cap for
+  //                     `ESC D n`, but the 4XL is NOT covered by
+  //                     that spec; it has its own (not-in-this-tree)
+  //                     technical reference with a wider-head value.
+  //                     Kept as-is — changing it would break 4XL.
+  //   SE450           — 56 bytes (448 dots = 1.49", specialised SE
+  //                     variant).
   if (!strcasecmp(ppd->modelname, "DYMO LabelWriter 300")
   || !strcasecmp(ppd->modelname, "DYMO LabelWriter 310")
   || !strcasecmp(ppd->modelname, "DYMO LabelWriter 315"))
@@ -86,7 +100,7 @@ void CDriverInitializerLabelWriter::ProcessPPDOptions(CLabelWriterDriver& Driver
     Driver.SetMaxPrintWidth(156);
 
   if (!strcasecmp(ppd->modelname, "DYMO LabelWriter SE450"))
-    Driver.SetMaxPrintWidth(56); 
+    Driver.SetMaxPrintWidth(56);
 }
 
 void

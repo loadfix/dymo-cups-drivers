@@ -326,10 +326,23 @@ CLabelWriterDriver::ProcessRasterLine(const buffer_t& lineBuffer)
 
     EmptyLinesCount_ = 0;
 
-    // set dot tab
-    // Bug Fix for DLS80AM-1421
-    // NOTE: an ESC B needs to be send for each raster line. Otherwise the LW 3xx series output
-    // will be distorted.
+    // Set dot tab (ESC B n) before every non-empty raster line.
+    //
+    // The LW 450 Series spec (p.11 "Optimization of Throughput") says
+    // ESC B "should be sent only when a change is desired" — so the
+    // obvious optimisation is `if (LastDotTab_ != LeaderBlanks)`.
+    // That's what the commented-out guard below would do, but it must
+    // not be re-enabled: upstream DYMO filed "DLS80AM-1421" against
+    // the LW 3xx firmware, which corrupts output if a raster row
+    // arrives without a preceding ESC B. The conditional-send breaks
+    // the 3xx series but would work fine on LW 450.
+    //
+    // For the LW 450 family specifically, this costs ~3 bytes per
+    // raster line (sub-millisecond over USB FS) — negligible. If a
+    // future change needs to diverge for 450 hardware, do it by
+    // overriding ProcessRasterLine in CLabelWriterDriver400 rather
+    // than flipping the guard here, so 3xx support stays correct.
+    //
     //if (LastDotTab_ != LeaderBlanks)
     //{
       SendDotTab(LeaderBlanks);
