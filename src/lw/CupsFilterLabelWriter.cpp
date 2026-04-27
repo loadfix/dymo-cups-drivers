@@ -28,6 +28,20 @@ void CDriverInitializerLabelWriter::ProcessPPDOptions(CLabelWriterDriver& Driver
   ppd_choice_t* choice = ppdFindMarkedChoice(ppd, "Resolution");
   if (choice)
   {
+    // NOTE: the 450-series PPDs (lw450.ppd, lw450t.ppd, lw450duo.ppd) only
+    // declare "300dpi" and "300x600dpi" resolution choices, but this block
+    // only knows how to map "203dpi" and "203x138dpi" to the driver's
+    // CLabelWriterDriver::resolution_t enum. Consequently SetResolution is
+    // silently skipped for 300 DPI PPDs and the printer runs at its
+    // factory-default 300 DPI — which is correct for 450-series hardware,
+    // so this works by happy accident. It also means the 300x600dpi choice
+    // in the PPD is purely cosmetic; selecting it has no effect.
+    //
+    // We do not fix this here because the CLabelWriterDriver::resolution_t
+    // enum in src/lw/LabelWriterDriver.h only defines res136 (204x136) and
+    // res204 (203x203), neither of which matches 300 DPI; introducing new
+    // enum values and the accompanying ESC-y/ESC-z opcodes for them is
+    // beyond the scope of this series. See CHANGES.md.
     if (!strcasecmp(choice->choice, "203dpi"))
       Driver.SetResolution(CLabelWriterDriver::res204);
     else if (!strcasecmp(choice->choice, "203x138dpi"))
