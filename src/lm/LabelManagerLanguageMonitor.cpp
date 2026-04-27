@@ -29,8 +29,32 @@
 
 namespace DymoPrinterDriver
 {
+    // Initialise every non-trivial POD member. TapeWidth_ and DeviceName_
+    // were previously left uninitialised by the ctor; TapeWidth_ is an
+    // enum (scalar) POD, reading its indeterminate value before the
+    // first SetTapeWidth() call is undefined behaviour per [basic.indet].
+    //
+    // The sequencing matters: StartPage() on the first page calls
+    // CheckStatus(), which calls CheckTapeSize(), which reads
+    // TapeWidth_. But SetTapeWidth() is only invoked from
+    // CDriverInitializerLabelManagerWithLM::ProcessPageOptions, which
+    // CCupsFilter::Run calls AFTER StartPage. So on page 1 the monitor
+    // reads TapeWidth_ before any write — pure UB without the init
+    // below.
+    //
+    // Defaulting to tw12mm matches the most common LabelManager tape
+    // cartridge and gives deterministic behaviour. DeviceName_ is a
+    // std::string, which default-initialises to empty — safe either
+    // way, but explicit-initialising for symmetry.
     CLabelManagerLanguageMonitor::CLabelManagerLanguageMonitor(IPrintEnvironment& Environment, bool UseSleep, size_t ReadStatusTimeout):
-    Environment_(Environment), IsFirstPage_(true), PageData_(), UseSleep_(UseSleep), LastReadStatusResult_(true), ReadStatusTimeout_(ReadStatusTimeout)
+    Environment_(Environment),
+    IsFirstPage_(true),
+    PageData_(),
+    DeviceName_(),
+    TapeWidth_(CLabelManagerDriver::tw12mm),
+    UseSleep_(UseSleep),
+    LastReadStatusResult_(true),
+    ReadStatusTimeout_(ReadStatusTimeout)
     {
     }
 
