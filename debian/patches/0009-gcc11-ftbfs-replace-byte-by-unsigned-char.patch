@@ -1,0 +1,722 @@
+From: Thorsten Alteholz <debian@alteholz.de>
+Date: Mon, 18 Oct 2021 23:09:19 +0200
+Subject: gcc11 ftbfs: replace byte by unsigned char
+
+---
+ src/common/tests/TestErrorDiffusionHalftoning.cpp | 32 ++++----
+ src/common/tests/TestNLLHalftoning.cpp            |  4 +-
+ src/lm/tests/TestLabelManagerDriver.cpp           | 92 +++++++++++------------
+ src/lw/tests/TestLabelWriterDriver.cpp            | 40 +++++-----
+ src/lw/tests/TestLabelWriterLanguageMonitor.cpp   | 32 ++++----
+ 5 files changed, 100 insertions(+), 100 deletions(-)
+
+diff --git a/src/common/tests/TestErrorDiffusionHalftoning.cpp b/src/common/tests/TestErrorDiffusionHalftoning.cpp
+index 3ed100b..527ba9a 100644
+--- a/src/common/tests/TestErrorDiffusionHalftoning.cpp
++++ b/src/common/tests/TestErrorDiffusionHalftoning.cpp
+@@ -44,11 +44,11 @@ void
+ ErrorDiffusionTest::testBlack()
+ {
+   // 5 pixels wide, 24bits per pixel
+-  byte InputLine[] =
++  unsigned char InputLine[] =
+     {
+       0x00, 0x00, 0x00,  0x00, 0x00, 0x00,  0x00, 0x00, 0x00,  0x00, 0x00, 0x00,  0x00, 0x00, 0x00,  
+     };
+-  byte OutputData[] = { 0xf8 };
++  unsigned char OutputData[] = { 0xf8 };
+ 
+   buffer_t OutputLine;
+   CErrorDiffusionHalftoning H(CHalftoneFilter::itRGB, CHalftoneFilter::itBW);
+@@ -73,11 +73,11 @@ void
+ ErrorDiffusionTest::testWhite()
+ {
+   // 5 pixels wide, 24bits per pixel
+-  byte InputLine[] =
++  unsigned char InputLine[] =
+     {
+       0xff, 0xff, 0xff,  0xff, 0xff, 0xff,  0xff, 0xff, 0xff,  0xff, 0xff, 0xff,  0xff, 0xff, 0xff,  
+     };
+-  byte OutputData[] = { 0x00 };
++  unsigned char OutputData[] = { 0x00 };
+ 
+   buffer_t OutputLine;
+   CErrorDiffusionHalftoning H(CHalftoneFilter::itRGB, CHalftoneFilter::itBW);
+@@ -102,13 +102,13 @@ void
+ ErrorDiffusionTest::testRed()
+ {
+   // 5 pixels wide, 24bits per pixel
+-  byte InputLine[] =
++  unsigned char InputLine[] =
+     {
+       0xff, 0x00, 0x00,  0xff, 0x00, 0x00,  0xff, 0x00, 0x00,  0xff, 0x00, 0x00,  0xff, 0x00, 0x00,  
+     };
+-  byte OutputData1[] = { 0xe8 };
+-  byte OutputData2[] = { 0xb8 };
+-  byte OutputData3[] = { 0xd0 };
++  unsigned char OutputData1[] = { 0xe8 };
++  unsigned char OutputData2[] = { 0xb8 };
++  unsigned char OutputData3[] = { 0xd0 };
+ 
+   buffer_t OutputLine;
+   CErrorDiffusionHalftoning H(CHalftoneFilter::itRGB, CHalftoneFilter::itBW);
+@@ -133,13 +133,13 @@ void
+ ErrorDiffusionTest::testGreen()
+ {
+   // 5 pixels wide, 24bits per pixel
+-  byte InputLine[] =
++  unsigned char InputLine[] =
+     {
+       0x00, 0xff, 0x00,  0x00, 0xff, 0x00,  0x00, 0xff, 0x00,  0x00, 0xff, 0x00,  0x00, 0xff, 0x00  
+     };
+-  byte OutputData1[] = { 0x50 };
+-  byte OutputData2[] = { 0x48 };
+-  byte OutputData3[] = { 0x50 };
++  unsigned char OutputData1[] = { 0x50 };
++  unsigned char OutputData2[] = { 0x48 };
++  unsigned char OutputData3[] = { 0x50 };
+ 
+   buffer_t OutputLine;
+   CErrorDiffusionHalftoning H(CHalftoneFilter::itRGB, CHalftoneFilter::itBW);
+@@ -164,13 +164,13 @@ void
+ ErrorDiffusionTest::testBlue()
+ {
+   // 5 pixels wide, 24bits per pixel
+-  byte InputLine[] =
++  unsigned char InputLine[] =
+     {
+       0x00, 0x00, 0xff,  0x00, 0x00, 0xff,  0x00, 0x00, 0xff,  0x00, 0x00, 0xff,  0x00, 0x00, 0xff  
+     };
+-  byte OutputData1[] = { 0xf8 };
+-  byte OutputData2[] = { 0xf8 };
+-  byte OutputData3[] = { 0xe8 };
++  unsigned char OutputData1[] = { 0xf8 };
++  unsigned char OutputData2[] = { 0xf8 };
++  unsigned char OutputData3[] = { 0xe8 };
+ 
+   buffer_t OutputLine;
+   CErrorDiffusionHalftoning H(CHalftoneFilter::itRGB, CHalftoneFilter::itBW);
+diff --git a/src/common/tests/TestNLLHalftoning.cpp b/src/common/tests/TestNLLHalftoning.cpp
+index cfa6199..93af7b7 100644
+--- a/src/common/tests/TestNLLHalftoning.cpp
++++ b/src/common/tests/TestNLLHalftoning.cpp
+@@ -44,7 +44,7 @@ void
+ NonLinearLaplacianTest::testBlock()
+ {
+   // 8x10 pixels wide, 24bits per pixel
+-  byte pInputImage[] =
++  unsigned char pInputImage[] =
+     {
+       255,255,255, 255,255,255, 255,255,255, 255,255,255, 255,255,255, 255,255,255, 255,255,255, 255,255,255,
+       255,255,255, 255,255,255, 0,0,0,       0,0,0,       0,0,0,       255,255,255, 255,255,255, 255,255,255,
+@@ -57,7 +57,7 @@ NonLinearLaplacianTest::testBlock()
+       255,255,255, 255,255,255, 255,255,255, 255,255,255, 255,255,255, 255,255,255, 255,255,255, 255,255,255,
+       255,255,255, 255,255,255, 255,255,255, 255,255,255, 255,255,255, 255,255,255, 255,255,255, 255,255,255,
+     };
+-  byte OutputData[] = 
++  unsigned char OutputData[] = 
+     { 
+       0x00, 0,
+       0x38, 0, 
+diff --git a/src/lm/tests/TestLabelManagerDriver.cpp b/src/lm/tests/TestLabelManagerDriver.cpp
+index d976367..f805ae1 100644
+--- a/src/lm/tests/TestLabelManagerDriver.cpp
++++ b/src/lm/tests/TestLabelManagerDriver.cpp
+@@ -30,8 +30,8 @@ using namespace DymoPrinterDriver;
+ // Registers the fixture into the 'registry'
+ CPPUNIT_TEST_SUITE_REGISTRATION(LabelManagerDriverTest);
+ 
+-const byte ESC = 0x1B;
+-const byte SYN = 0x16;
++const unsigned char ESC = 0x1B;
++const unsigned char SYN = 0x16;
+ 
+ void 
+ LabelManagerDriverTest::setUp()
+@@ -50,8 +50,8 @@ LabelManagerDriverTest::testEmptyLines()
+   MockPrintEnvironment Env;
+   CLabelManagerDriver  Driver(Env);
+ 
+-  byte RasterLine1[] = { 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
+-  byte RasterLine2[] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
++  unsigned char RasterLine1[] = { 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
++  unsigned char RasterLine2[] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+     
+   for (int i = 0; i < 10; ++i)
+     Driver.ProcessRasterLine(buffer_t(RasterLine2, RasterLine2 + sizeof(RasterLine2)));
+@@ -60,7 +60,7 @@ LabelManagerDriverTest::testEmptyLines()
+ 
+   Driver.ProcessRasterLine(buffer_t(RasterLine1, RasterLine1 + sizeof(RasterLine1)));
+     
+-  byte PrinterCommands[] =
++  unsigned char PrinterCommands[] =
+     {
+       ESC, 'D', 0x00, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, 
+       ESC, 'B', 0, ESC, 'D', 0x0c, SYN, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff
+@@ -78,8 +78,8 @@ LabelManagerDriverTest::testEmptyLinesAtEnd()
+   CLabelManagerDriver  Driver(Env);
+     
+ 
+-  byte RasterLine1[] = { 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
+-  byte RasterLine2[] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
++  unsigned char RasterLine1[] = { 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
++  unsigned char RasterLine2[] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+     
+   Driver.StartPage();
+   Driver.ProcessRasterLine(buffer_t(RasterLine1, RasterLine1 + sizeof(RasterLine1)));
+@@ -91,7 +91,7 @@ LabelManagerDriverTest::testEmptyLinesAtEnd()
+ 
+   Driver.EndPage();
+     
+-  byte PrinterCommands[] =
++  unsigned char PrinterCommands[] =
+     {
+       ESC, 'D', 0, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, 
+       ESC, 'B', 0, ESC, 'D', 0x0c, SYN, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+@@ -120,17 +120,17 @@ LabelManagerDriverTest::testDotTab()
+   MockPrintEnvironment Env;
+   CLabelManagerDriver  Driver(Env);
+ 
+-  byte RasterLine1[] = { 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0 };
+-  byte RasterLine2[] = { 0x00, 0x00, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0 };
+-  byte RasterLine3[] = { 0x00, 0x00, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0 };
+-  byte RasterLine4[] = { 0x00, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0 }; 
++  unsigned char RasterLine1[] = { 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0 };
++  unsigned char RasterLine2[] = { 0x00, 0x00, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0 };
++  unsigned char RasterLine3[] = { 0x00, 0x00, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0 };
++  unsigned char RasterLine4[] = { 0x00, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0 }; 
+     
+   Driver.ProcessRasterLine(buffer_t(RasterLine1, RasterLine1 + sizeof(RasterLine1)));
+   Driver.ProcessRasterLine(buffer_t(RasterLine2, RasterLine2 + sizeof(RasterLine2)));
+   Driver.ProcessRasterLine(buffer_t(RasterLine3, RasterLine3 + sizeof(RasterLine3)));
+   Driver.ProcessRasterLine(buffer_t(RasterLine4, RasterLine4 + sizeof(RasterLine4)));
+ 
+-  byte PrinterCommands[] =
++  unsigned char PrinterCommands[] =
+     {
+       ESC, 'B', 0, ESC, 'D', 0x0b, SYN, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+       ESC, 'B', 2, ESC, 'D', 0x09, SYN, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+@@ -152,7 +152,7 @@ LabelManagerDriverTest::testCutAndChainMarks()
+   Driver.StartPage();
+   Driver.EndPage();
+     
+-  byte PrinterCommands[] =
++  unsigned char PrinterCommands[] =
+     {
+       ESC, 'D', 0, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, 
+       ESC, 'D', 0, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN
+@@ -168,7 +168,7 @@ LabelManagerDriverTest::testCutAndChainMarks()
+   Driver.StartPage();
+   Driver.EndPage();
+     
+-  byte PrinterCommands2[] =
++  unsigned char PrinterCommands2[] =
+     {
+       ESC, 'D', 0, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, ESC, 'E', ESC, 'D', 0, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN,
+       ESC, 'D', 0, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN
+@@ -182,7 +182,7 @@ LabelManagerDriverTest::testCutAndChainMarks()
+   Driver.StartPage();
+   Driver.EndPage();
+     
+-  byte PrinterCommands3[] =
++  unsigned char PrinterCommands3[] =
+     {
+       ESC, 'B', 0, ESC, 'D', 0x0c, SYN, 0x99, 0x99, 0x99, 0x99, 0x99, 0x99, 0x99, 0x99, 0x99, 0x99, 0x99, 0x99, ESC, 'D', 0, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN,SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, 
+       ESC, 'D', 0, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN
+@@ -197,7 +197,7 @@ LabelManagerDriverTest::testCutAndChainMarks()
+   Driver.StartPage();
+   Driver.EndPage();
+     
+-  byte PrinterCommands4[] =
++  unsigned char PrinterCommands4[] =
+     {
+       ESC, 'B', 0, ESC, 'D', 0x0c, SYN, 0x99, 0x99, 0x99, 0x99, 0x99, 0x99, 0x99, 0x99, 0x99, 0x99, 0x99, 0x99, ESC, 'D', 0, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN,SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, 
+       ESC, 'D', 0, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN
+@@ -218,7 +218,7 @@ LabelManagerDriverTest::testAlignment()
+   Driver.StartPage();
+   Driver.EndPage();
+     
+-  byte PrinterCommands[] =
++  unsigned char PrinterCommands[] =
+     {
+       ESC, 'D', 0, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, 
+       ESC, 'D', 0, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, ESC, 'D', 0,   SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN
+@@ -233,7 +233,7 @@ LabelManagerDriverTest::testAlignment()
+   Driver.StartPage();
+   Driver.EndPage();
+     
+-  byte PrinterCommands2[] =
++  unsigned char PrinterCommands2[] =
+     {
+       ESC, 'D', 0, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, ESC, 'E', ESC, 'D', 0, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN,
+       ESC, 'D', 0, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN
+@@ -247,7 +247,7 @@ LabelManagerDriverTest::testAlignment()
+   Driver.StartPage();
+   Driver.EndPage();
+     
+-  byte PrinterCommands3[] =
++  unsigned char PrinterCommands3[] =
+     {
+       ESC, 'D', 0, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, ESC, 'E', ESC, 'D', 0, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN,
+       ESC, 'D', 0, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN
+@@ -269,7 +269,7 @@ LabelManagerDriverTest::testMinPageLength()
+   Driver.StartPage();
+   Driver.EndPage();
+     
+-  byte PrinterCommands[] =
++  unsigned char PrinterCommands[] =
+     {
+       ESC, 'D', 0, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, 
+       ESC, 'D', 0, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN,   SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN
+@@ -287,7 +287,7 @@ LabelManagerDriverTest::testMinPageLength()
+   Driver2.StartPage();
+   Driver2.EndPage();
+     
+-  byte PrinterCommands2[] =
++  unsigned char PrinterCommands2[] =
+     {
+       ESC, 'D', 0, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, 
+       ESC, 'D', 0, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, ESC, 'D', 0,   SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN,   SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN
+@@ -307,7 +307,7 @@ LabelManagerDriverTest::testMinPageLength()
+     Driver3.ProcessRasterLine(buffer_t());
+   Driver3.EndPage();
+     
+-  byte PrinterCommands3[] =
++  unsigned char PrinterCommands3[] =
+     {
+       ESC, 'D', 0, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, 
+       ESC, 'D', 0, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN
+@@ -328,7 +328,7 @@ LabelManagerDriverTest::testMinPageLength()
+     Driver4.ProcessRasterLine(buffer_t());
+   Driver4.EndPage();
+     
+-  byte PrinterCommands4[] =
++  unsigned char PrinterCommands4[] =
+     {
+       ESC, 'D', 0, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, 
+       ESC, 'D', 0, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, ESC, 'D', 0,   SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, 
+@@ -348,7 +348,7 @@ LabelManagerDriverTest::testMinPageLength()
+     Driver5.ProcessRasterLine(buffer_t());
+   Driver5.EndPage();
+     
+-  byte PrinterCommands5[] =
++  unsigned char PrinterCommands5[] =
+     {
+       ESC, 'D', 0, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, 
+       ESC, 'D', 0, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN,   SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN 
+@@ -367,8 +367,8 @@ LabelManagerDriverTest::testReverseData()
+   MockPrintEnvironment Env;
+   CLabelManagerDriver  Driver(Env);
+ 
+-  byte RasterLine1[] = { 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0x03};
+-  byte RasterLine2[] = { 0x10, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x20, 0x30};
++  unsigned char RasterLine1[] = { 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0x03};
++  unsigned char RasterLine2[] = { 0x10, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x20, 0x30};
+     
+   Driver.SetAlignment(CLabelManagerDriver::alCenter);
+   Driver.StartPage();
+@@ -376,7 +376,7 @@ LabelManagerDriverTest::testReverseData()
+   Driver.ProcessRasterLine(buffer_t(RasterLine2, RasterLine2 + sizeof(RasterLine2)));
+   Driver.EndPage();
+     
+-  byte PrinterCommands[] =
++  unsigned char PrinterCommands[] =
+     {
+       ESC, 'D', 0, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, 
+       ESC, 'B', 0, ESC, 'D', 0x0c, SYN, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0x03,
+@@ -399,7 +399,7 @@ LabelManagerDriverTest::testReverseData()
+   Driver2.ProcessRasterLine(buffer_t(RasterLine2, RasterLine2 + sizeof(RasterLine2)));
+   Driver2.EndPage();
+     
+-  byte PrinterCommands2[] =
++  unsigned char PrinterCommands2[] =
+     {
+       ESC, 'D', 0, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, 
+       ESC, 'D', 0, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN,
+@@ -420,14 +420,14 @@ LabelManagerDriverTest::testContinuousPaper()
+   MockPrintEnvironment Env;
+   CLabelManagerDriver  Driver(Env);
+ 
+-  byte RasterLine1[] = { 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
++  unsigned char RasterLine1[] = { 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
+     
+   Driver.SetContinuousPaper(false);
+   Driver.StartPage();
+   Driver.ProcessRasterLine(buffer_t(RasterLine1, RasterLine1 + sizeof(RasterLine1)));
+   Driver.EndPage();
+     
+-  byte PrinterCommands[] =
++  unsigned char PrinterCommands[] =
+     {
+       ESC, 'D', 0, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, 
+       ESC, 'B', 0, ESC, 'D', 0x0c, SYN, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+@@ -446,7 +446,7 @@ LabelManagerDriverTest::testContinuousPaper()
+   Driver2.ProcessRasterLine(buffer_t(RasterLine1, RasterLine1 + sizeof(RasterLine1)));
+   Driver2.EndPage();
+     
+-  byte PrinterCommands2[] =
++  unsigned char PrinterCommands2[] =
+     {
+       ESC, 'B', 0, ESC, 'D', 0x0c, SYN, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+     };    
+@@ -462,14 +462,14 @@ LabelManagerDriverTest::testAutoPaper()
+   MockPrintEnvironment Env;
+   CLabelManagerDriver  Driver(Env);
+ 
+-  byte RasterLine1[] = { 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
++  unsigned char RasterLine1[] = { 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
+     
+   Driver.SetAutoPaper(false);
+   Driver.StartPage();
+   Driver.ProcessRasterLine(buffer_t(RasterLine1, RasterLine1 + sizeof(RasterLine1)));
+   Driver.EndPage();
+     
+-  byte PrinterCommands[] =
++  unsigned char PrinterCommands[] =
+     {
+       ESC, 'D', 0, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, SYN, 
+       ESC, 'B', 0, ESC, 'D', 0x0c, SYN, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+@@ -503,11 +503,11 @@ LabelManagerDriverTest::testShiftData()
+   MockPrintEnvironment Env;
+   CLabelManagerDriver  Driver(Env);
+ 
+-  byte RasterLine[] = { 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
++  unsigned char RasterLine[] = { 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
+     
+   Driver.ProcessRasterLine(buffer_t(RasterLine, RasterLine + 12));
+     
+-  byte PrinterCommands[] =
++  unsigned char PrinterCommands[] =
+     {
+       ESC, 'B', 0, ESC, 'D', 0x0c, SYN, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+     };    
+@@ -521,7 +521,7 @@ LabelManagerDriverTest::testShiftData()
+   CLabelManagerDriver  Driver11(Env11);
+   Driver11.ProcessRasterLine(buffer_t(RasterLine, RasterLine + 11));
+     
+-  byte PrinterCommands11[] =
++  unsigned char PrinterCommands11[] =
+     {
+       ESC, 'B', 0, ESC, 'D', 0x0c, SYN, 0x0f, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xf0,
+     };    
+@@ -535,7 +535,7 @@ LabelManagerDriverTest::testShiftData()
+   CLabelManagerDriver  Driver10(Env10);
+   Driver10.ProcessRasterLine(buffer_t(RasterLine, RasterLine + 10));
+     
+-  byte PrinterCommands10[] =
++  unsigned char PrinterCommands10[] =
+     {
+       ESC, 'B', 1, ESC, 'D', 0x0a, SYN, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+     };    
+@@ -549,7 +549,7 @@ LabelManagerDriverTest::testShiftData()
+   CLabelManagerDriver  Driver9(Env9);
+   Driver9.ProcessRasterLine(buffer_t(RasterLine, RasterLine + 9));
+     
+-  byte PrinterCommands9[] =
++  unsigned char PrinterCommands9[] =
+     {
+       ESC, 'B', 1, ESC, 'D', 0x0a, SYN, 0xf, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xf0,
+     };    
+@@ -563,7 +563,7 @@ LabelManagerDriverTest::testShiftData()
+   CLabelManagerDriver  Driver8(Env8);
+   Driver8.ProcessRasterLine(buffer_t(RasterLine, RasterLine + 8));
+     
+-  byte PrinterCommands8[] =
++  unsigned char PrinterCommands8[] =
+     {
+       ESC, 'B', 2, ESC, 'D', 0x08, SYN, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+     };    
+@@ -582,7 +582,7 @@ LabelManagerDriverTest::testMaxPrintableWidth()
+   Driver.SetMaxPrintableWidth(96);
+   Driver.ProcessRasterLine(buffer_t(13, 0xff));
+     
+-  byte PrinterCommands1[] =
++  unsigned char PrinterCommands1[] =
+     {
+       ESC, 'B', 0, ESC, 'D', 0x0c, SYN, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff
+     };
+@@ -594,7 +594,7 @@ LabelManagerDriverTest::testMaxPrintableWidth()
+   Env.ClearData();
+   Driver.ProcessRasterLine(buffer_t(12, 0xff));
+     
+-  byte PrinterCommands2[] =
++  unsigned char PrinterCommands2[] =
+     {
+       SYN, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff
+     };
+@@ -606,7 +606,7 @@ LabelManagerDriverTest::testMaxPrintableWidth()
+   Env.ClearData();
+   Driver.ProcessRasterLine(buffer_t(11, 0xff));
+     
+-  byte PrinterCommands3[] =
++  unsigned char PrinterCommands3[] =
+     {
+       SYN, 0x0f, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xf0
+     };
+@@ -624,7 +624,7 @@ LabelManagerDriverTest::testTapeAlignmentOffset()
+ 
+   Driver.ProcessRasterLine(buffer_t(12, 0xff));
+     
+-  byte PrinterCommands1[] =
++  unsigned char PrinterCommands1[] =
+     {
+       ESC, 'B', 0, ESC, 'D', 0x0c, SYN, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff
+     };
+@@ -637,7 +637,7 @@ LabelManagerDriverTest::testTapeAlignmentOffset()
+   Driver.SetTapeAlignmentOffset(3);
+   Driver.ProcessRasterLine(buffer_t(12, 0xff));
+     
+-  byte PrinterCommands2[] =
++  unsigned char PrinterCommands2[] =
+     {
+       SYN, 0x1f, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff
+     };
+@@ -650,7 +650,7 @@ LabelManagerDriverTest::testTapeAlignmentOffset()
+   Driver.SetTapeAlignmentOffset(-3);
+   Driver.ProcessRasterLine(buffer_t(12, 0xff));
+     
+-  byte PrinterCommands3[] =
++  unsigned char PrinterCommands3[] =
+     {
+       SYN, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xf8
+     };
+diff --git a/src/lw/tests/TestLabelWriterDriver.cpp b/src/lw/tests/TestLabelWriterDriver.cpp
+index d4d9d49..bb0fe7c 100644
+--- a/src/lw/tests/TestLabelWriterDriver.cpp
++++ b/src/lw/tests/TestLabelWriterDriver.cpp
+@@ -30,9 +30,9 @@ using namespace DymoPrinterDriver;
+ // Registers the fixture into the 'registry'
+ CPPUNIT_TEST_SUITE_REGISTRATION(LabelWriterDriverTest);
+ 
+-const byte ESC = 0x1B;
+-const byte SYN = 0x16;
+-const byte ETB = 0x17;
++const unsigned char ESC = 0x1B;
++const unsigned char SYN = 0x16;
++const unsigned char ETB = 0x17;
+ 
+ void 
+ LabelWriterDriverTest::setUp()
+@@ -57,7 +57,7 @@ LabelWriterDriverTest::testPrologEpilogCommand()
+   Driver.EndPage();
+   Driver.EndDoc();
+ 
+-  byte PrinterCommands[] =
++  unsigned char PrinterCommands[] =
+     {
+       ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC,  
+       ESC, 'Q', 0x00, 0x00, ESC, 'B', 0, ESC, 'h', ESC, 'e',
+@@ -78,9 +78,9 @@ LabelWriterDriverTest::testCompression()
+   MockPrintEnvironment Env;
+   CLabelWriterDriver   Driver(Env);
+ 
+-  byte RasterLine1[] = { 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff };
+-  byte RasterLine2[] = { 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa };
+-  byte RasterLine3[] = { 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 
++  unsigned char RasterLine1[] = { 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff };
++  unsigned char RasterLine2[] = { 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa };
++  unsigned char RasterLine3[] = { 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 
+                          0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 
+                          0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff };
+     
+@@ -88,7 +88,7 @@ LabelWriterDriverTest::testCompression()
+   Driver.ProcessRasterLine(buffer_t(RasterLine2, RasterLine2 + sizeof(RasterLine2)));
+   Driver.ProcessRasterLine(buffer_t(RasterLine3, RasterLine3 + sizeof(RasterLine3)));
+ 
+-  byte PrinterCommands[] =
++  unsigned char PrinterCommands[] =
+     {
+       ESC, 'B', 0, ESC, 'D', 0x08, ETB, 0xbf, ESC, 'B', 0,  
+       SYN, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa,
+@@ -108,8 +108,8 @@ LabelWriterDriverTest::testEmptyLines()
+   MockPrintEnvironment Env;
+   CLabelWriterDriver   Driver(Env);
+ 
+-  byte RasterLine1[] = { 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff };
+-  byte RasterLine2[] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
++  unsigned char RasterLine1[] = { 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff };
++  unsigned char RasterLine2[] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+     
+   for (int i = 0; i < 255; ++i)
+     Driver.ProcessRasterLine(buffer_t(RasterLine2, RasterLine2 + sizeof(RasterLine2)));
+@@ -118,7 +118,7 @@ LabelWriterDriverTest::testEmptyLines()
+ 
+   Driver.ProcessRasterLine(buffer_t(RasterLine1, RasterLine1 + sizeof(RasterLine1)));
+     
+-  byte PrinterCommands[] =
++  unsigned char PrinterCommands[] =
+     {
+       ESC, 'f', 1, 0xff, ESC, 'f', 1, 2,
+       ESC, 'B', 0, ESC, 'D', 0x08, ETB, 0xbf,
+@@ -136,17 +136,17 @@ LabelWriterDriverTest::testDotTab()
+   MockPrintEnvironment Env;
+   CLabelWriterDriver   Driver(Env);
+ 
+-  byte RasterLine1[] = { 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff };
+-  byte RasterLine2[] = { 0x00, 0x00, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff };
+-  byte RasterLine3[] = { 0x00, 0x00, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff };
+-  byte RasterLine4[] = { 0x00, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff }; 
++  unsigned char RasterLine1[] = { 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff };
++  unsigned char RasterLine2[] = { 0x00, 0x00, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff };
++  unsigned char RasterLine3[] = { 0x00, 0x00, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff };
++  unsigned char RasterLine4[] = { 0x00, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff }; 
+     
+   Driver.ProcessRasterLine(buffer_t(RasterLine1, RasterLine1 + sizeof(RasterLine1)));
+   Driver.ProcessRasterLine(buffer_t(RasterLine2, RasterLine2 + sizeof(RasterLine2)));
+   Driver.ProcessRasterLine(buffer_t(RasterLine3, RasterLine3 + sizeof(RasterLine3)));
+   Driver.ProcessRasterLine(buffer_t(RasterLine4, RasterLine4 + sizeof(RasterLine4)));
+ 
+-  byte PrinterCommands[] =
++  unsigned char PrinterCommands[] =
+     {
+       ESC, 'B', 0, ESC, 'D', 0x08, ETB, 0xbf,
+       ESC, 'B', 2, ESC, 'D', 0x06, ETB, 0xaf,
+@@ -177,8 +177,8 @@ LabelWriterDriverTest::testContinuousPaper()
+   Driver2.SetPaperType(CLabelWriterDriver::ptContinuous);
+   Driver2.StartPage();
+     
+-  byte PrinterCommands1[] = {ESC, 'L', 0x12, 0x34 };
+-  byte PrinterCommands2[] = {ESC, 'L', 0xff, 0xff };
++  unsigned char PrinterCommands1[] = {ESC, 'L', 0x12, 0x34 };
++  unsigned char PrinterCommands2[] = {ESC, 'L', 0xff, 0xff };
+ 
+   //CPPUNIT_ASSERT_EQUAL(sizeof(PrinterCommands1), Env1.GetData().size());
+   CPPUNIT_ASSERT_EQUAL(
+@@ -204,7 +204,7 @@ LabelWriterDriverTest::test400EndPageEndDoc()
+   Driver.EndPage();
+   Driver.EndDoc();
+ 
+-  byte PrinterCommands[] =
++  unsigned char PrinterCommands[] =
+     {
+       ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC,
+       ESC, 'Q', 0x00, 0x00, ESC, 'B', 0, ESC, 'h', ESC, 'e',
+@@ -231,7 +231,7 @@ LabelWriterDriverTest::testTwinTurboRoll()
+   Driver.EndPage();
+   Driver.EndDoc();
+ 
+-  byte PrinterCommands[] =
++  unsigned char PrinterCommands[] =
+     {
+       ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC,
+       ESC, 'Q', 0x00, 0x00, ESC, 'B', 0, ESC, 'h', ESC, 'e', ESC, 'q', '0', 
+diff --git a/src/lw/tests/TestLabelWriterLanguageMonitor.cpp b/src/lw/tests/TestLabelWriterLanguageMonitor.cpp
+index 0d3f6ed..ac3e282 100644
+--- a/src/lw/tests/TestLabelWriterLanguageMonitor.cpp
++++ b/src/lw/tests/TestLabelWriterLanguageMonitor.cpp
+@@ -28,7 +28,7 @@
+ using namespace std;
+ using namespace DymoPrinterDriver;
+ 
+-const byte ESC = 0x1b;
++const unsigned char ESC = 0x1b;
+ 
+ // Registers the fixture into the 'registry'
+ CPPUNIT_TEST_SUITE_REGISTRATION(LabelWriterLMTest);
+@@ -53,7 +53,7 @@ LabelWriterLMTest::testGoodJob()
+   MockLWLMPrintEnvironment    Env;
+   CLabelWriterLanguageMonitor LM(Env, false, 1);
+ 
+-  byte PrinterData[] =
++  unsigned char PrinterData[] =
+     {
+       1, 2, 3, 4, 5, 6, 7, 8, 9, 10
+     };
+@@ -81,11 +81,11 @@ LabelWriterLMTest::testPaperOut()
+   MockLWLMPrintEnvironment    Env;
+   CLabelWriterLanguageMonitor LM(Env, false, 1);
+ 
+-  byte PrinterData[] =
++  unsigned char PrinterData[] =
+     {
+       1, 2, 3, 4, 5, 6, 7, 8, 9, 10
+     };
+-  byte OutputPrinterData[] =
++  unsigned char OutputPrinterData[] =
+     {
+       ESC, 'G', 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
+     };
+@@ -114,11 +114,11 @@ LabelWriterLMTest::testPaperOutAfterReprint()
+   MockLWLMPrintEnvironment    Env;
+   CLabelWriterLanguageMonitor LM(Env, false, 1);
+ 
+-  byte PrinterData[] =
++  unsigned char PrinterData[] =
+     {
+       1, 2, 3, 4, 5
+     };
+-  byte OutputPrinterData[] =
++  unsigned char OutputPrinterData[] =
+     {
+       ESC, 'G', 1, 2, 3, 4, 5, ESC, 'G', 1, 2, 3, 4, 5
+     };
+@@ -149,11 +149,11 @@ LabelWriterLMTest::testPollForPaperIn()
+   MockLWLMPrintEnvironment    Env;
+   CLabelWriterLanguageMonitor LM(Env, false, 1);
+ 
+-  byte PrinterData[] =
++  unsigned char PrinterData[] =
+     {
+       1, 2, 3, 4, 5, 6, 7, 8, 9, 10
+     };
+-  byte OutputPrinterData[] =
++  unsigned char OutputPrinterData[] =
+     {
+       ESC, 'G', 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
+     };
+@@ -182,15 +182,15 @@ LabelWriterLMTest::testOneGoodPageOneNot()
+   MockLWLMPrintEnvironment    Env;
+   CLabelWriterLanguageMonitor LM(Env, false, 1);
+ 
+-  byte PrinterData[] =
++  unsigned char PrinterData[] =
+     {
+       1, 2, 3
+     };
+-  byte PrinterData2[] =
++  unsigned char PrinterData2[] =
+     {
+       4, 5, 6
+     };
+-  byte OutputPrinterData[] =
++  unsigned char OutputPrinterData[] =
+     {
+       ESC, 'G', 4, 5, 6
+     };
+@@ -259,7 +259,7 @@ LabelWriterLMTest::testStatusReadFailed()
+   MockLWLMPrintEnvironment    Env;
+   CLabelWriterLanguageMonitor LM(Env, false, 1);
+ 
+-  byte PrinterData[] =
++  unsigned char PrinterData[] =
+     {
+       1, 2, 3, 4, 5, 6, 7, 8, 9, 10
+     };
+@@ -291,7 +291,7 @@ LabelWriterLMTest::testContinuousPaper()
+   MockLWLMPrintEnvironment    Env;
+   CLabelWriterLanguageMonitor LM(Env, false, 1);
+ 
+-  byte PrinterData[] =
++  unsigned char PrinterData[] =
+     {
+       1, 2, 3, 4, 5, 6, 7, 8, 9, 10
+     };
+@@ -324,15 +324,15 @@ LabelWriterLMTest::testRollChangedBit()
+   MockLWLMPrintEnvironment    Env;
+   CLabelWriterLanguageMonitor LM(Env, false, 1);
+ 
+-  byte PrinterData[] =
++  unsigned char PrinterData[] =
+     {
+       1, 2, 3, 4
+     };
+-  byte OutputPrinterData1[] =
++  unsigned char OutputPrinterData1[] =
+     {
+       ESC, 'G', 1, 2, 3, 4
+     };
+-  byte OutputPrinterData2[] =
++  unsigned char OutputPrinterData2[] =
+     {
+       1, 2, 3, 4
+     };

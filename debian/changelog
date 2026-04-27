@@ -1,0 +1,143 @@
+dymo-cups-drivers (1.4.0-12build3+loadfix1) resolute; urgency=medium
+
+  * Non-maintainer upload fixing the "zombie print job" issue on DYMO
+    LabelWriter 450 / 450 Turbo / 450 DUO Label / 450 Twin Turbo over USB.
+  * Disable the back-channel status monitor in raster2dymolw (the loop was
+    broken: first byte of multi-byte reply used, no read-failure exit,
+    unbounded PollUntilPaperIn) — see CHANGES.md in the source tree.
+  * Initialise CCupsPrintEnvironmentForLM members (undefined-behaviour
+    read of JobStatus_ could early-abort print jobs).
+  * Install SIGTERM/SIGINT/SIGPIPE handlers so CUPS cancels and backend
+    pipe failures result in clean filter termination (ESC E flushed,
+    stdout closed) rather than leaving the CUPS scheduler in "now
+    printing" state forever.
+  * Explicitly close stdout before return so the USB backend sees EOF
+    immediately on job completion.
+  * Return 0 on empty CUPS-raster input instead of marking the job
+    aborted in the queue.
+  * Exclude src_v2/ from the build (uses std::auto_ptr, removed in C++17).
+  * Drop redundant Debian patches already applied in the matthiasbock
+    upstream fork (0003, 0006, 0007, 0008, 0010).
+
+ -- loadfix <noreply@anthropic.com>  Mon, 27 Apr 2026 18:00:00 +1000
+
+dymo-cups-drivers (1.4.0-12build3) resolute; urgency=medium
+
+  * No-change mass rebuild for Ubuntu 26.04 (LP: #2132257)
+
+ -- Graham Inggs <ginggs@ubuntu.com>  Wed, 10 Dec 2025 22:33:42 +0000
+
+dymo-cups-drivers (1.4.0-12build2) noble; urgency=medium
+
+  * No-change rebuild for CVE-2024-3094
+
+ -- William Grant <wgrant@ubuntu.com>  Mon, 01 Apr 2024 16:46:39 +1100
+
+dymo-cups-drivers (1.4.0-12build1) noble; urgency=medium
+
+  * No-change rebuild against libcups2t64.
+
+ -- Michael Hudson-Doyle <michael.hudson@ubuntu.com>  Wed, 20 Mar 2024 13:47:15 +1300
+
+dymo-cups-drivers (1.4.0-12) unstable; urgency=medium
+
+  * add patch to be able to compile with gcc12
+    (Closes: #1012916)
+    (until a better solution is available the tests)
+    (are just disabled)
+
+ -- Thorsten Alteholz <debian@alteholz.de>  Sun, 14 Aug 2022 18:03:02 +0200
+
+dymo-cups-drivers (1.4.0-11) unstable; urgency=medium
+
+  * debian/control: add myself to uploaders
+  * debian/control: use dh13
+  * debian/control: add Rules-Requires-Root:
+  * debian/control: use new URL for Homepage: (Closes: #977285)
+  * debian/copyright: use new URL for Source:
+  * debian/watch: update watch file with new URL
+  * add 0009-gcc11-ftbfs-replace-byte-by-unsigned-char.patch
+    (Closes: #984045)
+
+ -- Thorsten Alteholz <debian@alteholz.de>  Mon, 18 Oct 2021 23:03:02 +0200
+
+dymo-cups-drivers (1.4.0-10) unstable; urgency=medium
+
+  * Remove myself from Uploaders
+  * Update watch file format version to 4
+  * Set upstream metadata fields
+  * wrap-and-sort -baskt
+  * S-V: Update to 4.6.0 without changes needed
+  * Backport 3 upstream fixes:
+    - "Replaced boolean OR by bitwise OR" fix
+    - "Replaced deprecated type std::auto_ptr by std::unique_ptr"
+    - "Add missing backend header"
+
+ -- Didier Raboud <odyx@debian.org>  Thu, 02 Sep 2021 09:14:51 +0200
+
+dymo-cups-drivers (1.4.0-9) unstable; urgency=medium
+
+  * Packaging cleanup:
+    - Drop double changelog entry
+    - Use secure copyright file specification URI
+    - Use secure URI in debian/watch
+    - Bump debhelper from old 9 to 12
+    - Remove unnecessary 'Testsuite: autopkgtest' header
+    - Set upstream metadata fields: Bug-Submit
+    - Drop unnecessary dependency on dh-autoconf
+    - Drop unnecessary dh arguments: --parallel
+  * Convert to git-debrebase
+  * Add patch include cups/sidechannel.h for cupsBackChannelRead symbol
+    (Closes: #943549)
+
+ -- Didier Raboud <odyx@debian.org>  Sun, 27 Oct 2019 09:48:25 +0100
+
+dymo-cups-drivers (1.4.0-8) unstable; urgency=medium
+
+  * Update debian/control syntax with cme
+  * Bump Standards-Version to 4.1.3 without changes needed
+  * Update Vcs-* fields for the move to salsa.d.o
+  * Instantiate gbp and git-dpm
+
+ -- Didier Raboud <odyx@debian.org>  Fri, 09 Feb 2018 17:46:19 +0100
+
+dymo-cups-drivers (1.4.0-6) unstable; urgency=medium
+
+  * Update previous ppd_file_t patch to cover the whole codebase
+    (Closes: #838590)
+  * Bump Standards-Version without changes needed
+
+ -- Didier Raboud <odyx@debian.org>  Sat, 24 Sep 2016 10:27:27 +0200
+
+dymo-cups-drivers (1.4.0-5) unstable; urgency=medium
+
+  * Add recommends to pull usb-modeswitch as some Dymo LabelPrinters need it
+    to work properly (Closes: #761086)
+
+ -- Didier Raboud <odyx@debian.org>  Tue, 16 Sep 2014 18:09:56 +0200
+
+dymo-cups-drivers (1.4.0-4) unstable; urgency=medium
+
+  * Add autopktest suite
+  * Allow parallel building
+
+ -- Didier Raboud <odyx@debian.org>  Fri, 01 Aug 2014 16:17:31 +0200
+
+dymo-cups-drivers (1.4.0-3) unstable; urgency=medium
+
+  * Move the repository from collab-maint to printing; update the VCS-*
+    fields accordingly
+
+ -- Didier Raboud <odyx@debian.org>  Wed, 05 Mar 2014 16:35:22 +0100
+
+dymo-cups-drivers (1.4.0-2) unstable; urgency=low
+
+  * Add patch to inheritate CXXFLAGS from the environment
+
+ -- Didier Raboud <odyx@debian.org>  Thu, 09 Jan 2014 22:49:38 +0100
+
+dymo-cups-drivers (1.4.0-1) unstable; urgency=low
+
+  * Initial release. (Closes: #640246)
+
+ -- Didier Raboud <odyx@debian.org>  Mon, 06 Jan 2014 15:17:11 +0100

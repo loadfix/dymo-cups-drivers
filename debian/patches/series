@@ -1,0 +1,4 @@
+0001-Inheritate-CXXFLAGS-from-the-environment-to-use-dpkg.patch
+0002-Port-to-newer-cups-headers-ppd_file_t-is-only-define.patch
+0005-Include-cups-sidechannel.h-for-cupsBackChannelRead-s.patch
+0009-gcc11-ftbfs-replace-byte-by-unsigned-char.patch

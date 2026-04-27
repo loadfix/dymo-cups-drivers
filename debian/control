@@ -1,0 +1,34 @@
+Source: dymo-cups-drivers
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+XSBC-Original-Maintainer: Debian Printing Team <debian-printing@lists.debian.org>
+Uploaders: Thorsten Alteholz <debian@alteholz.de>
+Section: text
+Priority: optional
+Build-Depends:
+ cups-client,
+ debhelper-compat (= 13),
+ libcppunit-dev,
+ libcups2-dev,
+ libcupsimage2-dev,
+ pyppd,
+Standards-Version: 4.6.0
+Vcs-Browser: https://salsa.debian.org/printing-team/dymo-cups-drivers
+Vcs-Git: https://salsa.debian.org/printing-team/dymo-cups-drivers.git
+Homepage: https://www.dymo-label-printers.co.uk/news/download-dymo-sdk-for-linux.html
+Rules-Requires-Root: no
+
+Package: printer-driver-dymo
+Architecture: any
+Depends:
+ ${misc:Depends},
+ ${shlibs:Depends},
+Recommends:
+ usb-modeswitch (>= 1.2.5+repack0-2~),
+Description: printer driver for DYMO label printers
+ CUPS filter driver for various DYMO label printers: LabelManager 400, 450, PC,
+ PC II and PnP; LabelPoint 350 and LabelWriter 300, 310, 315, 320, 330,
+ 330 Turbo, 400, 400 Turbo, 450, 450 DUO Label, 450 DUO Tape, 450 Turbo,
+ 450 Twin Turbo, 4XL, DUO Label, DUO Tape, DUO Tape 128, SE450 and Twin Turbo.
+ .
+ This package contains the CUPS filter driver and the compressed PPDs for the
+ supported label printers.
