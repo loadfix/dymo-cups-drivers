@@ -123,7 +123,9 @@ AC_TYPE_SIZE_T
 # Checks for library functions.
 AC_CHECK_FUNCS([memset strcasecmp])
 
-AC_CONFIG_FILES([Makefile src/Makefile src/common/tests/Makefile src/lm/Makefile src/lm/tests/Makefile src/lw/Makefile src/lw/tests/Makefile src_v2/Makefile src_v2/common/tests/Makefile src_v2/lm/Makefile src_v2/lm/tests/Makefile src_v2/lw/Makefile src_v2/lw/tests/Makefile ppd/Makefile docs/Makefile samples/Makefile samples/paper_list/Makefile samples/paper_bounds/Makefile samples/test_label/Makefile samples/custom_paper/Makefile samples/custom_paper_tape/Makefile])
+# src_v2/* removed from AC_CONFIG_FILES — does not compile on modern GCC.
+# See top-level Makefile.am for the matching SUBDIRS change.
+AC_CONFIG_FILES([Makefile src/Makefile src/common/tests/Makefile src/lm/Makefile src/lm/tests/Makefile src/lw/Makefile src/lw/tests/Makefile ppd/Makefile docs/Makefile samples/Makefile samples/paper_list/Makefile samples/paper_bounds/Makefile samples/test_label/Makefile samples/custom_paper/Makefile samples/custom_paper_tape/Makefile])
 AC_OUTPUT
 
 
