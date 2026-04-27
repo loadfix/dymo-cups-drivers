@@ -222,8 +222,15 @@ CLabelWriterLanguageMonitor::ReadStatus(byte& Status)
 
   if (buf.size() > 0)
   {
-
-    Status = buf[0];
+    // cupsBackChannelRead may return up to 16 bytes in a single call — one
+    // byte per ESC-A request we have previously issued. DYMO's original
+    // code kept only the *first* byte of the buffer, leaving any late-
+    // arriving earlier replies to pollute the next ReadData() call. Use
+    // the *last* byte instead: it corresponds to the most recent ESC-A we
+    // sent in this iteration, which is the status we actually want to
+    // reason about. All earlier bytes are stale observations of the
+    // printer state before we issued the current request.
+    Status = buf[buf.size() - 1];
 
     if (PaperType_ == CLabelWriterDriver::ptContinuous)
       Status |= TOF_BIT;
@@ -250,10 +257,25 @@ CLabelWriterLanguageMonitor::PollUntilPaperIn()
 {
   fprintf(stderr, "DEBUG: CLabelWriterLanguageMonitor::PollUntilPaperIn()\n");
 
-  byte Status = 0;  
+  byte Status = 0;
+  // The original DYMO source used `for(;;)` with the only escape clauses
+  // being `GetJobStatus() == jsDeleted` and `ReadStatus() == false`.
+  // The jsDeleted escape is inert on this platform: the only place that
+  // status is ever written is inside CupsFilter.h when the scheduler
+  // cancels a job, but on modern CUPS the cancel arrives as SIGTERM on
+  // the filter process rather than as a state write that this loop can
+  // observe. So in practice only ReadStatus=false exits the loop, and
+  // when the back-channel ACKs with a "still waiting for paper" byte we
+  // can spin for an unbounded time.
+  //
+  // Cap total wait at ReadStatusTimeout_ seconds (already the configured
+  // wall-clock budget for CheckStatusAndReprint) so a stuck printer can't
+  // hold the filter open forever.
+  const time_t pollDeadline = time(NULL) + (time_t)ReadStatusTimeout_;
+
   for(;;)
   {
-    // TODO: use platform-undependend call
+    // TODO: use platform-independent call
     if (UseSleep_)
     {
       //sleep(2);
@@ -262,7 +284,13 @@ CLabelWriterLanguageMonitor::PollUntilPaperIn()
       interval.tv_nsec = 200000000; // 0.2 second
       nanosleep(&interval, NULL);
     }
-    
+
+    if (time(NULL) >= pollDeadline)
+    {
+      fprintf(stderr, "DEBUG: CLabelWriterLanguageMonitor::PollUntilPaperIn() deadline-exceeded\n");
+      return false;
+    }
+
     if (Environment_.GetJobStatus() == IPrintEnvironment::jsDeleted)
       return false;
 
