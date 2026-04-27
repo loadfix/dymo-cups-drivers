@@ -240,14 +240,12 @@ CDriverInitializerLabelManager::ProcessPageOptions(CLabelManagerDriver& Driver, 
          Driver.SetTapeAlignmentOffset(-4);
  }
 
-  // adjust tape center
-  if (!strcasecmp(Driver.GetDeviceName().c_str(), "DYMO LabelLabelWriter DUO Tape"))
-  {
-    if (TapeWidth == CLabelManagerDriver::tw6mm)
-      Driver.SetTapeAlignmentOffset(-2);
-    else if (TapeWidth == CLabelManagerDriver::tw9mm)
-      Driver.SetTapeAlignmentOffset(-1);
-  }
+  // Upstream had a block here testing the string "DYMO LabelLabelWriter
+  // DUO Tape" — a typo (Label appears twice). No PPD ever sets modelname
+  // to that string, so the block was unreachable dead code. Its
+  // alignment-offset values matched the "DYMO LabelWriter DUO Tape"
+  // block above exactly, so deleting it loses no functionality. Removed
+  // to keep the model-match chain readable. See BUGS.md finding 4.2.
 
   // adjust tape center
   if (!strcasecmp(Driver.GetDeviceName().c_str(), "DYMO LabelWriter DUO Tape 128"))

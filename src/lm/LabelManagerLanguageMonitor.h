@@ -33,6 +33,15 @@ namespace DymoPrinterDriver
     class CLabelManagerLanguageMonitor: public ILanguageMonitor
     {
     public:
+        // LabelManager status byte bit definitions as used by this
+        // driver. Upstream DYMO also declared AUTO_CUTTER_BIT = 0x80
+        // and NO_POWER_BIT = 0x80 — both with the same value, neither
+        // referenced anywhere in the source tree, and with contradictory
+        // semantics (one is a normal-operation indicator, the other a
+        // fault). Both have been removed; if either becomes necessary
+        // in the future, add it back with a single authoritative name
+        // and a reference to whichever DYMO LabelManager programming
+        // doc defines it. See BUGS.md finding 4.7.
         enum status_bits
         {
             CASSETTE_SIZET0_BIT = 0x01,
@@ -43,8 +52,6 @@ namespace DymoPrinterDriver
             SLOT_STATUS_BIT     = 0x10,
             BUSY_BIT            = 0x20,
             CASSETTE_PRESENT_BIT= 0x40,
-            AUTO_CUTTER_BIT     = 0x80,
-            NO_POWER_BIT        = 0x80,
             INCORRECT_SIZE_BIT  = 0xFF
         };
         
