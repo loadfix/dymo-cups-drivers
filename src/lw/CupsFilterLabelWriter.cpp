@@ -23,7 +23,7 @@
 namespace DymoPrinterDriver
 {
 
-void CDriverInitializerLabelWriter::ProcessPPDOptions(CLabelWriterDriver& Driver, CDummyLanguageMonitor& LM, ppd_file_t* ppd)
+void CDriverInitializerLabelWriter::ProcessPPDOptions(CLabelWriterDriver& Driver, ILanguageMonitor& /*LM*/, ppd_file_t* ppd)
 {
   ppd_choice_t* choice = ppdFindMarkedChoice(ppd, "Resolution");
   if (choice)
@@ -104,7 +104,7 @@ void CDriverInitializerLabelWriter::ProcessPPDOptions(CLabelWriterDriver& Driver
 }
 
 void
-CDriverInitializerLabelWriter::ProcessPageOptions(CLabelWriterDriver& Driver, CDummyLanguageMonitor& LM, cups_page_header2_t& PageHeader)
+CDriverInitializerLabelWriter::ProcessPageOptions(CLabelWriterDriver& Driver, ILanguageMonitor& /*LM*/, cups_page_header2_t& PageHeader)
 {
 
   if ((PageHeader.cupsMediaType == int(CLabelWriterDriver::ptRegular)) || (PageHeader.cupsMediaType == int(CLabelWriterDriver::ptContinuous)))
@@ -124,7 +124,7 @@ CDriverInitializerLabelWriter::ProcessPageOptions(CLabelWriterDriver& Driver, CD
 
 
 void
-CDriverInitializerLabelWriterTwinTurbo::ProcessPPDOptions(CLabelWriterDriverTwinTurbo& Driver, CDummyLanguageMonitor& LM, ppd_file_t* ppd)
+CDriverInitializerLabelWriterTwinTurbo::ProcessPPDOptions(CLabelWriterDriverTwinTurbo& Driver, ILanguageMonitor& LM, ppd_file_t* ppd)
 {
   CDriverInitializerLabelWriter::ProcessPPDOptions(Driver, LM, ppd);
         
@@ -143,22 +143,26 @@ CDriverInitializerLabelWriterTwinTurbo::ProcessPPDOptions(CLabelWriterDriverTwin
 }
 
 void
-CDriverInitializerLabelWriterTwinTurbo::ProcessPageOptions(CLabelWriterDriverTwinTurbo& Driver, CDummyLanguageMonitor& LM, cups_page_header2_t& PageHeader)
+CDriverInitializerLabelWriterTwinTurbo::ProcessPageOptions(CLabelWriterDriverTwinTurbo& Driver, ILanguageMonitor& LM, cups_page_header2_t& PageHeader)
 {
   CDriverInitializerLabelWriter::ProcessPageOptions(Driver, LM, PageHeader);
 }
 
 
 
+// WithLM variants now pass `LM` through as ILanguageMonitor& directly
+// — no more (CDummyLanguageMonitor&) sibling-class C-casts.
+// CLabelWriterLanguageMonitor is-a ILanguageMonitor, so implicit
+// upcast is safe and well-defined.
 void CDriverInitializerLabelWriterWithLM::ProcessPPDOptions(CLabelWriterDriver& Driver, CLabelWriterLanguageMonitor& LM, ppd_file_t* ppd)
 {
-  CDriverInitializerLabelWriter::ProcessPPDOptions(Driver, (CDummyLanguageMonitor&)LM, ppd);
+  CDriverInitializerLabelWriter::ProcessPPDOptions(Driver, LM, ppd);
 }
 
 void
 CDriverInitializerLabelWriterWithLM::ProcessPageOptions(CLabelWriterDriver& Driver, CLabelWriterLanguageMonitor& LM, cups_page_header2_t& PageHeader)
 {
-  CDriverInitializerLabelWriter::ProcessPageOptions(Driver, (CDummyLanguageMonitor&)LM, PageHeader);
+  CDriverInitializerLabelWriter::ProcessPageOptions(Driver, LM, PageHeader);
   LM.SetPaperType(Driver.GetPaperType());
 }
 
@@ -166,14 +170,14 @@ CDriverInitializerLabelWriterWithLM::ProcessPageOptions(CLabelWriterDriver& Driv
 void
 CDriverInitializerLabelWriterTwinTurboWithLM::ProcessPPDOptions(CLabelWriterDriverTwinTurbo& Driver, CLabelWriterLanguageMonitor& LM, ppd_file_t* ppd)
 {
-  CDriverInitializerLabelWriterTwinTurbo::ProcessPPDOptions(Driver, (CDummyLanguageMonitor&)LM, ppd);
+  CDriverInitializerLabelWriterTwinTurbo::ProcessPPDOptions(Driver, LM, ppd);
   LM.SetRoll(Driver.GetRoll());
 }
 
 void
 CDriverInitializerLabelWriterTwinTurboWithLM::ProcessPageOptions(CLabelWriterDriverTwinTurbo& Driver, CLabelWriterLanguageMonitor& LM, cups_page_header2_t& PageHeader)
 {
-  CDriverInitializerLabelWriterTwinTurbo::ProcessPageOptions(Driver, (CDummyLanguageMonitor&)LM, PageHeader);
+  CDriverInitializerLabelWriterTwinTurbo::ProcessPageOptions(Driver, LM, PageHeader);
 }
 
 

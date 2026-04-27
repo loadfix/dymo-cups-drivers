@@ -56,7 +56,7 @@ static int ParseIntChoice(const char* s, int defaultValue)
 }
 
 void
-CDriverInitializerLabelManager::ProcessPPDOptions(CLabelManagerDriver& Driver, CDummyLanguageMonitor& LM, ppd_file_t* ppd)
+CDriverInitializerLabelManager::ProcessPPDOptions(CLabelManagerDriver& Driver, ILanguageMonitor& /*LM*/, ppd_file_t* ppd)
 {
   ppd_choice_t* choice = ppdFindMarkedChoice(ppd, "DymoCutOptions");
   if (choice)
@@ -234,7 +234,7 @@ CDriverInitializerLabelManager::ProcessPPDOptions(CLabelManagerDriver& Driver, C
 }
 
 void
-CDriverInitializerLabelManager::ProcessPageOptions(CLabelManagerDriver& Driver, CDummyLanguageMonitor& LM, cups_page_header2_t& PageHeader)
+CDriverInitializerLabelManager::ProcessPageOptions(CLabelManagerDriver& Driver, ILanguageMonitor& /*LM*/, cups_page_header2_t& PageHeader)
 {
   //fprintf(stderr, "DEBUG: ------ PageHeader.cupsMediaType: %d\n", PageHeader.cupsMediaType);
     
@@ -301,7 +301,9 @@ CDriverInitializerLabelManager::ProcessPageOptions(CLabelManagerDriver& Driver, 
 void
 CDriverInitializerLabelManagerWithLM::ProcessPPDOptions(CLabelManagerDriver& Driver, CLabelManagerLanguageMonitor& LM, ppd_file_t* ppd)
 {
-    CDriverInitializerLabelManager::ProcessPPDOptions(Driver, (CDummyLanguageMonitor&)LM, ppd);
+    // Upcast to ILanguageMonitor& — replaces the upstream
+    // (CDummyLanguageMonitor&) sibling-class C-cast. Well-defined.
+    CDriverInitializerLabelManager::ProcessPPDOptions(Driver, LM, ppd);
     
     LM.SetDeviceName(ppd->modelname);
 }
@@ -309,7 +311,7 @@ CDriverInitializerLabelManagerWithLM::ProcessPPDOptions(CLabelManagerDriver& Dri
 void
 CDriverInitializerLabelManagerWithLM::ProcessPageOptions(CLabelManagerDriver& Driver, CLabelManagerLanguageMonitor& LM, cups_page_header2_t& PageHeader)
 {
-    CDriverInitializerLabelManager::ProcessPageOptions(Driver, (CDummyLanguageMonitor&)LM, PageHeader);
+    CDriverInitializerLabelManager::ProcessPageOptions(Driver, LM, PageHeader);
 
     LM.SetTapeWidth(CLabelManagerDriver::tape_width_t(PageHeader.cupsMediaType & 0xff));
 }

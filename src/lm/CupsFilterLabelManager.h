@@ -27,15 +27,19 @@
 #include "LabelManagerDriver.h"
 #include "LabelManagerLanguageMonitor.h"
 #include "DummyLanguageMonitor.h"
+#include "PrinterDriver.h"  // ILanguageMonitor
 
 namespace DymoPrinterDriver
 {
 
+// See src/lw/CupsFilterLabelWriter.h for the rationale behind taking
+// ILanguageMonitor& here instead of the upstream CDummyLanguageMonitor&.
+// STATIC_ANALYSIS.md §S-1.
 class CDriverInitializerLabelManager
 {
 public:
-  static void ProcessPPDOptions (CLabelManagerDriver& Driver, CDummyLanguageMonitor& LM, ppd_file_t* ppd);
-  static void ProcessPageOptions(CLabelManagerDriver& Driver, CDummyLanguageMonitor& LM, cups_page_header2_t& PageHeader);
+  static void ProcessPPDOptions (CLabelManagerDriver& Driver, ILanguageMonitor& LM, ppd_file_t* ppd);
+  static void ProcessPageOptions(CLabelManagerDriver& Driver, ILanguageMonitor& LM, cups_page_header2_t& PageHeader);
 };
 
 class CDriverInitializerLabelManagerWithLM

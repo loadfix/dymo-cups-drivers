@@ -27,22 +27,39 @@
 #include "LabelWriterDriver.h"
 #include "LabelWriterLanguageMonitor.h"
 #include "DummyLanguageMonitor.h"
+#include "PrinterDriver.h"  // ILanguageMonitor
 
 namespace DymoPrinterDriver
 {
 
+// The "no-LM" Process*Options variants take the language monitor by
+// ILanguageMonitor& rather than CDummyLanguageMonitor&.
+//
+// Upstream declared them to take CDummyLanguageMonitor& but left the
+// parameter unused in the body. The WithLM subclasses then invoked the
+// no-LM versions with `(CDummyLanguageMonitor&)LM` C-casts — where LM
+// is actually a CLabelWriterLanguageMonitor (a sibling class, not a
+// derived class). That cast is reinterpret_cast and the reference is
+// undefined per [basic.reference]; any use of the parameter inside the
+// callee would be UB. It happens to be safe today only because the
+// callees don't touch LM.
+//
+// Hoisting the parameter type to the common base ILanguageMonitor&
+// removes the UB cleanly: the WithLM callers pass their concrete LM
+// reference (which IS-A ILanguageMonitor) with no cast, and the no-LM
+// callees still don't use it. See STATIC_ANALYSIS.md §S-1.
 class CDriverInitializerLabelWriter
 {
 public:
-  static void ProcessPPDOptions (CLabelWriterDriver& Driver, CDummyLanguageMonitor& LM, ppd_file_t* ppd);
-  static void ProcessPageOptions(CLabelWriterDriver& Driver, CDummyLanguageMonitor& LM, cups_page_header2_t& PageHeader);
+  static void ProcessPPDOptions (CLabelWriterDriver& Driver, ILanguageMonitor& LM, ppd_file_t* ppd);
+  static void ProcessPageOptions(CLabelWriterDriver& Driver, ILanguageMonitor& LM, cups_page_header2_t& PageHeader);
 };
 
 class CDriverInitializerLabelWriterTwinTurbo
 {
 public:
-  static void ProcessPPDOptions (CLabelWriterDriverTwinTurbo& Driver, CDummyLanguageMonitor& LM, ppd_file_t* ppd);
-  static void ProcessPageOptions(CLabelWriterDriverTwinTurbo& Driver, CDummyLanguageMonitor& LM, cups_page_header2_t& PageHeader);
+  static void ProcessPPDOptions (CLabelWriterDriverTwinTurbo& Driver, ILanguageMonitor& LM, ppd_file_t* ppd);
+  static void ProcessPageOptions(CLabelWriterDriverTwinTurbo& Driver, ILanguageMonitor& LM, cups_page_header2_t& PageHeader);
 };
 
 class CDriverInitializerLabelWriterWithLM
