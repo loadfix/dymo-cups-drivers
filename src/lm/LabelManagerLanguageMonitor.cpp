@@ -319,6 +319,15 @@ namespace DymoPrinterDriver
             !strcasecmp(DeviceName_.c_str(), "DYMO LabelMANAGER 420P") ||
             !strcasecmp(DeviceName_.c_str(), "DYMO LabelManager 500TS"))
         {
+            // Same Status[1] short-read hazard as the LabelMANAGER 450
+            // branch above — these models also encode tape-width in the
+            // second status byte, and cupsBackChannelRead can return a
+            // single byte on short reads or older firmware. Guard here
+            // too so Status[1] is never dereferenced on an empty/1-byte
+            // vector (vector::operator[] is unchecked; that would be UB).
+            if (Status.size() < 2)
+                return false;
+
             if((Status[0] & CASSETTE_PRESENT_BIT) == CASSETTE_PRESENT_BIT)
             {
                 if(((Status[1] & 0xFF) == 0x00) ||
