@@ -32,12 +32,18 @@ namespace DymoPrinterDriver
 const byte ESC = 0x1B;
 const byte SYN = 0x16;
 
+// PageLineCount_ added to the init list (cppcheck uninitMemberVar / STATIC_ANALYSIS.md S-2).
+// The CUPS filter lifecycle always calls StartPage() before any code that
+// reads PageLineCount_, and StartPage sets it to 0 — but reading an
+// indeterminate size_t value until then is undefined behaviour, and a future
+// refactor that moves a read earlier would expose it.
 CLabelManagerDriver::CLabelManagerDriver(IPrintEnvironment& Environment):
-  Environment_(Environment), 
+  Environment_(Environment),
   CutOptions_(CLabelManagerDriver::coCut), Alignment_(alCenter), ContinuousPaper_(false), PrintChainMarksAtDocEnd_(false), AutoPaper_(false), TapeAlignmentOffset_(0), TapeColor_(tcBlackOnWhite),
-  DeviceName_(), SupportAutoCut_(true), TSDevice_(false), MaxPrintableWidth_(96), 
+  DeviceName_(), SupportAutoCut_(true), TSDevice_(false), MaxPrintableWidth_(96),
   NormalLeader_(75), MinLeader_(55), AlignedLeader_(43), MinPageLines_(133),
-  LastDotTab_(size_t(-1)), LastBytesPerLine_(size_t(-1)), EmptyLinesCount_(0), PageNo_(1),
+  LastDotTab_(size_t(-1)), LastBytesPerLine_(size_t(-1)),
+  PageLineCount_(0), EmptyLinesCount_(0), PageNo_(1),
   RasterLines_(), ShiftedRasterLine_(12), TSBuffer_(0),
   HLockFile_(0)
 {

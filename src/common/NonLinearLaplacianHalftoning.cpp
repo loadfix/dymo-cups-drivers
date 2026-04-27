@@ -253,8 +253,15 @@ const CNLLBlock::square_block_t CNLLBlock::Squares_[8] =
   };
 */
 
-CNLLHalftoning::CNLLHalftoning(int Threshold, image_t InputImageType, image_t OutputImageType): 
-  CHalftoneFilter(InputImageType, OutputImageType), Threshold_(Threshold)
+// ImageWidth_ and ImageHeight_ added to the init list
+// (cppcheck uninitMemberVar / STATIC_ANALYSIS.md S-3). They are written at
+// the top of ProcessImage() before any read — but the class is publicly
+// visible and a future getter (or a subclass) could query them pre-
+// ProcessImage. Reading an indeterminate size_t value is UB.
+CNLLHalftoning::CNLLHalftoning(int Threshold, image_t InputImageType, image_t OutputImageType):
+  CHalftoneFilter(InputImageType, OutputImageType),
+  Threshold_(Threshold),
+  ImageWidth_(0), ImageHeight_(0)
 {
   if (GetOutputImageType() != itBW)
     throw EHalftoneError(EHalftoneError::heUnsupportedImageType);
