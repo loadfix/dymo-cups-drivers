@@ -32,9 +32,17 @@ const byte ESC = 0x1B;
 const byte SYN = 0x16;
 const byte ETB = 0x17;
 
+// PageHeight_ is initialised to 3058 (0x0BF2) — the LW 450 Series spec's
+// documented firmware default for label length (spec p.9: "default = 3058
+// = 10.2 inches"). In practice every print path calls SendLabelLength()
+// with a length computed from the CUPS page header in StartPage(), so
+// this default is never actually emitted to the printer. Upstream DYMO
+// used 0x0800 (2048) here which didn't match spec; swapped for the
+// correct value so the dormant default matches documentation if anyone
+// ever introduces a StartPage path that skips the page header.
 CLabelWriterDriver::CLabelWriterDriver(IPrintEnvironment& Environment):
   Environment_(Environment),
-  Resolution_(resUnknown), Density_(pdNormal), Quality_(pqText), PageHeight_(0x0800), PaperType_(ptRegular),
+  Resolution_(resUnknown), Density_(pdNormal), Quality_(pqText), PageHeight_(3058), PaperType_(ptRegular),
   MaxPrintWidth_(84),PageOffset_(0, 0),LastDotTab_(size_t(-1)), LastBytesPerLine_(size_t(-1)), EmptyLinesCount_(0)
 {
 }
@@ -46,6 +54,16 @@ CLabelWriterDriver::~CLabelWriterDriver()
 void
 CLabelWriterDriver::StartDoc()
 {
+  // This base-class StartDoc is also exercised by the LW 300 / 310 / 315
+  // and SE450 subclasses (they don't override it). On those models the
+  // ESC Q ("Line Tab") command emitted by SendLineTab is part of the
+  // documented opcode set. On LW 450-family firmware ESC Q is not
+  // documented (spec p.9 says any unknown opcode after ESC is silently
+  // ignored), so the 4 stray bytes are a harmless no-op for 450 but
+  // required for 3xx correctness — see the "3xx series" comment in
+  // ProcessRasterLine around line 313. If this ever needs to diverge
+  // for 450-family hardware, override StartDoc in CLabelWriterDriver400
+  // rather than stripping the call here.
   SendCommand(GetResetCommand());
   SendResolution(Resolution_);
   SendLineTab(0);
@@ -542,6 +560,20 @@ CLabelWriterDriver::SendPrintQuality(quality_t Value)
   SendCommand(buf, sizeof(buf));
 }
 
+// GetResetCommand returns 156 consecutive ESC bytes (0x1B). This is the
+// "sync recovery" sequence documented in LW 450 Series Technical
+// Reference p.9: "The printer can be forced back into a known command
+// state by sending at least 85 continuous <esc> characters." 156 > 85
+// so the sync is satisfied.
+//
+// NOTE: this is NOT the spec's "Reset Printer" command (ESC @, 0x1B 0x40)
+// which would also restore firmware parameter defaults. The 156-ESC
+// sequence only re-synchronises the command stream; it does not touch
+// density / quality / resolution / dot-tab / etc. The driver compensates
+// by explicitly re-setting every parameter in StartDoc() immediately
+// after, so the post-reset state is deterministic either way. Kept as-is
+// because it's what the original DYMO Windows driver and DYMO Connect
+// send — printers in the field are tested against this exact sequence.
 buffer_t
 CLabelWriterDriver::GetResetCommand()
 {
